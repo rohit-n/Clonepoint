@@ -182,12 +182,6 @@ void handleSettingsChange()
 
 void loop1()
 {
-	/*
-	Uint32 fps_lasttime = SDL_GetTicks(); //the last recorded time.
-	Uint32 fps_current; //the current FPS.
-	Uint32 fps_frames = 0; //frames passed since the last recorded fps.
-	*/
-
 	Uint32 old_time;
 	Uint32 curr_time;
 	old_time = SDL_GetTicks();
@@ -197,12 +191,6 @@ void loop1()
 		sm->getActiveState()->handleInput();
 
 		curr_time = SDL_GetTicks();
-
-		// while ((curr_time - old_time) < 15)
-		// {
-		// curr_time = SDL_GetTicks();
-		// SDL_Delay(curr_time - old_time);
-		// }
 
 		delta += (curr_time - old_time);
 		old_time = curr_time;
@@ -215,41 +203,6 @@ void loop1()
 		}
 
 		draw_frame();
-		/*
-		fps_frames++;
-		if (fps_lasttime < SDL_GetTicks() - 1000)
-		{
-			fps_lasttime = SDL_GetTicks();
-			fps_current = fps_frames;
-			LOGF((stdout, "FPS = %i\n", fps_current));
-			fps_frames = 0;
-		}
-		*/
-	}
-}
-
-void loop2()
-{
-	Uint32 old_time;
-
-	old_time = SDL_GetTicks();
-
-	unsigned int dT;
-	unsigned int accumulator = 0;
-
-	while (!sm->getActiveState()->isQuitting())
-	{
-		sm->getActiveState()->handleInput();
-		dT = SDL_GetTicks() - old_time;
-		accumulator += dT;
-		if (accumulator >= 15)
-		{
-			sm->update(accumulator);
-			accumulator = 0;
-			draw_frame();
-		}
-
-		old_time = SDL_GetTicks();
 	}
 }
 
