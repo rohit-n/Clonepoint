@@ -1,6 +1,9 @@
 Clonepoint
 by Rohit Nirmal
 
+This is the source code to Clonepoint. You can find the data files needed to play the game here:
+http://rohit.itch.io/clonepoint
+
 Default Controls:
 	A - Move Left
 	D - Move Right
