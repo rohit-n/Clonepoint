@@ -258,18 +258,6 @@ void OptionsState::handleButton(Button* button)
 		_manager->changeSettings();
 		_saveMessage->init(_manager->getWindowWidth() - 256, 64, "Saved settings.", 2000);
 	}
-	else if (button == _saveChangesButton.get())
-	{
-		saveSettings();
-		_manager->changeSettings();
-		_saveMessage->init(_manager->getWindowWidth() - 256, 64, "Saved settings.", 2000);
-	}
-	else if (button == _saveChangesButton.get())
-	{
-		saveSettings();
-		_manager->changeSettings();
-		_saveMessage->init(_manager->getWindowWidth() - 256, 64, "Saved settings.", 2000);
-	}
 	else if (button == _toBindingsPage.get())
 	{
 		changeToBindingsPage();
