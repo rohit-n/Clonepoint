@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 #include <dirent.h>
 #include <string>
 #include "loadmapstate.h"
@@ -44,6 +45,7 @@ LoadMapState::LoadMapState(StateManager* sm) : MenuState(sm)
 
 	DIR *dir = opendir("./data");
 	struct dirent *ent;
+	std::vector<std::string> nameList;
 
 	if (dir != nullptr)
 	{
@@ -56,20 +58,23 @@ LoadMapState::LoadMapState(StateManager* sm) : MenuState(sm)
 			        ent->d_name[strlen(ent->d_name) - 3] == 't' &&
 			        ent->d_name[strlen(ent->d_name) - 4] == '.')
 			{
-				currPage.push_back(std::shared_ptr<TextButton>(new TextButton(0, 0, (strlen(ent->d_name) + 2) * 16, 32, std::string(ent->d_name))));
-				if (currPage.size() == MAX_ITEMS_PER_PAGE)
-				{
-					currPage.push_back(_cancelButton);
-					currPage.push_back(_prevButton);
-					currPage.push_back(_nextButton);
-					_pages.push_back(currPage);
-					currPage.clear();
-				}
+				nameList.push_back(std::string(ent->d_name));
 			}
 		}
 		closedir (dir);
+	}
+	else
+	{
+		LOGF((stderr, "ERROR: Could not load directory ./data."));
+	}
 
-		if (!currPage.empty())
+	std::sort(nameList.begin(), nameList.end());
+	std::vector<std::string>::iterator it;
+
+	for (it = nameList.begin(); it != nameList.end(); ++it)
+	{
+		currPage.push_back(std::shared_ptr<TextButton>(new TextButton(0, 0, ((*it).length() + 2) * 16, 32, *it)));
+		if (currPage.size() == MAX_ITEMS_PER_PAGE)
 		{
 			currPage.push_back(_cancelButton);
 			currPage.push_back(_prevButton);
@@ -78,11 +83,15 @@ LoadMapState::LoadMapState(StateManager* sm) : MenuState(sm)
 			currPage.clear();
 		}
 	}
-	else
-	{
-		LOGF((stderr, "ERROR: Could not load directory ./data."));
-	}
 
+	if (!currPage.empty())
+	{
+		currPage.push_back(_cancelButton);
+		currPage.push_back(_prevButton);
+		currPage.push_back(_nextButton);
+		_pages.push_back(currPage);
+		currPage.clear();
+	}
 	handlePageChange();
 }
 
@@ -168,10 +177,10 @@ void LoadMapState::handlePageChange()
 {
 	_buttons = _pages[_currPageIndex];
 	char str[16];
-	#ifdef _WIN32
+#ifdef _WIN32
 	sprintf(str, "%i/%i", _currPageIndex + 1, _pages.size());
-	#else
+#else
 	sprintf(str, "%lu/%lu", _currPageIndex + 1, _pages.size());
-	#endif
+#endif
 	_pageLabel->setText(std::string(str));
 }
