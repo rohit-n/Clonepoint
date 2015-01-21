@@ -219,7 +219,8 @@ void Renderer::init(int x, int y)
 	_messageStrings[SM_Start] = "Welcome to Clonepoint.";
 	_messageStrings[SM_Jumping] = "Use the mouse to jump on to the side of the building.";
 	_messageStrings[SM_Falling] = "You can survive any fall.";
-	_messageStrings[SM_Guards] = "Avoid the guard's field of vision. Pounce on them to knock them out.";
+	_messageStrings[SM_Guards1] = "Avoid the guard's field of vision. Pounce on them to knock them out.";
+	_messageStrings[SM_Guards2] = "Guards will search for the nearest switch to turn the light back on. Turn off the light.";
 	_messageStrings[SM_Crosslink1] = "Enter Crosslink and drag a connection from the light switch to the door to proceed.";
 	_messageStrings[SM_Crosslink2] = "Good job! Use Crosslink to get to your objectives in creative ways.";
 	_messageStrings[SM_ObjectivesIncomplete] = "Objectives not completed.";

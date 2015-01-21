@@ -727,13 +727,17 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				}
 				if (!strcmp(element->Attribute("type"), "tut_04"))
 				{
-					sm = SM_Guards;
+					sm = SM_Guards1;
 				}
 				if (!strcmp(element->Attribute("type"), "tut_05"))
 				{
-					sm = SM_Crosslink1;
+					sm = SM_Guards2;
 				}
 				if (!strcmp(element->Attribute("type"), "tut_06"))
+				{
+					sm = SM_Crosslink1;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_07"))
 				{
 					sm = SM_Crosslink2;
 				}
@@ -1073,6 +1077,7 @@ void Map::parseTileLayer(char* data)
 	SDL_Rect dstrect;
 	unsigned int row;
 	unsigned int col;
+	int endcol;
 	unsigned int tilesetWidthInTiles = _tilesetImage->w / TILEDIM;
 
 	while (token)
@@ -1085,6 +1090,11 @@ void Map::parseTileLayer(char* data)
 			gid--;
 
 			row = i / _tilesWide;
+			endcol = i - (row * _tilesWide) - 1;
+			if (endcol < 0)
+			{
+				row--;
+			}
 			col = i - (row * _tilesWide) - 1;
 
 			tileset_col = gid % tilesetWidthInTiles;
