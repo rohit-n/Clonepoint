@@ -1310,6 +1310,40 @@ void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, std::s
 	rect->h = (height * font->getSize()) + 16;
 }
 
+//more expensive than above function - used only when bindings are changed.
+void Renderer::getBoxDimsAroundText(const char* text, std::shared_ptr<Font> font, vec2f* dims)
+{
+	int height = font->getSize();
+	const char* c;
+	float x, y, longestWidth;
+	x = y = longestWidth = 0;
+	stbtt_aligned_quad q;
+	for (c = text; *c != '\0'; c++)
+	{
+			if (*c == '\n')
+			{
+				height += font->getSize();
+				y += font->getSize();
+				x = 0;
+				continue;
+			}
+
+			stbtt_GetBakedQuad(font->data(), 512, 512, *c - 32, &x, &y, &q, 1);
+			if (q.x1 > longestWidth)
+			{
+				longestWidth = q.x1;
+			}
+	}
+
+	if (longestWidth == 0)
+	{
+		longestWidth = strlen(text) * font->getSize();
+	}
+
+	dims->x = longestWidth + (2 * font->getSize());
+	dims->y = height + (font->getSize() / 2);
+}
+
 void Renderer::drawScene(Scene* scene)
 {
 	Rect cam = scene->getCamera();
@@ -1418,7 +1452,10 @@ void Renderer::drawScene(Scene* scene)
 	if (scene->getFirstOverlappedEnt() < NumUsableEnts)
 	{
 		float oneMinusAlpha = 1.0f - (0.5f * scene->getInputPopupAlpha());
-		getBoxCoordsAroundText(_bindingStrings[scene->getFirstOverlappedEnt()].c_str(), playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, font2, &messageBox);
+		messageBox.x = playerRect.x - cam.x - font2->getSize();
+		messageBox.y = playerRect.y + playerRect.h - cam.y;
+		messageBox.w = _bindingBoxDims[scene->getFirstOverlappedEnt()].x;
+		messageBox.h = _bindingBoxDims[scene->getFirstOverlappedEnt()].y;
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
 		drawRect2Fill(messageBox, oneMinusAlpha, oneMinusAlpha, oneMinusAlpha, 3.0f);
@@ -1535,6 +1572,14 @@ void Renderer::handleSettingsChange()
 	_bindingStrings[UEEnemy] = "Punch: LMB";
 	_bindingStrings[UEEnemyKnockedOut] = "Punch:   LMB\nGet off: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveLeft)
 	+ "/" + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveRight);
+
+	getBoxDimsAroundText(_bindingStrings[UESwitch].c_str(), font2, &_bindingBoxDims[UESwitch]);
+	getBoxDimsAroundText(_bindingStrings[UETerminal].c_str(), font2, &_bindingBoxDims[UETerminal]);
+	getBoxDimsAroundText(_bindingStrings[UEElevator].c_str(), font2, &_bindingBoxDims[UEElevator]);
+	getBoxDimsAroundText(_bindingStrings[UEStairs].c_str(), font2, &_bindingBoxDims[UEStairs]);
+	getBoxDimsAroundText(_bindingStrings[UECircuitBox].c_str(), font2, &_bindingBoxDims[UECircuitBox]);
+	getBoxDimsAroundText(_bindingStrings[UEEnemy].c_str(), font2, &_bindingBoxDims[UEEnemy]);
+	getBoxDimsAroundText(_bindingStrings[UEEnemyKnockedOut].c_str(), font2, &_bindingBoxDims[UEEnemyKnockedOut]);
 }
 
 void Renderer::addShader(GLuint shader_program, const char* shader_text, GLuint shader_id)

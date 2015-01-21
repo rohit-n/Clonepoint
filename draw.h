@@ -123,6 +123,7 @@ public:
 
 	void handleSettingsChange();
 	void getBoxCoordsAroundText(const char* text, float x, float y, std::shared_ptr<Font> font, Rect* rect);
+	void getBoxDimsAroundText(const char* text, std::shared_ptr<Font> font, vec2f* dims);
 
 	std::function<void()> getScreenshotFunc();
 
@@ -210,6 +211,7 @@ private:
 	const char* _mouseOverStrings[NUMBER_OF_MOUSEOVER_OBJECTS];
 	const char* _messageStrings[NUMBER_OF_STRING_MESSAGES];
 	std::string _bindingStrings[NumUsableEnts];
+	vec2f _bindingBoxDims[NumUsableEnts];
 	std::string objectivesNotCompleted;
 	Rect messageBox;
 };
