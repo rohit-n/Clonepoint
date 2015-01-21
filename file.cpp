@@ -4,26 +4,26 @@
 
 char* file_read(const char* filename)
 {
-	FILE* in = fopen(filename, "rb");
-	if (in == NULL)
-		return NULL;
-	int res_size = BUFSIZ;
-	char* res = new char[res_size];
-	int nb_read_total = 0;
-	while (!feof(in) && !ferror(in))
-	{
-		if (nb_read_total + BUFSIZ > res_size)
-		{
-			if (res_size > 10*1024*1024)
-				break;
-			res_size = res_size * 2;
-			res = (char*)realloc(res, res_size);
-		}
-		char* p_res = res + nb_read_total;
-		nb_read_total += fread(p_res, 1, BUFSIZ, in);
-	}
-	fclose(in);
-	res = (char*)realloc(res, nb_read_total + 1);
-	res[nb_read_total] = '\0';
-	return res;
+    FILE* input = fopen(filename, "rb");
+    if(input == nullptr) return nullptr;
+
+    if(fseek(input, 0, SEEK_END) == -1) return nullptr;
+    long size = ftell(input);
+    if(size == -1) return nullptr;
+    if(fseek(input, 0, SEEK_SET) == -1) return nullptr;
+
+    auto content = new char[(size_t)size+1];
+    if(content == nullptr)
+        return nullptr;
+
+    fread(content, 1, (size_t)size, input);
+    if(ferror(input))
+    {
+        delete [] content;
+        return nullptr;
+    }
+
+    fclose(input);
+    content[size] = '\0';
+    return content;
 }
