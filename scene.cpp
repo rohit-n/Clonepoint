@@ -274,6 +274,7 @@ void Scene::update(unsigned int dT)
 	_playerOverlappingEnts[UETerminal] = false;
 	_playerOverlappingEnts[UEElevator] = false;
 	_playerOverlappingEnts[UECircuitBox] = false;
+	_playerOverlappingEnts[UEEnemy] = _player->isPinning();
 
 	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)
 	{
@@ -324,8 +325,8 @@ void Scene::update(unsigned int dT)
 			ent->update(dT);
 			if (check_collision(ent->getCollisionRect(), _player->getCollisionRect()))
 			{
-				_playerOverlappingEnts[UEElevator] = true;
 				_elevator = static_cast<ElevatorDoor*>(ent);
+				_playerOverlappingEnts[UEElevator] = (!_player->isInElevator() || _player->getElevatorDoor() != _elevator);
 				if (_player->isInElevator() && _player->getElevatorDoor() != _elevator)
 				{
 					_player->switchElevator(_elevator);
@@ -336,8 +337,8 @@ void Scene::update(unsigned int dT)
 		{
 			if (check_collision(ent->getCollisionRect(), _player->getCollisionRect()))
 			{
-				_playerOverlappingEnts[UECircuitBox] = true;
 				_circuitBox = static_cast<CircuitBox*>(ent);
+				_playerOverlappingEnts[UECircuitBox] = !_circuitBox->isHacked();
 			}
 		}
 		else if (dynamic_cast<MotionScanner*>(ent))
@@ -376,7 +377,8 @@ void Scene::update(unsigned int dT)
 		_playerOverlappingEnts[UETerminal] ||
 		_playerOverlappingEnts[UEElevator] ||
 		_playerOverlappingEnts[UECircuitBox] ||
-		_playerOverlappingEnts[UEStairs])
+		_playerOverlappingEnts[UEStairs] ||
+		_playerOverlappingEnts[UEEnemy])
 	{
 		if (!_showInputPopup)
 		{
@@ -1983,6 +1985,17 @@ StringMessage Scene::getStringMessage()
 
 UsableEnts Scene::getFirstOverlappedEnt()
 {
+	if (_playerOverlappingEnts[UEEnemy])
+	{
+		if (_player->getNumPunches() == 0)
+		{
+			return UEEnemy;
+		}
+		else
+		{
+			return UEEnemyKnockedOut;
+		}
+	}
 	if (_playerOverlappingEnts[UESwitch])
 	{
 		return UESwitch;

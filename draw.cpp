@@ -1532,6 +1532,9 @@ void Renderer::handleSettingsChange()
 	                              Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveDown);
 	_bindingStrings[UEStairs] = _bindingStrings[UEElevator];
 	_bindingStrings[UECircuitBox] = "Bypass: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
+	_bindingStrings[UEEnemy] = "Punch: LMB";
+	_bindingStrings[UEEnemyKnockedOut] = "Punch:   LMB\nGet off: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveLeft)
+	+ "/" + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveRight);
 }
 
 void Renderer::addShader(GLuint shader_program, const char* shader_text, GLuint shader_id)

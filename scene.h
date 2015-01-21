@@ -43,6 +43,8 @@ enum UsableEnts
 	UEElevator,
 	UECircuitBox,
 	UEStairs,
+	UEEnemy,
+	UEEnemyKnockedOut,
 	NumUsableEnts
 };
 
