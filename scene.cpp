@@ -59,7 +59,8 @@ Scene::Scene()
 	_playerOverlappingEnts[UESwitch] =
 	    _playerOverlappingEnts[UETerminal] =
 	        _playerOverlappingEnts[UEElevator] =
-	            _playerOverlappingEnts[UECircuitBox] = false;
+	            _playerOverlappingEnts[UECircuitBox] =
+	                _playerOverlappingEnts[UEStairs] = false;
 
 	_endRect.w = 1;
 	_endRect.h = 1;
@@ -219,6 +220,10 @@ void Scene::handleStairCollision(LivingEntity* le)
 		{
 			le->setOverlappingStairs(sw);
 			found = true;
+			if (_player.get() == le)
+			{
+				_playerOverlappingEnts[UEStairs] = true;
+			}
 			break;
 		}
 	}
@@ -238,6 +243,7 @@ void Scene::update(unsigned int dT)
 	if (!_player->isInElevator())
 		handleMapCollisions(_player.get(), dT);
 	_player->update(dT);
+	_playerOverlappingEnts[UEStairs] = false;
 	handleStairCollision(_player.get());
 	checkIfEntOnGround(_player.get());
 
@@ -1963,6 +1969,10 @@ UsableEnts Scene::getFirstOverlappedEnt()
 	if (_playerOverlappingEnts[UECircuitBox])
 	{
 		return UECircuitBox;
+	}
+	if (_playerOverlappingEnts[UEStairs])
+	{
+		return UEStairs;
 	}
 	return NumUsableEnts;
 }

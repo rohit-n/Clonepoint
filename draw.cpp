@@ -1526,8 +1526,9 @@ void Renderer::handleSettingsChange()
 	_enteredLightFlash = (Locator::getConfigManager()->getValue("entered_light_flash") == "1");
 	_bindingStrings[UESwitch] = "Flip Switch: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UETerminal] = "Hack: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
-	_bindingStrings[UEElevator] = "Move Up: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp) + "\nMove Down: " +
+	_bindingStrings[UEElevator] = "Move Up:   " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp) + "\nMove Down: " +
 	                              Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveDown);
+	_bindingStrings[UEStairs] = _bindingStrings[UEElevator];
 	_bindingStrings[UECircuitBox] = "Bypass: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 }
 

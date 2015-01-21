@@ -42,6 +42,7 @@ enum UsableEnts
 	UETerminal,
 	UEElevator,
 	UECircuitBox,
+	UEStairs,
 	NumUsableEnts
 };
 
