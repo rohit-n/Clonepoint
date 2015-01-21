@@ -208,10 +208,12 @@ public:
 	int getTimeToSniper();
 	unsigned int getNumPlayerBullets();
 	unsigned int getPlayerEnergy();
-	int getObjectivesIncompleteTime();
+	int getStringMessageTime();
 	void setTimeToSniper(int time);
 	void setNumPlayerBullets(unsigned int bullets);
 	void setPlayerEnergy(unsigned int energy);
+	StringMessage getStringMessage();
+	UsableEnts getFirstOverlappedEnt();
 
 	//scene_guards.cpp
 	void traceEnemyFOV(Enemy* enemy);
@@ -325,13 +327,14 @@ private:
 	std::vector<std::unique_ptr<Particle> > _particles;
 
 	MouseOverObject _mousedOverObject;
-	int objectivesNotCompleteTimer;
+	int _stringMessageTimer;
 
 	float _lightEnteredAlpha;
 	bool _playerShotFired;
 	int _timeToSniper;
 	unsigned int _numPlayerBullets;
 	unsigned int _playerEnergy;
+	StringMessage _stringMessage;
 
 	//saving
 	char _mapFilename[32];

@@ -94,4 +94,16 @@ enum MouseOverObject
 	NUMBER_OF_MOUSEOVER_OBJECTS
 };
 
+enum StringMessage
+{
+	SM_Start = 0,
+	SM_Jumping,
+	SM_Falling,
+	SM_Guards,
+	SM_Crosslink1,
+	SM_Crosslink2,
+	SM_ObjectivesIncomplete,
+	NUMBER_OF_STRING_MESSAGES
+};
+
 #endif

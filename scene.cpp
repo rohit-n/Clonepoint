@@ -22,7 +22,8 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #define CROSSLINKPAN 5
 #define CROSSLINKPANTRHESHOLD 30
 #define ENEMYGUNLINKCOST 3
-#define TIME_TO_SHOW_OBJECTIVES_INCOMPLETE_MSG 5000
+#define TIME_TO_SHOW_MSG 5000
+#define TIME_TO_SHOW_TUTORIAL_MSG 3000
 #define PLAYER_LIGHT_THRESHOLD 50
 #define PLAYERSPEED 0.20
 #define PLAYERAIMINGSPEEDMOD 0.25
@@ -102,7 +103,8 @@ Scene::Scene()
 	_timeToSniper = 1000;
 	_numPlayerBullets = 0;
 	_playerEnergy = 0;
-	objectivesNotCompleteTimer = -1;
+	_stringMessageTimer = -1;
+	_stringMessage = NUMBER_OF_STRING_MESSAGES;
 }
 
 Scene::~Scene()
@@ -352,6 +354,14 @@ void Scene::update(unsigned int dT)
 				addNoise(alarm->getCollisionRectPosition().x - _camera.x, alarm->getCollisionRectPosition().y - _camera.y, 512, true, ALERT_RUN, alarm);
 			}
 		}
+		else if (dynamic_cast<TutorialMark*>(ent))
+		{
+			if (check_collision(ent->getCollisionRect(), _player->getCollisionRect()))
+			{
+				_stringMessage = static_cast<TutorialMark*>(ent)->getTutorialString();
+				_stringMessageTimer = TIME_TO_SHOW_TUTORIAL_MSG;
+			}
+		}
 	}
 
 	for (i = 0; i < _currentMap->getNumberOfShafts(); i++)
@@ -397,7 +407,8 @@ void Scene::update(unsigned int dT)
 		}
 		else
 		{
-			objectivesNotCompleteTimer = TIME_TO_SHOW_OBJECTIVES_INCOMPLETE_MSG;
+			_stringMessage = SM_ObjectivesIncomplete;
+			_stringMessageTimer = TIME_TO_SHOW_MSG;
 		}
 	}
 
@@ -422,9 +433,9 @@ void Scene::update(unsigned int dT)
 		}
 	}
 
-	if (objectivesNotCompleteTimer > 0.0f)
+	if (_stringMessageTimer >= 0.0f)
 	{
-		objectivesNotCompleteTimer -= dT;
+		_stringMessageTimer -= dT;
 	}
 
 	//updateSaves(dT);
@@ -733,7 +744,7 @@ void Scene::handleClick(int mx, int my, unsigned int dT)
 			if (vec2InRect(vec2f(locX, locY), collRect))
 			{
 				_linker = le;
-				if (_linker->getCircuitType() == RED || _circuitUnlocked[_linker->getCircuitType()])
+				if (isCircuitUnlocked(_linker->getCircuitType()))
 				{
 					_linker->unlink();
 					_selecting = true;
@@ -1245,9 +1256,9 @@ void Scene::toggleCrosslinkMode()
 			}
 			else
 			{
-				if (_circuitUnlocked[camera->getCircuitType()] || camera->getCircuitType() == RED)
+				if (isCircuitUnlocked(camera->getCircuitType()))
 				{
-					fov->setColors(r , g , b );
+					fov->setColors(r , g , b);
 				}
 				else
 				{
@@ -1925,7 +1936,33 @@ void Scene::setPlayerEnergy(unsigned int energy)
 	_playerEnergy = energy;
 }
 
-int Scene::getObjectivesIncompleteTime()
+int Scene::getStringMessageTime()
 {
-	return objectivesNotCompleteTimer;
+	return _stringMessageTimer;
+}
+
+StringMessage Scene::getStringMessage()
+{
+	return _stringMessage;
+}
+
+UsableEnts Scene::getFirstOverlappedEnt()
+{
+	if (_playerOverlappingEnts[UESwitch])
+	{
+		return UESwitch;
+	}
+	if (_playerOverlappingEnts[UETerminal])
+	{
+		return UETerminal;
+	}
+	if (_playerOverlappingEnts[UEElevator])
+	{
+		return UEElevator;
+	}
+	if (_playerOverlappingEnts[UECircuitBox])
+	{
+		return UECircuitBox;
+	}
+	return NumUsableEnts;
 }

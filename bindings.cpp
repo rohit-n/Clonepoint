@@ -267,6 +267,22 @@ std::string BindingsManager::getKeysBound(eBinding binding)
 	return keysBound;
 }
 
+std::string BindingsManager::getFirstKeyBound(eBinding binding)
+{
+	std::string keysBound = "";
+	std::map<SDL_Keycode, eBinding>::iterator it;
+
+	for (it = _bindings.begin(); it != _bindings.end(); it++)
+	{
+		if (it->second == binding)
+		{
+			return getKeyAsString(it->first);
+		}
+	}
+
+	return "NONE";
+}
+
 void BindingsManager::addBinding(SDL_Keycode key, eBinding binding)
 {
 	//erase previous keys for this binding first.

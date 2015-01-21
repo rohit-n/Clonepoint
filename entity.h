@@ -223,6 +223,15 @@ private:
 	bool _alive;
 };
 
+class TutorialMark : public Entity
+{
+public:
+	TutorialMark(float x, float y, StringMessage ts);
+	StringMessage getTutorialString();
+private:
+	StringMessage _ts;
+};
+
 class Stairwell;
 
 class Stairs : public Entity

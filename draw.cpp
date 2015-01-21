@@ -196,27 +196,33 @@ void Renderer::init(int x, int y)
 	resGlass.reset(new SpriteSheet("./data/sprites/glass.png", 8, false));
 	generateSheetBuffers(resGlass.get(), 8);
 
-	mouseOverStrings[MO_Nothing] = "";
-	mouseOverStrings[MO_CircuitBox] = "A circuit box. Use it to unlock its circuit.";
-	mouseOverStrings[MO_LightFixture] = "A light fixture. Toggles its light when activated.";
-	mouseOverStrings[MO_MainComputer] = "A computer terminal. Hack these to complete mission objectives.";
-	mouseOverStrings[MO_HandScanner] = "A hand scanner. Only guards can use these.";
-	mouseOverStrings[MO_Elevator] = "An elevator switch. Makes nearby enemies look when an elevator arrives.";
-	mouseOverStrings[MO_MotionScanner] = "A motion detector. Activates when any living entity passes through.";
-	mouseOverStrings[MO_Switch] = "A light switch.";
-	mouseOverStrings[MO_Door] = "A door. Opens or closes when activated.";
-	mouseOverStrings[MO_TrapDoor] = "A trap door. Opens when activated, then closes after a time.";
-	mouseOverStrings[MO_VaultDoor] = "A vault door. Opens when activated, then closes after a time.";
-	mouseOverStrings[MO_SoundDetector] = "A sound detector. Activated by loud sounds nearby.";
-	mouseOverStrings[MO_Alarm] = "An alarm. When activated, alerts nearby guard to turn it off.";
-	mouseOverStrings[MO_PowerSocket] = "A power socket. Knocks out guards nearby when activated.";
-	mouseOverStrings[MO_SecurityCamera] = "A security camera. Activates whenever you enter its field of vision.";
-	mouseOverStrings[MO_Guard] = "A Guard. Shoots on sight.";
-	mouseOverStrings[MO_Enforcer] = "An Enforcer. Cannot be pounced.";
-	mouseOverStrings[MO_Professional] = "A Professional. Has faster reflexes, can see in the dark, shoots when held at gunpoint.";
-	mouseOverStrings[MO_Sniper] = "A Sniper. You probably won't make it out.";
+	_mouseOverStrings[MO_Nothing] = "";
+	_mouseOverStrings[MO_CircuitBox] = "A circuit box. Use it to unlock its circuit.";
+	_mouseOverStrings[MO_LightFixture] = "A light fixture. Toggles its light when activated.";
+	_mouseOverStrings[MO_MainComputer] = "A computer terminal. Hack these to complete mission objectives.";
+	_mouseOverStrings[MO_HandScanner] = "A hand scanner. Only guards can use these.";
+	_mouseOverStrings[MO_Elevator] = "An elevator switch. Makes nearby enemies look when an elevator arrives.";
+	_mouseOverStrings[MO_MotionScanner] = "A motion detector. Activates when any living entity passes through.";
+	_mouseOverStrings[MO_Switch] = "A light switch.";
+	_mouseOverStrings[MO_Door] = "A door. Opens or closes when activated.";
+	_mouseOverStrings[MO_TrapDoor] = "A trap door. Opens when activated, then closes after a time.";
+	_mouseOverStrings[MO_VaultDoor] = "A vault door. Opens when activated, then closes after a time.";
+	_mouseOverStrings[MO_SoundDetector] = "A sound detector. Activated by loud sounds nearby.";
+	_mouseOverStrings[MO_Alarm] = "An alarm. When activated, alerts nearby guard to turn it off.";
+	_mouseOverStrings[MO_PowerSocket] = "A power socket. Knocks out guards nearby when activated.";
+	_mouseOverStrings[MO_SecurityCamera] = "A security camera. Activates whenever you enter its field of vision.";
+	_mouseOverStrings[MO_Guard] = "A Guard. Shoots on sight.";
+	_mouseOverStrings[MO_Enforcer] = "An Enforcer. Cannot be pounced.";
+	_mouseOverStrings[MO_Professional] = "A Professional. Has faster reflexes, can see in the dark, shoots when held at gunpoint.";
+	_mouseOverStrings[MO_Sniper] = "A Sniper. You probably won't make it out.";
 
-	objectivesNotCompleted = "Objectives not completed.";
+	_messageStrings[SM_Start] = "Welcome to Clonepoint.";
+	_messageStrings[SM_Jumping] = "Use the mouse to jump on to the side of the building.";
+	_messageStrings[SM_Falling] = "You can survive any fall.";
+	_messageStrings[SM_Guards] = "Avoid the guard's field of vision. Pounce on them to knock them out.";
+	_messageStrings[SM_Crosslink1] = "Enter Crosslink and drag a connection from the light switch to the door to proceed.";
+	_messageStrings[SM_Crosslink2] = "Good job! Use Crosslink to get to your objectives in creative ways.";
+	_messageStrings[SM_ObjectivesIncomplete] = "Objectives not completed.";
 
 	handleSettingsChange();
 }
@@ -781,13 +787,13 @@ void Renderer::drawCollisionVols(Scene* scene)
 
 			if (map->getCollideVolAt(i).glass)
 				drawRect2(rect, 0, 1, 1, 1);
-			#ifdef DEBUG
+#ifdef DEBUG
 			else
 			{
 				drawRect2(rect, 0.40625f, 0.71875f, 0.91796875f, 1);
 				// drawRect2(rect, 0, 0, 0, scene->inCrosslinkMode(), 1);
 			}
-			#endif
+#endif
 		}
 	}
 }
@@ -940,7 +946,7 @@ void Renderer::drawEntities(Scene* scene)
 		if (dynamic_cast<SecurityCamera*>(ent))
 		{
 			SecurityCamera* camera = static_cast<SecurityCamera*>(ent);
-			if (scene->inCrosslinkMode() && !scene->isCircuitUnlocked(camera->getCircuitType()) && camera->getCircuitType() != RED)
+			if (scene->inCrosslinkMode() && !scene->isCircuitUnlocked(camera->getCircuitType()))
 			{
 				glBlendFunc(GL_DST_COLOR, GL_ZERO);
 			}
@@ -1269,10 +1275,45 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 	glUseProgramObject(0);
 }
 
+void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, std::shared_ptr<Font> font, Rect* rect)
+{
+	int longestWidth = 0;
+	int widthCounter = 0;
+	int height = 1;
+	const char* c;
+	for (c = text; *c != '\0'; c++)
+	{
+		if (*c != '\n')
+		{
+			widthCounter++;
+		}
+		else
+		{
+			if (widthCounter > longestWidth)
+			{
+				longestWidth = widthCounter;
+				widthCounter = 0;
+			}
+			height++;
+		}
+	}
+
+	if (longestWidth == 0)
+	{
+		longestWidth = strlen(text);
+	}
+
+	rect->x = x - font->getSize();
+	rect->y = y -  font->getSize();
+	rect->w = ((longestWidth / 2.0f) + 2.5f) * font->getSize();
+	rect->h = (height * font->getSize()) + 16;
+}
+
 void Renderer::drawScene(Scene* scene)
 {
 	Rect cam = scene->getCamera();
 	Player* player = scene->getPlayer();
+	Rect playerRect = player->getCollisionRect();
 	drawTileLayer(scene, 0);
 	if (!scene->inCrosslinkMode())
 	{
@@ -1339,14 +1380,20 @@ void Renderer::drawScene(Scene* scene)
 	drawJumpTrajectory(scene);
 
 	MouseOverObject moo = scene->getObjectMousedOver();
-	float xOff = (mouseOverStrings[moo].length() * font2->getSize()) / 4.0f;
-	drawText((winX / 2) - xOff, winY - 32, mouseOverStrings[moo].c_str(), RGB_WHITE, 1.0f, font2);
+	float xOff = (strlen(_mouseOverStrings[moo]) * font2->getSize()) / 4.0f;
+	drawText((winX / 2) - xOff, winY - 32, _mouseOverStrings[moo], RGB_WHITE, 1.0f, font2);
 
-	if (scene->getObjectivesIncompleteTime() >= 0)
+	if (scene->getStringMessageTime() >= 0)
 	{
-		float xOff = (objectivesNotCompleted.length() * font2->getSize()) / 4.0f;
-		sprintf(print, "%s", objectivesNotCompleted.c_str());
-		drawText((winX / 2) - xOff, winY - 64, print, RGB_WHITE, 1.0f, font2);
+		StringMessage sm = scene->getStringMessage();
+		float xOff = (strlen(_messageStrings[sm]) * font2->getSize()) / 4.0f;
+		getBoxCoordsAroundText(_messageStrings[sm], (winX / 2) - xOff, winY - 32, font2, &messageBox);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		drawRect2Fill(messageBox, 0.5f, 0.5f, 0.5f, 3.0f);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDisable(GL_BLEND);
+		drawText((winX / 2) - xOff, winY - 32, _messageStrings[sm], RGB_WHITE, 1.0f, font2);
 	}
 
 	if (scene->hasPlayerFiredShot() || player->isAimingGun())
@@ -1365,6 +1412,17 @@ void Renderer::drawScene(Scene* scene)
 			sprintf(print, "Ammo: %i", scene->getNumPlayerBullets());
 			drawText(32, 128, print, RGB_WHITE, 1.0f, font1);
 		}
+	}
+
+	if (scene->getFirstOverlappedEnt() < NumUsableEnts)
+	{
+		getBoxCoordsAroundText(_bindingStrings[scene->getFirstOverlappedEnt()].c_str(), playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, font2, &messageBox);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		drawRect2Fill(messageBox, 0.5f, 0.5f, 0.5f, 3.0f);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDisable(GL_BLEND);
+		drawText(playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, _bindingStrings[scene->getFirstOverlappedEnt()].c_str(), 0.56f, 0.44f, 0.33f, 1.0f, font2);
 	}
 
 	if (_enteredLightFlash)
@@ -1466,6 +1524,11 @@ std::function<void()> Renderer::getScreenshotFunc()
 void Renderer::handleSettingsChange()
 {
 	_enteredLightFlash = (Locator::getConfigManager()->getValue("entered_light_flash") == "1");
+	_bindingStrings[UESwitch] = "Flip Switch: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
+	_bindingStrings[UETerminal] = "Hack: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
+	_bindingStrings[UEElevator] = "Move Up: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp) + "\nMove Down: " +
+	                              Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveDown);
+	_bindingStrings[UECircuitBox] = "Bypass: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 }
 
 void Renderer::addShader(GLuint shader_program, const char* shader_text, GLuint shader_id)

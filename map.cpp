@@ -709,6 +709,39 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 			{
 				_entities.push_back(std::shared_ptr<CircuitBox>(new CircuitBox(x, y - ENTDIM, VIOLET)));
 			}
+
+			if (!strncmp(element->Attribute("type"), "tut_", 4))
+			{
+				StringMessage sm = NUMBER_OF_STRING_MESSAGES;
+				if (!strcmp(element->Attribute("type"), "tut_01"))
+				{
+					sm = SM_Start;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_02"))
+				{
+					sm = SM_Jumping;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_03"))
+				{
+					sm = SM_Falling;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_04"))
+				{
+					sm = SM_Guards;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_05"))
+				{
+					sm = SM_Crosslink1;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_06"))
+				{
+					sm = SM_Crosslink2;
+				}
+				if (sm < NUMBER_OF_STRING_MESSAGES)
+				{
+					_entities.push_back(std::shared_ptr<TutorialMark>(new TutorialMark(x, y - ENTDIM, sm)));
+				}
+			}
 		}
 		element = element->NextSiblingElement("object");
 	}

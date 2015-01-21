@@ -52,6 +52,7 @@ public:
 	std::vector<std::string> getBindingsToSave();
 	void clearBinding(eBinding binding);
 	std::string getKeysBound(eBinding binding);
+	std::string getFirstKeyBound(eBinding binding);
 	void addBinding(SDL_Keycode key, eBinding binding);
 private:
 	std::map<SDL_Keycode, eBinding> _bindings;

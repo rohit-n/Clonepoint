@@ -435,6 +435,7 @@ void OptionsState::rebindKey(SDL_Keycode key)
 		Locator::getBindingsManager()->addBinding(key, _bindToChange);
 	}
 
+	_manager->changeSettings();
 	updateBindingButtons();
 
 	_bindToChange = Bind_Nothing;

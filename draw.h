@@ -122,6 +122,7 @@ public:
 	void setScreenshotIndex(unsigned int value);
 
 	void handleSettingsChange();
+	void getBoxCoordsAroundText(const char* text, float x, float y, std::shared_ptr<Font> font, Rect* rect);
 
 	std::function<void()> getScreenshotFunc();
 
@@ -206,8 +207,11 @@ private:
 	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resGlass;
 
 	//Gameplay strings
-	std::string mouseOverStrings[NUMBER_OF_MOUSEOVER_OBJECTS];
+	const char* _mouseOverStrings[NUMBER_OF_MOUSEOVER_OBJECTS];
+	const char* _messageStrings[NUMBER_OF_STRING_MESSAGES];
+	std::string _bindingStrings[NumUsableEnts];
 	std::string objectivesNotCompleted;
+	Rect messageBox;
 };
 
 #endif
