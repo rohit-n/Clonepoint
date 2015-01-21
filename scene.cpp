@@ -97,6 +97,8 @@ Scene::Scene()
 	_mousedOverObject = MO_Nothing;
 
 	_lightEnteredAlpha = 0.0f;
+	_inputPopupAlpha = 1.0f;
+	_showInputPopup = false;
 
 	_laserEnd = vec2f(0, 0);
 
@@ -370,6 +372,23 @@ void Scene::update(unsigned int dT)
 		}
 	}
 
+	if (_playerOverlappingEnts[UESwitch] ||
+		_playerOverlappingEnts[UETerminal] ||
+		_playerOverlappingEnts[UEElevator] ||
+		_playerOverlappingEnts[UECircuitBox] ||
+		_playerOverlappingEnts[UEStairs])
+	{
+		if (!_showInputPopup)
+		{
+			_showInputPopup = true;
+			_inputPopupAlpha = 0.0f;
+		}
+	}
+	else
+	{
+		_showInputPopup = false;
+	}
+
 	for (i = 0; i < _currentMap->getNumberOfShafts(); i++)
 	{
 		shaft = _currentMap->getShaftAt(i);
@@ -421,6 +440,11 @@ void Scene::update(unsigned int dT)
 	if (_lightEnteredAlpha > 0.0f)
 	{
 		_lightEnteredAlpha -= (float)dT/1000;
+	}
+
+	if (_showInputPopup && _inputPopupAlpha < 1.0f)
+	{
+		_inputPopupAlpha += (float)dT/400;
 	}
 
 	if (_playerShotFired && _timeToSniper > 0)
@@ -1900,6 +1924,11 @@ MouseOverObject Scene::getObjectMousedOver()
 float Scene::getLightEnteredAlpha()
 {
 	return _lightEnteredAlpha;
+}
+
+float Scene::getInputPopupAlpha()
+{
+	return _inputPopupAlpha;
 }
 
 vec2f Scene::getLaserEnd()

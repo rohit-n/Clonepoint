@@ -1416,13 +1416,14 @@ void Renderer::drawScene(Scene* scene)
 
 	if (scene->getFirstOverlappedEnt() < NumUsableEnts)
 	{
+		float oneMinusAlpha = 1.0f - (0.5f * scene->getInputPopupAlpha());
 		getBoxCoordsAroundText(_bindingStrings[scene->getFirstOverlappedEnt()].c_str(), playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, font2, &messageBox);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
-		drawRect2Fill(messageBox, 0.5f, 0.5f, 0.5f, 3.0f);
+		drawRect2Fill(messageBox, oneMinusAlpha, oneMinusAlpha, oneMinusAlpha, 3.0f);
 		glBlendFunc(GL_ONE, GL_ONE);
 		glDisable(GL_BLEND);
-		drawText(playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, _bindingStrings[scene->getFirstOverlappedEnt()].c_str(), 0.56f, 0.44f, 0.33f, 1.0f, font2);
+		drawText(playerRect.x - cam.x, playerRect.y + playerRect.h + font2->getSize() - cam.y, _bindingStrings[scene->getFirstOverlappedEnt()].c_str(), 0.56f, 0.44f, 0.33f, scene->getInputPopupAlpha(), font2);
 	}
 
 	if (_enteredLightFlash)

@@ -205,6 +205,7 @@ public:
 	void handleMouse(unsigned int mx, unsigned int my);
 	MouseOverObject getObjectMousedOver();
 	float getLightEnteredAlpha();
+	float getInputPopupAlpha();
 	bool hasPlayerFiredShot();
 	int getTimeToSniper();
 	unsigned int getNumPlayerBullets();
@@ -290,6 +291,7 @@ private:
 	MainComputer* _computer; //pointer to main objective computer that player may overlap.
 	ElevatorDoor* _elevator;
 	CircuitBox* _circuitBox;
+	bool _showInputPopup;
 
 	vec2f _jumpImpulse;
 	vec2f _laserEnd;
@@ -331,6 +333,7 @@ private:
 	int _stringMessageTimer;
 
 	float _lightEnteredAlpha;
+	float _inputPopupAlpha;
 	bool _playerShotFired;
 	int _timeToSniper;
 	unsigned int _numPlayerBullets;
