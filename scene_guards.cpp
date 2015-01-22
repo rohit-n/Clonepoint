@@ -142,14 +142,15 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 void Scene::handleEnemyLightOff(Enemy* enemy)
 {
 	//Need to try lightswitch 3 times - don't try again unless light comes on again.
-
-	size_t i;
 	LightSwitch* sw = nullptr;
-	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)
+	_currentMap->getLinkableIters(&linkBegin, &linkEnd);
+	LinkableEntity* le;
+	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		if (dynamic_cast<LightSwitch*>(_currentMap->getEntAt(i)) && !((LightSwitch*)_currentMap->getEntAt(i))->isHandScanner())
+		le = (*linkIter).get();
+		if (dynamic_cast<LightSwitch*>(le) && !static_cast<LightSwitch*>(le)->isHandScanner())
 		{
-			sw = static_cast<LightSwitch*>(_currentMap->getEntAt(i));
+			sw = static_cast<LightSwitch*>(le);
 
 			if (vec2f_distance(enemy->getCollisionRectCenterPosition(), sw->getCollisionRectPosition()) < SWITCH_LIGHT_MIN_DISTANCE && switchReachableToEnemy(enemy, sw))
 			{
@@ -163,16 +164,18 @@ void Scene::handleEnemyLightOff(Enemy* enemy)
 
 void Scene::enemyTryOpenDoor(Enemy* enemy, Door* door)
 {
-	size_t i;
 	bool leftToRight = door->getCollisionRectPosition().x > enemy->getCollisionRectPosition().x;
 	bool between = false;
 	LightSwitch* sw = nullptr;
 	float px;
-	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)
+	_currentMap->getLinkableIters(&linkBegin, &linkEnd);
+	LinkableEntity* le;
+	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		if (dynamic_cast<LightSwitch*>(_currentMap->getEntAt(i)) && static_cast<LightSwitch*>(_currentMap->getEntAt(i))->isHandScanner())
+		le = (*linkIter).get();
+		if (dynamic_cast<LightSwitch*>(le) && static_cast<LightSwitch*>(le)->isHandScanner())
 		{
-			sw = static_cast<LightSwitch*>(_currentMap->getEntAt(i));
+			sw = static_cast<LightSwitch*>(le);
 			px = sw->getCollisionRectPosition().x;
 			between = (leftToRight && door->getCollisionRectPosition().x > px && px > enemy->getCollisionRectPosition().x) ||
 			          (!leftToRight && enemy->getCollisionRectPosition().x > px && px > door->getCollisionRectPosition().x);
