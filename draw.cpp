@@ -780,13 +780,13 @@ void Renderer::drawCollisionVols(Scene* scene)
 	Rect rect;
 	for (int i = 0; i < numVols; i++)
 	{
-		if (map->getCollideVolAt(i).active)
+		if (map->getCollideVolAt(i).active())
 		{
 			rect = map->getCollideVolAt(i).rect;
 			rect.x -= scene->getCamera().x;
 			rect.y -= scene->getCamera().y;
 
-			if (map->getCollideVolAt(i).glass)
+			if (map->getCollideVolAt(i).glass())
 				drawRect2(rect, 0, 1, 1, 1);
 #ifdef DEBUG
 			else

@@ -38,6 +38,11 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #define ENTDIM 128
 
+#define COLLISION_ACTIVE (1 << 0)
+#define COLLISION_GLASS (1 << 1)
+#define COLLISION_DOOR (1 << 2)
+#define COLLISION_GUARDBLOCK (1 << 3) //invisible volume that makes guards turn around.
+
 struct Rect
 {
 	float x;
@@ -49,10 +54,11 @@ struct Rect
 struct CollisionVolume
 {
 	Rect rect;
-	bool active;
-	bool glass;
-	bool door;
-	bool guardblock; //invisible volume that makes guards turn around.
+	unsigned int flags;
+	bool active() { return flags & COLLISION_ACTIVE; }
+	bool glass() { return flags & COLLISION_GLASS; }
+	bool door() { return flags & COLLISION_DOOR; }
+	bool guardblock() { return flags & COLLISION_GUARDBLOCK; }
 };
 
 enum Circuit

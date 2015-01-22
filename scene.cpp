@@ -972,7 +972,7 @@ void Scene::calculateJumpTrajectory(int x, int y, unsigned int dT)
 		}
 		for (j = 0; j < _numCollideVols && !stop; j++)
 		{
-			if (vec2InRect(point, _currentMap->getCollideVolAt(j).rect) && _currentMap->getCollideVolAt(j).active)
+			if (vec2InRect(point, _currentMap->getCollideVolAt(j).rect) && _currentMap->getCollideVolAt(j).active())
 			{
 				stop = true; //this jump will collide with a collision vol. Stop tracing.
 				break;

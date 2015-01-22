@@ -198,9 +198,9 @@ void Scene::traceLaserSight(Entity* source, vec2f interpolatedPoint, vec2f start
 	for (k = 0; k < _numCollideVols; k++)
 	{
 		vol = _currentMap->getCollideVolPointerAt(k);
-		if (vec2InRect(interpolatedPoint, vol->rect) && vol->active)
+		if (vec2InRect(interpolatedPoint, vol->rect) && vol->active())
 		{
-			if (!vol->glass)
+			if (!vol->glass())
 			{
 				*stop = true;
 				break;
@@ -241,10 +241,10 @@ void Scene::traceGuardSight(Entity* source, vec2f interpolatedPoint, vec2f start
 	for (k = 0; k < _numCollideVols; k++)
 	{
 		//if the trace hits an active collision volume that is NOT glass, abandon check.
-		if (vec2InRect(interpolatedPoint, _currentMap->getCollideVolAt(k).rect) && _currentMap->getCollideVolAt(k).active && !_currentMap->getCollideVolAt(k).glass)
+		if (vec2InRect(interpolatedPoint, _currentMap->getCollideVolAt(k).rect) && _currentMap->getCollideVolAt(k).active() && !_currentMap->getCollideVolAt(k).glass())
 		{
 			*index = k;
-			if (_currentMap->getCollideVolAt(k).door)
+			if (_currentMap->getCollideVolAt(k).door())
 			{
 				*b1 = true;
 			}
@@ -281,10 +281,10 @@ void Scene::interpStandard(Entity* source, vec2f interpolatedPoint, vec2f start,
 	for (k = 0; k < _numCollideVols; k++)
 	{
 		//if the trace hits an active collision volume that is NOT glass, abandon check.
-		if (vec2InRect(interpolatedPoint, _currentMap->getCollideVolAt(k).rect) && _currentMap->getCollideVolAt(k).active && !_currentMap->getCollideVolAt(k).glass)
+		if (vec2InRect(interpolatedPoint, _currentMap->getCollideVolAt(k).rect) && _currentMap->getCollideVolAt(k).active() && !_currentMap->getCollideVolAt(k).glass())
 		{
 			*index = k;
-			if (_currentMap->getCollideVolAt(k).door)
+			if (_currentMap->getCollideVolAt(k).door())
 			{
 				*b1 = true;
 			}
@@ -308,9 +308,9 @@ void Scene::breakOnGlass(vec2f interpolatedPoint, vec2f start, bool* stop)
 	for (k = 0; k < _numCollideVols; k++)
 	{
 		vol = _currentMap->getCollideVolPointerAt(k);
-		if (vec2InRect(interpolatedPoint, vol->rect) && vol->active)
+		if (vec2InRect(interpolatedPoint, vol->rect) && vol->active())
 		{
-			if (vol->glass)
+			if (vol->glass())
 			{
 				//if the bullet hits glass, break it.
 				glassShatter(vol, vec2f(leftToRight ? 0.1f : -0.1f, 0));

@@ -74,9 +74,9 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 		}
 
 		//extra check for entity rect is necessary if volume is very thin.
-		if ((vol->active || (ent != _player.get() && vol->guardblock)) && (check_collision(velRect, vol->rect) || check_collision(entRect, vol->rect)))
+		if ((vol->active() || (ent != _player.get() && vol->guardblock())) && (check_collision(velRect, vol->rect) || check_collision(entRect, vol->rect)))
 		{
-			if (vol->glass && velocity.length_squared() >= GLASSBREAKSPEEDSQUARED)
+			if (vol->glass() && velocity.length_squared() >= GLASSBREAKSPEEDSQUARED)
 			{
 				addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, nullptr);
 				glassShatter(vol, ent->getVelocity());
@@ -101,7 +101,7 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 				{
 					if (i == j) continue;
 					vol2 = _currentMap->getCollideVolPointerAt(j);
-					if (vol2->active && vec2InRect2(testPoint, vol2->rect))
+					if (vol2->active() && vec2InRect2(testPoint, vol2->rect))
 					{
 						abandonGround = true;
 						break;
@@ -150,7 +150,7 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 					{
 						if (i == j) continue;
 						vol2 = _currentMap->getCollideVolPointerAt(j);
-						if (vol2->active && vec2InRect2(testPoint, vol2->rect))
+						if (vol2->active() && vec2InRect2(testPoint, vol2->rect))
 						{
 							abandonCeil = true;
 							break;
@@ -242,7 +242,7 @@ void Scene::glassShatter(CollisionVolume* vol, vec2f velocity)
 		}
 	}
 
-	vol->active = false;
+	vol->flags &= ~COLLISION_ACTIVE;
 }
 
 void Scene::handleParticles()
@@ -262,7 +262,7 @@ void Scene::handleParticles()
 			for (j = 0; j < _numCollideVols; j++)
 			{
 				vol = _currentMap->getCollideVolPointerAt(j);
-				if (vol->active && (check_collision(p->getCollisionRect(), vol->rect)))
+				if (vol->active() && (check_collision(p->getCollisionRect(), vol->rect)))
 				{
 					p->setAlive(false);
 					break;
@@ -300,7 +300,7 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 	for (i = 0; i < _numCollideVols; i++)
 	{
 		vol = _currentMap->getCollideVolPointerAt(i);
-		if (vol->active)
+		if (vol->active())
 		{
 			checkLeft = vec2InRect(testPointLeft, vol->rect);
 			checkRight = vec2InRect(testPointRight, vol->rect);
@@ -332,7 +332,7 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 					for (j = i + 1; j < _numCollideVols; j++)
 					{
 						vol = _currentMap->getCollideVolPointerAt(j);
-						if (vol->active)
+						if (vol->active())
 						{
 							if (vec2InRect(checkLeft ? testPointRight : testPointLeft, vol->rect))
 							{
@@ -372,7 +372,7 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 					for (i = 0; i < _numCollideVols; i++)
 					{
 						vol = _currentMap->getCollideVolPointerAt(i);
-						if (vol->active)
+						if (vol->active())
 						{
 							checkLeft = vec2InRect(testPointLeft, vol->rect);
 							checkRight = vec2InRect(testPointRight, vol->rect);
@@ -455,7 +455,7 @@ void Scene::checkPlayerClimbFinish()
 		for (i = 0; i < _numCollideVols; i++)
 		{
 			finalVol = _currentMap->getCollideVolPointerAt(i);
-			if (finalVol->active)
+			if (finalVol->active())
 			{
 				if (vec2InRect(testPoint, finalVol->rect))
 				{
@@ -542,7 +542,7 @@ void Scene::checkPlayerClimbDownFinish()
 		for (i = 0; i < _numCollideVols; i++)
 		{
 			finalVol = _currentMap->getCollideVolPointerAt(i);
-			if (finalVol->active)
+			if (finalVol->active())
 			{
 				if (vec2InRect(testPoint, finalVol->rect))
 				{
@@ -609,7 +609,7 @@ void Scene::tryPlayerAttachSide()
 	for (i = 0; i < _numCollideVols; i++)
 	{
 		vol = _currentMap->getCollideVolPointerAt(i);
-		if (vol->active)
+		if (vol->active())
 		{
 			finalRect.y = vol->rect.y;
 			check1 = vec2InRect(testPoint1, vol->rect);
@@ -620,7 +620,7 @@ void Scene::tryPlayerAttachSide()
 				{
 					vol2 = _currentMap->getCollideVolPointerAt(j);
 
-					if (vol2->active && vec2InRect(check1 ? testPoint2 : testPoint1, vol2->rect))
+					if (vol2->active() && vec2InRect(check1 ? testPoint2 : testPoint1, vol2->rect))
 					{
 						//if player is on top of two separate collision volumes, don't attach.
 						return;
@@ -638,7 +638,7 @@ void Scene::tryPlayerAttachSide()
 					{
 						vol2 = _currentMap->getCollideVolPointerAt(j);
 
-						if (vol2->active && check_collision(finalRect, vol2->rect))
+						if (vol2->active() && check_collision(finalRect, vol2->rect))
 						{
 							return;
 						}
@@ -682,7 +682,7 @@ void Scene::checkPlayerCeilingEnd()
 	Rect endRect = pRect;
 	endRect.y = currentVol->rect.y + currentVol->rect.h - endRect.h;
 
-	if (currentVol->active)
+	if (currentVol->active())
 	{
 		checkLeft = vec2InRect(testPoint1, currentVol->rect);
 		checkRight = vec2InRect(testPoint2, currentVol->rect);
@@ -705,7 +705,7 @@ void Scene::checkPlayerCeilingEnd()
 					endRect.x -= endRect.w;
 				}
 
-				if (otherVol != currentVol && otherVol->active)
+				if (otherVol != currentVol && otherVol->active())
 				{
 					if (check_collision2(pRect, otherVol->rect))
 					{
@@ -797,9 +797,9 @@ void Scene::handlePlayerPounceEnemy(Enemy* enemy, unsigned int dT)
 	for (i = 0; i < _numCollideVols; i++)
 	{
 		vol = _currentMap->getCollideVolPointerAt(i);
-		if (vol->active)
+		if (vol->active())
 		{
-			if (check_collision(vol->rect, velRect) && vol->glass && velocity.length_squared() >= GLASSBREAKSPEEDSQUARED)
+			if (check_collision(vol->rect, velRect) && vol->glass() && velocity.length_squared() >= GLASSBREAKSPEEDSQUARED)
 			{
 				glassBroken = true;
 				glassShatter(vol, _player->getVelocity());
@@ -819,7 +819,7 @@ void Scene::handlePlayerPounceEnemy(Enemy* enemy, unsigned int dT)
 				for (j = i + 1; j < _numCollideVols; j++)
 				{
 					vol2 = _currentMap->getCollideVolPointerAt(j);
-					if (vol2->active)
+					if (vol2->active())
 					{
 						if (vec2InRect(check1 ? testPoint2 : testPoint1, vol2->rect))
 						{

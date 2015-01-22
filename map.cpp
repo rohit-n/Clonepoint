@@ -593,15 +593,24 @@ void Map::parseCollisionVolume(TiXmlElement* element)
 		else
 		{
 			std::unique_ptr<CollisionVolume> vol(new CollisionVolume());
+			vol->flags = 0;
 			vol->rect.x = atoi(element->Attribute("x"));
 			vol->rect.y = atoi(element->Attribute("y"));
 			vol->rect.w = atoi(element->Attribute("width"));
 			vol->rect.h = atoi(element->Attribute("height"));
-			vol->glass = element->Attribute("type") && !strcmp(element->Attribute("type"), "Glass");
-			vol->guardblock = element->Attribute("type") && !strcmp(element->Attribute("type"), "GuardBlock");
-			vol->active = !vol->guardblock;
+			if (element->Attribute("type") && !strcmp(element->Attribute("type"), "Glass"))
+			{
+				vol->flags |= COLLISION_GLASS;
+			}
+			if (element->Attribute("type") && !strcmp(element->Attribute("type"), "GuardBlock"))
+			{
+				vol->flags |= COLLISION_GUARDBLOCK;
+			}
+			if (!vol->guardblock())
+			{
+				vol->flags |= COLLISION_ACTIVE;
+			}
 
-			vol->door = false;
 			_collideVols.push_back(std::move(vol));
 		}
 		element = element->NextSiblingElement("object");

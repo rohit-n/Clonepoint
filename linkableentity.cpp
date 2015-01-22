@@ -173,6 +173,7 @@ Door::Door(float x, float y, Circuit c, bool open, DoorType type) : LinkableEnti
 {
 	_type = type;
 	_cvol = new CollisionVolume();
+	_cvol->flags = 0;
 	_cvol2 = nullptr;
 
 	switch(type)
@@ -187,6 +188,7 @@ Door::Door(float x, float y, Circuit c, bool open, DoorType type) : LinkableEnti
 		_opened = false;
 		_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "vault_closed");
 		_cvol2 = new CollisionVolume();
+		_cvol2->flags = 0;
 		break;
 	default:
 		setCollisionRectDims(8, 48, ENTDIM);
@@ -213,13 +215,14 @@ Door::Door(float x, float y, Circuit c, bool open, DoorType type) : LinkableEnti
 		_cvol2->rect.y = _collisionRect.y;
 		_cvol2->rect.w = _collisionRect.w;
 		_cvol2->rect.h = 76;
-		_cvol2->active = true;
+		_cvol2->flags |= COLLISION_ACTIVE;
 	}
 
-	_cvol->active = !open;
-	_cvol->glass = false;
-	_cvol->door = true;
-	_cvol->guardblock = false;
+	if (!open)
+	{
+		_cvol->flags |= COLLISION_ACTIVE;
+	}
+	_cvol->flags |= COLLISION_DOOR;
 	_timeToClose = _type == Door_Trap ? TRAPDOOR_TIMEMS : VAULTDOOR_TIMEMS;
 	_dirty = false;
 }
@@ -335,7 +338,14 @@ void Door::update(unsigned int dT)
 
 void Door::updateCollisionVolume()
 {
-	_cvol->active = !_opened;
+	if (_opened)
+	{
+		_cvol->flags &= ~COLLISION_ACTIVE;
+	}
+	else
+	{
+		_cvol->flags |= COLLISION_ACTIVE;
+	}
 }
 
 size_t Door::getNumberOfOverlappingLights()

@@ -167,8 +167,15 @@ void Scene::loadGame(const char* filename)
 			break;
 		case SGET_Glass:
 			cvol = _currentMap->getCollideVolPointerAt(states[i].index1);
-			Assert(cvol->glass);
-			cvol->active = states[i].b1;
+			Assert(cvol->glass());
+			if (states[i].b1)
+			{
+				cvol->flags |= COLLISION_ACTIVE;
+			}
+			else
+			{
+				cvol->flags &= ~COLLISION_ACTIVE;
+			}
 			break;
 		case SGET_CircuitBox:
 			cb = static_cast<CircuitBox*>(_currentMap->getEntAt(states[i].index1));
@@ -385,10 +392,10 @@ void Scene::getSGESs(std::vector<SavedGameEntityState>* container)
 	{
 		vol = _currentMap->getCollideVolPointerAt(i);
 
-		if (vol->glass)
+		if (vol->glass())
 		{
 			sges.type = SGET_Glass;
-			sges.b1 = vol->active;
+			sges.b1 = vol->active();
 			sges.index1 = i;
 			container->push_back(sges);
 		}

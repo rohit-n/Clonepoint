@@ -78,7 +78,7 @@ void Player::update(unsigned int dT)
 	_fixDirection = _aimingGun;
 	_affectedByGravity = (_attach == NotAttached);
 
-	if (_attachedVolume != nullptr && !_attachedVolume->active)
+	if (_attachedVolume != nullptr && !_attachedVolume->active())
 	{
 		detach();
 	}
