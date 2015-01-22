@@ -78,8 +78,7 @@ enum Direction
 
 enum MouseOverObject
 {
-	MO_Nothing = 0,
-	MO_CircuitBox,
+	MO_CircuitBox = 0,
 	MO_MainComputer,
 	MO_LightFixture,
 	MO_Switch,

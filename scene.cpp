@@ -94,7 +94,7 @@ Scene::Scene()
 
 	_testAttach = NotAttached;
 
-	_mousedOverObject = MO_Nothing;
+	_mousedOverObject = NUMBER_OF_MOUSEOVER_OBJECTS;
 
 	_lightEnteredAlpha = 0.0f;
 	_inputPopupAlpha = 1.0f;
@@ -1788,7 +1788,7 @@ void Scene::handleVaultDoorClose(Door* door)
 
 void Scene::handleMouse(unsigned int mx, unsigned int my)
 {
-	_mousedOverObject = MO_Nothing;
+	_mousedOverObject = NUMBER_OF_MOUSEOVER_OBJECTS;
 	size_t i;
 	Entity* ent;
 	bool shouldHighlight = false;

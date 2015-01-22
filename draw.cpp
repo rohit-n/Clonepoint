@@ -196,7 +196,6 @@ void Renderer::init(int x, int y)
 	resGlass.reset(new SpriteSheet("./data/sprites/glass.png", 8, false));
 	generateSheetBuffers(resGlass.get(), 8);
 
-	_mouseOverStrings[MO_Nothing] = "";
 	_mouseOverStrings[MO_CircuitBox] = "A circuit box. Use it to unlock its circuit.";
 	_mouseOverStrings[MO_LightFixture] = "A light fixture. Toggles its light when activated.";
 	_mouseOverStrings[MO_MainComputer] = "A computer terminal. Hack these to complete mission objectives.";
@@ -215,6 +214,11 @@ void Renderer::init(int x, int y)
 	_mouseOverStrings[MO_Enforcer] = "An Enforcer. Cannot be pounced.";
 	_mouseOverStrings[MO_Professional] = "A Professional. Has faster reflexes, can see in the dark, shoots when held at gunpoint.";
 	_mouseOverStrings[MO_Sniper] = "A Sniper. You probably won't make it out.";
+
+	for (size_t i = 0; i < NUMBER_OF_MOUSEOVER_OBJECTS; i++)
+	{
+		getBoxDimsAroundText(_mouseOverStrings[i], font2, &_mouseOverDims[i]);
+	}
 
 	_messageStrings[SM_Start] = "Welcome to Clonepoint.";
 	_messageStrings[SM_Jumping] = "Use the mouse to jump on to the side of the building.";
@@ -863,8 +867,6 @@ void Renderer::drawEntities(Scene* scene)
 		}
 	}
 
-	drawLinkableEntities(scene);
-	glBindTexture(GL_TEXTURE_2D, resObjects->getTexId());
 	if (map->subwayFound())
 	{
 		drawSprite(	map->getSubwayPosition().x - cam.x,
@@ -887,6 +889,8 @@ void Renderer::drawEntities(Scene* scene)
 		            resObjects.get(),
 		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "stairs"), false, 0, 0, 0);
 	}
+
+	drawLinkableEntities(scene);
 
 	for (i = 0; i < map->getNumberOfShafts(); i++)
 	{
@@ -1329,7 +1333,7 @@ void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, std::s
 	rect->h = (height * font->getSize()) + 16;
 }
 
-//more expensive than above function - used only when bindings are changed.
+//more expensive than above function - used only when strings are changed.
 void Renderer::getBoxDimsAroundText(const char* text, std::shared_ptr<Font> font, vec2f* dims)
 {
 	int height = font->getSize();
@@ -1440,9 +1444,20 @@ void Renderer::drawScene(Scene* scene)
 	drawJumpTrajectory(scene);
 
 	MouseOverObject moo = scene->getObjectMousedOver();
-	float xOff = (strlen(_mouseOverStrings[moo]) * font2->getSize()) / 4.0f;
-	drawText((winX / 2) - xOff, winY - 32, _mouseOverStrings[moo], RGB_WHITE, 1.0f, font2);
-
+	if (moo < NUMBER_OF_MOUSEOVER_OBJECTS)
+	{
+		float xOff = (strlen(_mouseOverStrings[moo]) * font2->getSize()) / 4.0f;
+		messageBox.x = (winX / 2) - xOff - font2->getSize();
+		messageBox.y = winY - 32 - font2->getSize();
+		messageBox.w = _mouseOverDims[moo].x;
+		messageBox.h = _mouseOverDims[moo].y;
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		drawRect2Fill(messageBox, 0.5f, 0.5f, 0.5f, 3.0f);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDisable(GL_BLEND);
+		drawText((winX / 2) - xOff, winY - 32, _mouseOverStrings[moo], RGB_WHITE, 1.0f, font2);
+	}
 	if (scene->getStringMessageTime() >= 0)
 	{
 		StringMessage sm = scene->getStringMessage();
@@ -1598,13 +1613,10 @@ void Renderer::handleSettingsChange()
 	_bindingStrings[UEEnemyKnockedOut] = "Punch:   LMB\nGet off: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveLeft)
 	+ "/" + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveRight);
 
-	getBoxDimsAroundText(_bindingStrings[UESwitch].c_str(), font2, &_bindingBoxDims[UESwitch]);
-	getBoxDimsAroundText(_bindingStrings[UETerminal].c_str(), font2, &_bindingBoxDims[UETerminal]);
-	getBoxDimsAroundText(_bindingStrings[UEElevator].c_str(), font2, &_bindingBoxDims[UEElevator]);
-	getBoxDimsAroundText(_bindingStrings[UEStairs].c_str(), font2, &_bindingBoxDims[UEStairs]);
-	getBoxDimsAroundText(_bindingStrings[UECircuitBox].c_str(), font2, &_bindingBoxDims[UECircuitBox]);
-	getBoxDimsAroundText(_bindingStrings[UEEnemy].c_str(), font2, &_bindingBoxDims[UEEnemy]);
-	getBoxDimsAroundText(_bindingStrings[UEEnemyKnockedOut].c_str(), font2, &_bindingBoxDims[UEEnemyKnockedOut]);
+	for (size_t i = 0; i < NumUsableEnts; i++)
+	{
+		getBoxDimsAroundText(_bindingStrings[i].c_str(), font2, &_bindingBoxDims[i]);
+	}
 }
 
 void Renderer::addShader(GLuint shader_program, const char* shader_text, GLuint shader_id)

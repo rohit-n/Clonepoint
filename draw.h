@@ -213,6 +213,7 @@ private:
 	const char* _messageStrings[NUMBER_OF_STRING_MESSAGES];
 	std::string _bindingStrings[NumUsableEnts];
 	vec2f _bindingBoxDims[NumUsableEnts];
+	vec2f _mouseOverDims[NUMBER_OF_MOUSEOVER_OBJECTS];
 	std::string objectivesNotCompleted;
 	Rect messageBox;
 };
