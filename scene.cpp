@@ -363,11 +363,21 @@ void Scene::update(unsigned int dT)
 				addNoise(alarm->getCollisionRectPosition().x - _camera.x, alarm->getCollisionRectPosition().y - _camera.y, 512, true, ALERT_RUN, alarm);
 			}
 		}
-		else if (dynamic_cast<TutorialMark*>(ent))
+	}
+
+	if (Locator::getConfigManager()->getBool("tutorial_popups"))
+	{
+		std::vector<std::shared_ptr<TutorialMark> >::iterator tutBegin;
+		std::vector<std::shared_ptr<TutorialMark> >::iterator tutEnd;
+		std::vector<std::shared_ptr<TutorialMark> >::iterator it;
+		_currentMap->getTutorialIters(&tutBegin, &tutEnd);
+		TutorialMark* tm;
+		for (it = tutBegin; it != tutEnd; ++it)
 		{
-			if (check_collision(ent->getCollisionRect(), _player->getCollisionRect()))
+			tm = (*it).get();
+			if (check_collision(tm->getCollisionRect(), _player->getCollisionRect()))
 			{
-				_stringMessage = static_cast<TutorialMark*>(ent)->getTutorialString();
+				_stringMessage = tm->getTutorialString();
 				_stringMessageTimer = TIME_TO_SHOW_TUTORIAL_MSG;
 			}
 		}
@@ -1985,6 +1995,10 @@ StringMessage Scene::getStringMessage()
 
 UsableEnts Scene::getFirstOverlappedEnt()
 {
+	if (!Locator::getConfigManager()->getBool("input_popups"))
+	{
+		return NumUsableEnts;
+	}
 	if (_playerOverlappingEnts[UEEnemy])
 	{
 		if (_player->getNumPunches() == 0)

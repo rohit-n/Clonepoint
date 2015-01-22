@@ -31,7 +31,7 @@ ConfigManager::~ConfigManager()
 }
 
 //bindings are loaded in BindingsManager.
-bool ConfigManager::isKeyValid(char* key)
+bool ConfigManager::isKeyValid(const char* key)
 {
 	if (!strcmp(key, "fullscreen")) return true;
 	if (!strcmp(key, "window_x")) return true;
@@ -39,6 +39,8 @@ bool ConfigManager::isKeyValid(char* key)
 	if (!strcmp(key, "screenshot_index")) return true;
 	if (!strcmp(key, "entered_light_flash")) return true;
 	if (!strcmp(key, "volume")) return true;
+	if (!strcmp(key, "tutorial_popups")) return true;
+	if (!strcmp(key, "input_popups")) return true;
 
 	return false;
 }
@@ -50,6 +52,13 @@ std::string ConfigManager::getValue(std::string key)
 	return it != _settings.end() ? it->second : "";
 }
 
+bool ConfigManager::getBool(std::string key)
+{
+	auto it = _settings.find(key);
+
+	return it != _settings.end() ? (it->second == "1") : false;
+}
+
 void ConfigManager::setValue(std::string key, std::string value)
 {
 	if (getValue(key) != "")
@@ -58,7 +67,7 @@ void ConfigManager::setValue(std::string key, std::string value)
 	}
 	else
 	{
-		if (isKeyValid((char*)key.c_str()))
+		if (isKeyValid(key.c_str()))
 		{
 			_settings.insert(std::pair<std::string, std::string>(key, value));
 		}

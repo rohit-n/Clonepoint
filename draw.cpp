@@ -1083,6 +1083,30 @@ void Renderer::drawLinkableEntities(Scene* scene)
 	}
 }
 
+void Renderer::drawTutorialMarks(Scene* scene)
+{
+	std::shared_ptr<Map> map = scene->getMap();
+	std::vector<std::shared_ptr<TutorialMark> >::iterator tutBegin;
+	std::vector<std::shared_ptr<TutorialMark> >::iterator tutEnd;
+	std::vector<std::shared_ptr<TutorialMark> >::iterator it;
+	TutorialMark* tm;
+	map->getTutorialIters(&tutBegin, &tutEnd);
+	vec2f position;
+	Rect cam = scene->getCamera();
+	for (it = tutBegin; it != tutEnd; ++it)
+	{
+		tm = (*it).get();
+		position = tm->getPosition();
+		drawSprite(	position.x - cam.x,
+					position.y - cam.y,
+					1,
+					tm->getRotation(),
+					resObjects.get(),
+					tm->getCurrentSprite(),
+					false, 1, 0, 1);
+	}
+}
+
 void Renderer::drawLights(Scene* scene)
 {
 	size_t numLights = scene->getMap()->getNumberOfLights();
@@ -1391,6 +1415,12 @@ void Renderer::drawScene(Scene* scene)
 		drawLights(scene);
 	}
 
+	if (Locator::getConfigManager()->getBool("tutorial_popups"))
+	{
+		glBindTexture(GL_TEXTURE_2D, resObjects->getTexId());
+		drawTutorialMarks(scene);
+	}
+
 	drawCrossLink(scene);
 	drawInterface(scene);
 
@@ -1562,7 +1592,7 @@ std::function<void()> Renderer::getScreenshotFunc()
 
 void Renderer::handleSettingsChange()
 {
-	_enteredLightFlash = (Locator::getConfigManager()->getValue("entered_light_flash") == "1");
+	_enteredLightFlash = (Locator::getConfigManager()->getBool("entered_light_flash"));
 	_bindingStrings[UESwitch] = "Flip Switch: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UETerminal] = "Hack: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UEElevator] = "Move Up:   " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp) + "\nMove Down: " +

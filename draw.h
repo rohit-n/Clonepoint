@@ -103,6 +103,7 @@ public:
 	void drawEntities(Scene* scene);
 	void drawEnemies(Scene* scene, bool crosslink);
 	void drawLinkableEntities(Scene* scene);
+	void drawTutorialMarks(Scene* scene);
 	void drawLights(Scene* scene);
 	void drawJumpTrajectory(Scene* scene);
 	void drawCrossLink(Scene* scene);

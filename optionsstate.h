@@ -70,6 +70,10 @@ private:
 	std::shared_ptr<ImageButton> _volumeDecr;
 	std::shared_ptr<ImageButton> _volumeIncr;
 	std::shared_ptr<ImageButton> _volumeProgress[NUM_VOLUME_BARS];
+	std::shared_ptr<TextLabel> _tutorialPopupsText;
+	std::shared_ptr<TextLabel> _inputPopupsText;
+	std::shared_ptr<ImageButton> _tutorialPopupsState;
+	std::shared_ptr<ImageButton> _inputPopupsState;
 
 	//bindings page
 	std::shared_ptr<TextLabel> _pressAKeyLabel;

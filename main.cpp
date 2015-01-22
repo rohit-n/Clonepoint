@@ -177,7 +177,7 @@ void handleSettingsChange()
 		renderer.setResolution(winX, winY);
 		sm->setWindowDims(winX, winY);
 	}
-	SDL_SetWindowFullscreen(screen, Locator::getConfigManager()->getValue("fullscreen") == "1");
+	SDL_SetWindowFullscreen(screen, Locator::getConfigManager()->getBool("fullscreen"));
 }
 
 void loop1()

@@ -52,7 +52,11 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	                               Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowdown_selected")));
 	_fullscreenState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
 	_lightEnteredAlphaState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
+	_tutorialPopupsState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
+	_inputPopupsState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
 	_lightEnteredAlphaText.reset(new TextLabel(0, 0, "Screen flash on entering light", 1, 1, 1));
+	_tutorialPopupsText.reset(new TextLabel(0, 0, "Show tutorial popups", 1, 1, 1));
+	_inputPopupsText.reset(new TextLabel(0, 0, "Show input popups", 1, 1, 1));
 
 	_saveMessage.reset(new FloatingMessage(0, 0, "", 0, 1, 0));
 	_toBindingsPage.reset(new TextButton(0, 0, (strlen("Bindings") + 2) * 16, 32, "Bindings"));
@@ -74,6 +78,8 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_labels.push_back(_resolutionText);
 	_labels.push_back(_fullscreenLabel);
 	_labels.push_back(_lightEnteredAlphaText);
+	_labels.push_back(_tutorialPopupsText);
+	_labels.push_back(_inputPopupsText);
 	_labels.push_back(_saveMessage);
 	_labels.push_back(_volumeLabel);
 
@@ -83,6 +89,8 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_gameplayPage.push_back(_resUp);
 	_gameplayPage.push_back(_fullscreenState);
 	_gameplayPage.push_back(_lightEnteredAlphaState);
+	_gameplayPage.push_back(_tutorialPopupsState);
+	_gameplayPage.push_back(_inputPopupsState);
 	_gameplayPage.push_back(_toBindingsPage);
 
 	//Bindings page
@@ -141,19 +149,25 @@ void OptionsState::resetPositions(int w, int h)
 	int x, y, i;
 
 	x = w * 0.5;
-	y = h * 0.3;
+	y = h * 0.2;
 
 	_titleLabel->setPosition(x - 56, h * 0.08f);
 	_fullscreenLabel->setPosition(w * 0.25f, y);
 	_lightEnteredAlphaText->setPositionWithOffset(w * 0.25f, y, 0, 64);
 	_lightEnteredAlphaState->setPositionWithOffset(w * 0.4f, y, 440, 32);
 
-	_resolutionLabel->setPositionWithOffset(w * 0.25f, y, 0, 128);
+	_tutorialPopupsText->setPositionWithOffset(w * 0.25f, y, 0, 128);
+	_tutorialPopupsState->setPositionWithOffset(w * 0.4f, y, 440, 96);
+	_inputPopupsText->setPositionWithOffset(w * 0.25f, y, 0, 192);
+	_inputPopupsState->setPositionWithOffset(w * 0.4f, y, 440, 160);
+
+	_resolutionLabel->setPositionWithOffset(w * 0.25f, y, 0, 256);
+
 	_fullscreenState->setPositionWithOffset(w * 0.4f, y, 440, -24);
 
-	_resUp->setPositionWithOffset(w * 0.4f, y, 440, 80);
-	_resolutionText->setPositionWithOffset(w * 0.4f, y, 408, 132);
-	_resDown->setPositionWithOffset(w * 0.4f, y, 440, 144);
+	_resUp->setPositionWithOffset(w * 0.4f, y, 440, 208);
+	_resolutionText->setPositionWithOffset(w * 0.4f, y, 408, 260);
+	_resDown->setPositionWithOffset(w * 0.4f, y, 440, 272);
 
 	_saveChangesButton->setPosition(w * 0.45f, h * 0.75f);
 	_exitButton->setPosition(x, h * 0.8f);
@@ -221,6 +235,28 @@ void OptionsState::handleButton(Button* button)
 		else
 		{
 			_lightEnteredAlphaState->changeSprites(cb, cb);
+		}
+	}
+	else if (button == _tutorialPopupsState.get())
+	{
+		if (_tutorialPopupsState->getSpriteIndex() == cb)
+		{
+			_tutorialPopupsState->changeSprites(cbs, cbs);
+		}
+		else
+		{
+			_tutorialPopupsState->changeSprites(cb, cb);
+		}
+	}
+	else if (button == _inputPopupsState.get())
+	{
+		if (_inputPopupsState->getSpriteIndex() == cb)
+		{
+			_inputPopupsState->changeSprites(cbs, cbs);
+		}
+		else
+		{
+			_inputPopupsState->changeSprites(cb, cb);
 		}
 	}
 	else if (button == _resUp.get())
@@ -304,7 +340,7 @@ void OptionsState::setLabels()
 
 	_saveMessage->setText("");
 
-	if (Locator::getConfigManager()->getValue("fullscreen") == "1")
+	if (Locator::getConfigManager()->getBool("fullscreen"))
 	{
 		_fullscreenState->changeSprites(cbs, cbs);
 	}
@@ -313,13 +349,31 @@ void OptionsState::setLabels()
 		_fullscreenState->changeSprites(cb, cb);
 	}
 
-	if (Locator::getConfigManager()->getValue("entered_light_flash") == "1")
+	if (Locator::getConfigManager()->getBool("entered_light_flash"))
 	{
 		_lightEnteredAlphaState->changeSprites(cbs, cbs);
 	}
 	else
 	{
 		_lightEnteredAlphaState->changeSprites(cb, cb);
+	}
+
+	if (Locator::getConfigManager()->getBool("tutorial_popups"))
+	{
+		_tutorialPopupsState->changeSprites(cbs, cbs);
+	}
+	else
+	{
+		_tutorialPopupsState->changeSprites(cb, cb);
+	}
+
+	if (Locator::getConfigManager()->getBool("input_popups"))
+	{
+		_inputPopupsState->changeSprites(cbs, cbs);
+	}
+	else
+	{
+		_inputPopupsState->changeSprites(cb, cb);
 	}
 
 	for (i = 0; i < _modes.size(); i++)
@@ -361,6 +415,8 @@ void OptionsState::saveSettings()
 	Locator::getConfigManager()->setValue("window_y", tokenY);
 	Locator::getConfigManager()->setValue("fullscreen", _fullscreenState->getSpriteIndex() == cbs ?  "1" : "0");
 	Locator::getConfigManager()->setValue("entered_light_flash", _lightEnteredAlphaState->getSpriteIndex() == cbs ? "1" : "0");
+	Locator::getConfigManager()->setValue("tutorial_popups", _tutorialPopupsState->getSpriteIndex() == cbs ? "1" : "0");
+	Locator::getConfigManager()->setValue("input_popups", _inputPopupsState->getSpriteIndex() == cbs ? "1" : "0");
 	Locator::getConfigManager()->setValue("volume", std::string(volstr));
 	Locator::getAudio()->setVolume((float)_currVolume / 10);
 }
@@ -381,6 +437,8 @@ void OptionsState::changeToGameplayPage()
 	_resolutionLabel->setVisible(true);
 	_lightEnteredAlphaText->setVisible(true);
 	_volumeLabel->setVisible(true);
+	_tutorialPopupsText->setVisible(true);
+	_inputPopupsText->setVisible(true);
 	//bindings
 	_moveLeftLabel->setVisible(false);
 	_moveRightLabel->setVisible(false);
@@ -398,6 +456,8 @@ void OptionsState::changeToBindingsPage()
 	_resolutionLabel->setVisible(false);
 	_lightEnteredAlphaText->setVisible(false);
 	_volumeLabel->setVisible(false);
+	_tutorialPopupsText->setVisible(false);
+	_inputPopupsText->setVisible(false);
 	//bindings
 	_moveLeftLabel->setVisible(true);
 	_moveRightLabel->setVisible(true);

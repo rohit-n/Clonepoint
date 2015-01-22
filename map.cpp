@@ -45,6 +45,7 @@ Map::~Map()
 	_lights.clear();
 	_shafts.clear();
 	_enemyIndices.clear();
+	_tutorials.clear();
 	glDeleteTextures(1, &_mapTex);
 }
 
@@ -743,7 +744,7 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				}
 				if (sm < NUMBER_OF_STRING_MESSAGES)
 				{
-					_entities.push_back(std::shared_ptr<TutorialMark>(new TutorialMark(x, y - ENTDIM, sm)));
+					_tutorials.push_back(std::shared_ptr<TutorialMark>(new TutorialMark(x, y - ENTDIM, sm)));
 				}
 			}
 		}
@@ -1163,6 +1164,13 @@ void Map::getLinkableIters(std::vector<std::shared_ptr<LinkableEntity> >::iterat
 {
 	*begin = _linkableEnts.begin();
 	*end = _linkableEnts.end();
+}
+
+void Map::getTutorialIters(std::vector<std::shared_ptr<TutorialMark> >::iterator* begin,
+	                      std::vector<std::shared_ptr<TutorialMark> >::iterator* end)
+{
+	*begin = _tutorials.begin();
+	*end = _tutorials.end();
 }
 
 void Map::removeEnemyGun(EnemyGun* gun)

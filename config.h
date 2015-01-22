@@ -32,8 +32,9 @@ public:
 	~ConfigManager();
 	void loadConfig(const char* filename);
 	void saveConfig(const char* filename, std::vector<std::string> bindings);
-	bool isKeyValid(char* key);
+	bool isKeyValid(const char* key);
 	std::string getValue(std::string key);
+	bool getBool(std::string key);
 	void setValue(std::string key, std::string value);
 	std::map<std::string, std::string>* getSettings();
 private:
