@@ -1066,19 +1066,14 @@ void Renderer::drawLinkableEntities(Scene* scene)
 				scene->getCircuitColor(ent->getCircuitType(), r, g, b);
 			}
 		}
-		if (dynamic_cast<Door*>(ent) || dynamic_cast<PowerSocket*>(ent) || dynamic_cast<MotionScanner*>(ent) || dynamic_cast<SoundDetector*>(ent) || dynamic_cast<SecurityCamera*>(ent) || dynamic_cast<Alarm*>(ent)
-		        || dynamic_cast<LightSwitch*>(ent) || dynamic_cast<LightFixture*>(ent) || dynamic_cast<ElevatorSwitch*>(ent))
+		if (!dynamic_cast<EnemyGun*>(ent))
 		{
 			drawSprite(position.x - cam.x, position.y - cam.y, 1.5f, 0, resLinkables.get(), ent->getCurrentSprite(), scene->inCrosslinkMode(), r, g, b);
 		}
-		else if (dynamic_cast<EnemyGun*>(ent))
+		else
 		{
 			if (scene->inCrosslinkMode())
 				drawRect2(vol, 1, 0, 1, 2);
-		}
-		else
-		{
-			drawRect2(vol, 1, 0, 1, 1);
 		}
 	}
 }
