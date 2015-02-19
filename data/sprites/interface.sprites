@@ -1,0 +1,14 @@
+arrowdown = 0
+arrowdown_selected = 1
+arrowup = 2
+arrowup_selected = 3
+arrowright = 4
+arrowleft= 5
+arrowright_selected = 6
+arrowleft_selected = 7
+checkbox = 8
+checkbox_selected = 9
+box_empty = 10
+box_full = 11
+pointer_safe = 12
+pointer_unsafe = 13

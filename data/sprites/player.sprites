@@ -1,0 +1,12 @@
+player_idle_ground = 0
+player_idle_ceiling = 4
+player_idle_side = 7
+player_slide_down = 10
+player_dead_ground = 11
+player_dead_air = 12
+player_rising = 13
+player_diving = 14
+player_falling = 15
+player_in_elevator = 39
+player_arm_gun = 48
+player_idle_aiming = 49

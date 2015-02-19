@@ -1,0 +1,6 @@
+guard_idle_ground = 0
+guard_idle_caution = 1
+guard_fallen = 3
+guard_falling = 6
+guard_fallen_player = 8
+guard_punched = 10
