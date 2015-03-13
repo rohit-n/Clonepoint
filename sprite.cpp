@@ -25,9 +25,17 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 SpriteSheet::SpriteSheet(const char* filename, int tileDim, bool flip)
 {
+	_numberOfSprites = 0;
+	_indexBuffers = nullptr;
 	if (flip)
 	{
 		SDL_Surface* surf = loadSurfaceFromImage(filename);
+		if (!surf)
+		{
+			fprintf(stderr, "Fatal: Failed to load %s\n", filename);
+			_tex = 0;
+			return;
+		}
 		surf = reverseSpriteSheet(surf, tileDim);
 		_tex = createTextureFromSurface(surf);
 		SDL_FreeSurface(surf);
@@ -35,6 +43,11 @@ SpriteSheet::SpriteSheet(const char* filename, int tileDim, bool flip)
 	else
 	{
 		_tex = loadTexture(filename);
+		if (_tex == 0)
+		{
+			fprintf(stderr, "Fatal: Failed to load %s\n", filename);
+			return;
+		}
 	}
 	_tileDim = tileDim;
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &_width);
@@ -71,8 +84,10 @@ SpriteSheet::~SpriteSheet()
 	glDeleteTextures(1, &_tex);
 	_width = 0;
 	_height = 0;
-
-	delete [] _indexBuffers;
+	if (_indexBuffers)
+	{
+		delete [] _indexBuffers;
+	}
 }
 
 GLint SpriteSheet::getWidth()

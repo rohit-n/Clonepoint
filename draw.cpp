@@ -105,7 +105,7 @@ void Renderer::toggleWireframe()
 	wireframe = !wireframe;
 }
 
-void Renderer::init(int x, int y)
+bool Renderer::init(int x, int y)
 {
 	_screenVBO = 0;
 
@@ -155,45 +155,65 @@ void Renderer::init(int x, int y)
 	font2.reset(new Font("./data/fonts/VeraMono.ttf", 16.0f));
 
 	resPlayer.reset(new SpriteSheet("./data/sprites/player.png", ENTDIM, false));
-	generateSheetBuffers(resPlayer.get(), ENTDIM);
-
 	resPlayerLeft.reset(new SpriteSheet("./data/sprites/player.png", ENTDIM, true));
-	generateSheetBuffers(resPlayerLeft.get(), ENTDIM);
-
 	resGuardRight.reset(new SpriteSheet("./data/sprites/guard.png", ENTDIM, false));
-	generateSheetBuffers(resGuardRight.get(), ENTDIM);
-
 	resGuardLeft.reset(new SpriteSheet("./data/sprites/guard.png", ENTDIM, true));
-	generateSheetBuffers(resGuardLeft.get(), ENTDIM);
-
 	resEnforcerLeft.reset(new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, true));
-	generateSheetBuffers(resEnforcerLeft.get(), ENTDIM);
-
 	resEnforcerRight.reset(new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, false));
-	generateSheetBuffers(resEnforcerRight.get(), ENTDIM);
-
 	resProfessionalLeft.reset(new SpriteSheet("./data/sprites/professional.png", ENTDIM, true));
-	generateSheetBuffers(resProfessionalLeft.get(), ENTDIM);
-
 	resProfessionalRight.reset(new SpriteSheet("./data/sprites/professional.png", ENTDIM, false));
-	generateSheetBuffers(resProfessionalRight.get(), ENTDIM);
-
 	resSniperLeft.reset(new SpriteSheet("./data/sprites/sniper.png", ENTDIM, true));
-	generateSheetBuffers(resSniperLeft.get(), ENTDIM);
-
 	resSniperRight.reset(new SpriteSheet("./data/sprites/sniper.png", ENTDIM, false));
-	generateSheetBuffers(resSniperRight.get(), ENTDIM);
-
 	resObjects.reset(new SpriteSheet("./data/sprites/objects.png", ENTDIM, false));
-	generateSheetBuffers(resObjects.get(), ENTDIM);
-
 	resLinkables.reset(new SpriteSheet("./data/sprites/linkable.png", ENTDIM, false));
-	generateSheetBuffers(resLinkables.get(), ENTDIM);
-
 	resInterface.reset(new SpriteSheet("./data/sprites/interface.png", 32, false));
-	generateSheetBuffers(resInterface.get(), 32);
-
 	resGlass.reset(new SpriteSheet("./data/sprites/glass.png", 8, false));
+
+	if (resPlayer->getTexId() == 0 ||
+		resPlayerLeft->getTexId() == 0 ||
+		resGuardRight->getTexId() == 0 ||
+		resGuardLeft->getTexId() == 0 ||
+		resEnforcerLeft->getTexId() == 0 ||
+		resEnforcerRight->getTexId() == 0 ||
+		resProfessionalLeft->getTexId() == 0 ||
+		resProfessionalRight->getTexId() == 0 ||
+		resSniperLeft->getTexId() == 0 ||
+		resSniperRight->getTexId() == 0 ||
+		resObjects->getTexId() == 0 ||
+		resLinkables->getTexId() == 0 ||
+		resInterface->getTexId() == 0 ||
+		resGlass->getTexId() == 0)
+	{
+		resPlayer.reset();
+		resPlayerLeft.reset();
+		resGuardRight.reset();
+		resGuardLeft.reset();
+		resEnforcerLeft.reset();
+		resEnforcerRight.reset();
+		resProfessionalLeft.reset();
+		resProfessionalRight.reset();
+		resSniperLeft.reset();
+		resSniperRight.reset();
+		resObjects.reset();
+		resLinkables.reset();
+		resInterface.reset();
+		resGlass.reset();
+		return false;
+	}
+
+	generateSheetBuffers(resPlayer.get(), ENTDIM);
+	generateSheetBuffers(resPlayerLeft.get(), ENTDIM);
+	generateSheetBuffers(resGuardRight.get(), ENTDIM);
+	generateSheetBuffers(resGuardLeft.get(), ENTDIM);
+	generateSheetBuffers(resEnforcerLeft.get(), ENTDIM);
+	generateSheetBuffers(resEnforcerRight.get(), ENTDIM);
+	generateSheetBuffers(resProfessionalLeft.get(), ENTDIM);
+	generateSheetBuffers(resProfessionalRight.get(), ENTDIM);
+	generateSheetBuffers(resSniperLeft.get(), ENTDIM);
+	generateSheetBuffers(resSniperRight.get(), ENTDIM);
+	generateSheetBuffers(resObjects.get(), ENTDIM);
+	generateSheetBuffers(resLinkables.get(), ENTDIM);
+	generateSheetBuffers(resInterface.get(), 32);
 	generateSheetBuffers(resGlass.get(), 8);
 
 	_mouseOverStrings[MO_CircuitBox] = "A circuit box. Use it to unlock its circuit.";
@@ -230,6 +250,7 @@ void Renderer::init(int x, int y)
 	_messageStrings[SM_ObjectivesIncomplete] = "Objectives not completed.";
 
 	handleSettingsChange();
+	return true;
 }
 
 void Renderer::setResolution(int x, int y)

@@ -70,7 +70,7 @@ class Renderer
 public:
 	Renderer();
 	~Renderer();
-	void init(int x, int y);
+	bool init(int x, int y);
 	void setResolution(int x, int y);
 	bool initShaders();
 	void drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, std::shared_ptr<Font> font);
@@ -182,7 +182,10 @@ private:
 		void operator()(SpriteSheet* sheet) const
 		{
 			GLuint vbo = sheet->getVertexBuffer();
-			glDeleteBuffers(sheet->getNumberOfSprites(), sheet->getIndexBuffers());
+			if (sheet->getNumberOfSprites() > 0)
+			{
+				glDeleteBuffers(sheet->getNumberOfSprites(), sheet->getIndexBuffers());
+			}
 			glDeleteBuffers(1, &vbo);
 			delete sheet;
 		}
