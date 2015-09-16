@@ -161,16 +161,16 @@ mat4f mat4f_perspective(float fov, float aspect, float zNear, float zFar)
 	return ret;
 }
 
-mat4f mat4f_orthographic(float left, float right, float bottom, float top, float near, float far)
+mat4f mat4f_orthographic(float left, float right, float bottom, float top, float znear, float zfar)
 {
 	mat4f ret = mat4f_zero();
 
 	ret.m[0][3] = -(right + left) / (right - left);
 	ret.m[1][3] = -(top + bottom) / (top - bottom);
-	ret.m[2][3] = -(far + near) / (far - near);
+	ret.m[2][3] = -(zfar + znear) / (zfar - znear);
 	ret.m[0][0] = 2.0f / (right - left);
 	ret.m[1][1] = 2.0f / (top - bottom);
-	ret.m[2][2] = -2.0f / (far - near);
+	ret.m[2][2] = -2.0f / (zfar - znear);
 	ret.m[3][3] = 1.0f;
 
 	return ret;

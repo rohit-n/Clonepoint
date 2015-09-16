@@ -38,7 +38,7 @@ mat4f mat4f_mult(mat4f a, mat4f b);
 mat4f mat4f_rotate(float xRot, float yRot, float zRot);
 mat4f mat4f_rotate(float angle, float x, float y, float z);
 mat4f mat4f_translate(float x, float y, float z);
-mat4f mat4f_orthographic(float left, float right, float bottom, float top, float near, float far);
+mat4f mat4f_orthographic(float left, float right, float bottom, float top, float znear, float zfar);
 mat4f mat4f_perspective(float fov, float aspect, float zNear, float zFar);
 mat4f mat4f_camera_transform(vec3f target, vec3f up);
 mat4f quat2mat(quatf quat);
