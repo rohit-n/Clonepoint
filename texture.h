@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef TEXTURE_H
+#define TEXTURE_H
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
@@ -31,3 +34,5 @@ SDL_Surface* loadSurfaceFromImage(const char * filename);
 GLuint createTextureFromSurface(SDL_Surface* surface);
 SDL_Surface* reverseSpriteSheet(SDL_Surface* surface, unsigned int tileDim);
 SDL_Surface* flipSurface(SDL_Surface* surface, FlipType ft);
+
+#endif

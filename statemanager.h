@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef STATEMANAGER_H
+#define STATEMANAGER_H
+
 #include <memory>
 #include <string>
 
@@ -70,3 +73,5 @@ private:
 	int _winX;
 	int _winY;
 };
+
+#endif
