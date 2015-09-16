@@ -22,16 +22,60 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <time.h>
 
+#if BUILD_UNITY
+#include "animations.cpp"
+#include "audio.cpp"
+#include "bindings.cpp"
+#include "button.cpp"
+#include "config.cpp"
+#include "creditsstate.cpp"
+#include "draw.cpp"
+#include "elevators.cpp"
+#include "enemy.cpp"
+#include "entity.cpp"
+#include "fieldofview.cpp"
+#include "file.cpp"
+#include "font.cpp"
+#include "gamestate.cpp"
+#include "intersect.cpp"
+#include "levelendstate.cpp"
+#include "linkableentity.cpp"
+#include "livingentity.cpp"
+#include "loadmapstate.cpp"
+#include "locator.cpp"
+#include "map.cpp"
+#include "mainmenustate.cpp"
+#include "matrix.cpp"
+#include "menustate.cpp"
+#include "optionsstate.cpp"
+#include "pausestate.cpp"
+#include "player.cpp"
+#include "scene.cpp"
+#include "scene_guards.cpp"
+#include "scene_physics.cpp"
+#include "scene_saved_game.cpp"
+#include "scene_trace.cpp"
+#include "sprite.cpp"
+#include "stairs.cpp"
+#include "state.cpp"
+#include "statemanager.cpp"
+#include "static_sprites.cpp"
+#include "texture.cpp"
+#include "upgradesstate.cpp"
+#include "vec.cpp"
+#else
 #include "file.h"
 #include "draw.h"
 #include "matrix.h"
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype.h"
 #include "scene.h"
 #include "statemanager.h"
 #include "optionsstate.h"
 #include "locator.h"
 #include "config.h"
+#endif
+
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
 
 SDL_Window* screen;
 SDL_GLContext context;

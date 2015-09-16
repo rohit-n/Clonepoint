@@ -1,0 +1,26 @@
+SYS := $(shell gcc -dumpmachine)
+
+CXX=g++
+CFLAGS= -Wall -pedantic -std=c++11 -DBUILD_UNITY
+OBJECTS = tinyxml/tinyxml.o tinyxml/tinystr.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o
+
+ifneq (, $(findstring mingw, $(SYS)))
+LIBS = -lmingw32 -lSDL2main -lSDL2 -lopengl32 -lopenal32
+DELCMD = del clonepoint.exe && cd tinyxml/ && del *.o
+MAKECMD = mingw32-make
+else
+LIBS = `sdl2-config --libs` -lGL -lopenal
+DELCMD = rm -f clonepoint && cd tinyxml/ && make clean
+MAKECMD = make
+endif
+
+all: tinyxmldir game
+
+tinyxmldir:
+	cd tinyxml/ && $(MAKECMD)
+
+game: main.cpp $(OBJECTS)
+	$(CXX) main.cpp $(OBJECTS) $(LIBS) $(CFLAGS) -o clonepoint
+
+clean:
+	$(DELCMD)
