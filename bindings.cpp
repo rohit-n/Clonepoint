@@ -177,7 +177,7 @@ std::string BindingsManager::getKeyAsString(SDL_Keycode key)
 
 eBinding BindingsManager::getBindingFromKey(SDL_Keycode key)
 {
-	auto it = _bindings.find(key);
+	std::map<SDL_Keycode, eBinding>::iterator it = _bindings.find(key);
 
 	if (it != _bindings.end())
 	{
@@ -197,7 +197,7 @@ void BindingsManager::loadBindingsFromConfig(const char* filename)
 	while (token)
 	{
 		binding = checkToken(token);
-		token = strtok(nullptr, delim);
+		token = strtok(NULL, delim);
 		if (binding != Bind_Nothing)
 		{
 			SDL_Keycode key = getKeyFromToken(token);
@@ -205,14 +205,14 @@ void BindingsManager::loadBindingsFromConfig(const char* filename)
 		}
 
 		if (token)
-			token = strtok(nullptr, delim);
+			token = strtok(NULL, delim);
 	}
 
 	delete [] text;
 	delete [] token;
-	text = nullptr;
-	token = nullptr;
-	delim = nullptr;
+	text = NULL;
+	token = NULL;
+	delim = NULL;
 }
 
 std::vector<std::string> BindingsManager::getBindingsToSave()

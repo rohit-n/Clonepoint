@@ -27,12 +27,12 @@ LivingEntity::LivingEntity(float x, float y, Direction startingDir) : Entity(x, 
 	_fixDirection = false;
 	_affectedByGravity = true;
 	_dir = startingDir;
-	_stairsEntered = nullptr;
+	_stairsEntered = NULL;
 
 	//stair related
 	_traversal = NotMoving;
 	_stairTimer = STAIRTRAVERSETIME;
-	_overlappingStairs = nullptr;
+	_overlappingStairs = NULL;
 
 	_acceleration.accelerating = false;
 	_acceleration.accel = 0.0f;
@@ -79,11 +79,11 @@ void LivingEntity::update(unsigned int dT)
 		else
 		{
 			_stairTimer = STAIRTRAVERSETIME;
-			if (_overlappingStairs != nullptr) //could be null if save game is loaded while moving through stairs.
+			if (_overlappingStairs != NULL) //could be null if save game is loaded while moving through stairs.
 			{
 				Stairs* target = (_traversal == MovingUp) ? _overlappingStairs->getUpstairs() : _overlappingStairs->getDownstairs();
 
-				if (target != nullptr)
+				if (target != NULL)
 				{
 					arriveAtStairs(target);
 				}
@@ -142,7 +142,7 @@ void LivingEntity::setStairMovement(StairTraversal st)
 	//lock bounding box to stairs only if path through stairs exists.
 	Stairs* target = (st == MovingUp) ? _overlappingStairs->getUpstairs() : _overlappingStairs->getDownstairs();
 
-	if (target != nullptr)
+	if (target != NULL)
 	{
 		_stairsEntered = _overlappingStairs;
 		_traversal = st;
@@ -165,13 +165,13 @@ void LivingEntity::setOverlappingStairs(Stairs* sw)
 
 bool LivingEntity::isOverlappingStairs()
 {
-	return _overlappingStairs != nullptr;
+	return _overlappingStairs != NULL;
 }
 
 void LivingEntity::arriveAtStairs(Stairs* st)
 {
 	setCollisionRectPosition(st->getCollisionRectPosition().x, st->getCollisionRectPosition().y);
-	_stairsEntered = nullptr;
+	_stairsEntered = NULL;
 }
 
 bool LivingEntity::isMovingThroughStairs()

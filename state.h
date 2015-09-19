@@ -33,9 +33,8 @@ public:
 	bool isQuitting();
 	virtual void update(unsigned int dT) = 0;
 	virtual void handleInput();
-	void registerScreenshotFunction(std::function<void()> func);
 	size_t getLabelCount();
-	std::shared_ptr<TextLabel> getLabelAt(size_t i);
+	TextLabel* getLabelAt(size_t i);
 	virtual void handleMouseWheel(int dir);
 	virtual void handleKeyDown(SDL_Keycode key) = 0;
 	virtual void handleKeyUp(SDL_Keycode key) = 0;
@@ -43,14 +42,14 @@ public:
 	virtual void handleMouseUp(SDL_MouseButtonEvent event) = 0;
 	void getMousePosition(int* mx, int* my);
 	void setMousePosition(int mx, int my);
+	bool tookScreenshot;
 protected:
 	SDL_Event _event;
 	bool _quitting;
 	int _mouseX;
 	int _mouseY;
 	StateManager* _manager;
-	std::function<void()> _takeScreenshot;
-	std::vector<std::shared_ptr<TextLabel> > _labels;
+	std::vector<TextLabel*> _labels;
 };
 
 #endif

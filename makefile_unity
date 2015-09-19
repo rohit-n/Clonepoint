@@ -1,7 +1,7 @@
 SYS := $(shell gcc -dumpmachine)
 
 CXX=g++
-CFLAGS= -Wall -pedantic -std=c++11 -DBUILD_UNITY
+CFLAGS= -Wall -pedantic -DBUILD_UNITY
 OBJECTS = tinyxml/tinyxml.o tinyxml/tinystr.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o
 
 ifneq (, $(findstring mingw, $(SYS)))

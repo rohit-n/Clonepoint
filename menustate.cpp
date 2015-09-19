@@ -28,8 +28,14 @@ MenuState::MenuState(StateManager* sm) : BaseState(sm)
 
 MenuState::~MenuState()
 {
+	size_t i;
+	for (i = 0; i < _buttons.size(); i++)
+	{
+		delete _buttons[i];
+	}
+
 	_buttons.clear();
-	_labels.clear();
+
 }
 
 size_t MenuState::getButtonCount()
@@ -37,16 +43,17 @@ size_t MenuState::getButtonCount()
 	return _buttons.size();
 }
 
-std::shared_ptr<Button> MenuState::getButtonAt(int i)
+Button* MenuState::getButtonAt(int i)
 {
 	return _buttons[i];
 }
 
 void MenuState::update(unsigned int dT)
 {
-	for (auto& elem : _buttons)
+	size_t i;
+	for (i = 0; i < _buttons.size(); i++)
 	{
-		elem->handleMouseIntersection(_mouseX, _mouseY);
+		_buttons[i]->handleMouseIntersection(_mouseX, _mouseY);
 	}
 }
 
@@ -67,17 +74,18 @@ void MenuState::handleMouseDown(SDL_MouseButtonEvent event)
 
 void MenuState::handleMouseUp(SDL_MouseButtonEvent event)
 {
+	size_t i;
 	if (event.button == SDL_BUTTON_LEFT)
 	{
-		for (auto& elem : _buttons)
+		for (i = 0; i < _buttons.size(); i++)
 		{
-			if (elem->isMouseIntersecting(_mouseX, _mouseY))
+			if (_buttons[i]->isMouseIntersecting(_mouseX, _mouseY))
 			{
-				if (elem->isClickable())
+				if (_buttons[i]->isClickable())
 				{
 					Locator::getAudio()->playSound("menu_click");
 				}
-				handleButton(elem.get());
+				handleButton(_buttons[i]);
 				break;
 			}
 		}

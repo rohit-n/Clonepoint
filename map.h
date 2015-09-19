@@ -69,11 +69,11 @@ public:
 	GLuint getCrosslinkTexture();
 	bool subwayFound();
 	vec2f getSubwayPosition();
-	void getLinkableIters(std::vector<std::shared_ptr<LinkableEntity> >::iterator* begin,
-	                      std::vector<std::shared_ptr<LinkableEntity> >::iterator* end);
+	void getLinkableIters(std::vector<LinkableEntity*>::iterator* begin,
+	                      std::vector<LinkableEntity*>::iterator* end);
 
-	void getTutorialIters(std::vector<std::shared_ptr<TutorialMark> >::iterator* begin,
-	                      std::vector<std::shared_ptr<TutorialMark> >::iterator* end);
+	void getTutorialIters(std::vector<TutorialMark*>::iterator* begin,
+	                      std::vector<TutorialMark*>::iterator* end);
 	void removeEnemyGun(EnemyGun* gun);
 	void addMissingGuns();
 	void addSniper();
@@ -87,18 +87,18 @@ private:
 	vec2f _playerStartPos;
 	vec2f _subwayPos;
 	bool _subwayFound;
-	std::vector<std::unique_ptr<CollisionVolume> > _collideVols;
-	std::vector<std::shared_ptr<Entity> > _entities;
-	std::vector<std::unique_ptr<Stairs> > _stairDoors;
-	std::vector<std::unique_ptr<Stairwell> > _stairwells;
-	std::vector<std::unique_ptr<FieldOfView> > _lights;
-	std::vector<std::unique_ptr<ElevatorShaft> > _shafts;
-	std::vector<std::shared_ptr<LinkableEntity> > _linkableEnts;
+	std::vector<CollisionVolume*> _collideVols;
+	std::vector<Entity*> _entities;
+	std::vector<Stairs*> _stairDoors;
+	std::vector<Stairwell*> _stairwells;
+	std::vector<FieldOfView*> _lights;
+	std::vector<ElevatorShaft*> _shafts;
+	std::vector<LinkableEntity*> _linkableEnts;
 	std::vector<Line> _lines;
 	std::vector<Line> _lightLinks;
 	std::vector<size_t> _enemyIndices;
-	std::vector<std::shared_ptr<TutorialMark> > _tutorials;
-	std::shared_ptr<Enemy> _sniper;
+	std::vector<TutorialMark*> _tutorials;
+	Enemy* _sniper;
 
 	void parseLinkableObject(TiXmlElement* element, Circuit c);
 	void parseCollisionVolume(TiXmlElement* element);

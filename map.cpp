@@ -36,6 +36,43 @@ Map::Map()
 Map::~Map()
 {
 	LOGF((stdout, "Running map destructor!\n"));
+	size_t i;
+	for (i = 0; i < _entities.size(); i++)
+	{
+		delete _entities[i];
+	}
+
+	for (i = 0; i < _tutorials.size(); i++)
+	{
+		delete _tutorials[i];
+	}
+
+	for (i = 0; i < _collideVols.size(); i++)
+	{
+		delete _collideVols[i];
+	}
+
+	for (i = 0; i < _stairDoors.size(); i++)
+	{
+		delete _stairDoors[i];
+	}
+
+	for (i = 0; i < _stairwells.size(); i++)
+	{
+		delete _stairwells[i];
+	}
+
+	for (i = 0; i < _lights.size(); i++)
+	{
+		delete _lights[i];
+	}
+
+	for (i = 0; i < _shafts.size(); i++)
+	{
+		delete _shafts[i];
+	}
+
+	delete _sniper;
 
 	_collideVols.clear();
 	_entities.clear();
@@ -228,18 +265,18 @@ bool Map::loadFromFile(const char* filename, bool savegame)
 	size_t linkableCount = 0;
 	for (size_t j = 0; j < _entities.size(); j++)
 	{
-		if (std::dynamic_pointer_cast<LinkableEntity>(_entities[j]))
+		if (dynamic_cast<LinkableEntity*>(_entities[j]))
 		{
 			linkableCount++;
 		}
 	}
 	Assert((_linkableEnts.size() == linkableCount));
 
-	_sniper.reset(new Enemy(0, 0, Left, false, Enemy_Sniper));
+	_sniper = new Enemy(0, 0, Left, false, Enemy_Sniper);
 
-	std::shared_ptr<EnemyGun> eg(new EnemyGun(0, 0, RED));
-	eg->setEnemy(_sniper.get());
-	_sniper->setGun(eg.get());
+	EnemyGun* eg = new EnemyGun(0, 0, RED);
+	eg->setEnemy(_sniper);
+	_sniper->setGun(eg);
 	_entities.push_back(eg);
 
 	return true;
@@ -292,39 +329,39 @@ size_t Map::getNumberOfEnemies()
 
 CollisionVolume Map::getCollideVolAt(int i)
 {
-	return *_collideVols[i].get();
+	return *_collideVols[i];
 }
 
 CollisionVolume* Map::getCollideVolPointerAt(int i)
 {
-	return _collideVols[i].get();
+	return _collideVols[i];
 }
 
 Entity* Map::getEntAt(size_t i)
 {
-	return _entities[i].get();
+	return _entities[i];
 }
 
 Enemy* Map::getEnemyAt(size_t i)
 {
-	Entity* ent = _entities[_enemyIndices[i]].get();
+	Entity* ent = _entities[_enemyIndices[i]];
 	Assert(dynamic_cast<Enemy*>(ent));
 	return static_cast<Enemy*>(ent);
 }
 
 Stairs* Map::getStairsAt(size_t i)
 {
-	return _stairDoors[i].get();
+	return _stairDoors[i];
 }
 
 Stairwell* Map::getStairwellAt(size_t i)
 {
-	return _stairwells[i].get();
+	return _stairwells[i];
 }
 
 FieldOfView* Map::getLightAt(size_t i)
 {
-	return _lights[i].get();
+	return _lights[i];
 }
 
 Line Map::getLineAt(size_t i)
@@ -339,7 +376,7 @@ Line Map::getLightLinkAt(size_t i)
 
 ElevatorShaft* Map::getShaftAt(size_t i)
 {
-	return _shafts[i].get();
+	return _shafts[i];
 }
 
 unsigned int Map::getMapWidth()
@@ -357,7 +394,7 @@ int Map::indexOfCollideVol(CollisionVolume* vol)
 	unsigned int i;
 	for (i = 0; i < _collideVols.size(); i++)
 	{
-		if (_collideVols[i].get() == vol)
+		if (_collideVols[i] == vol)
 		{
 			return (int)i;
 		}
@@ -370,7 +407,7 @@ int Map::indexOfEntity(Entity* ent)
 	unsigned int i;
 	for (i = 0; i < _entities.size(); i++)
 	{
-		if (_entities[i].get() == ent)
+		if (_entities[i] == ent)
 		{
 			return (int)i;
 		}
@@ -383,7 +420,7 @@ int Map::indexOfFOV(FieldOfView* fov)
 	unsigned int i;
 	for (i = 0; i < _lights.size(); i++)
 	{
-		if (_lights[i].get() == fov)
+		if (_lights[i] == fov)
 		{
 			return (int)i;
 		}
@@ -428,7 +465,7 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 					}
 				}
 
-				std::shared_ptr<LightSwitch> sw(new LightSwitch(x, y - ENTDIM, c, handscanner));
+				LightSwitch* sw = new LightSwitch(x, y - ENTDIM, c, handscanner);
 				_entities.push_back(sw);
 				_linkableEnts.push_back(sw);
 			}
@@ -453,23 +490,23 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 					}
 				}
 
-				std::shared_ptr<Door> door(new Door(x, y - ENTDIM, c, open ? true : false, Door_Normal));
-				_collideVols.push_back(std::unique_ptr<CollisionVolume>(door->getCollisionVolume()));
+				Door* door = new Door(x, y - ENTDIM, c, open ? true : false, Door_Normal);
+				_collideVols.push_back(door->getCollisionVolume());
 				_entities.push_back(door);
 				_linkableEnts.push_back(door);
 			}
 			else if (!strcmp(element->Attribute("type"), "TrapDoor"))
 			{
-				std::shared_ptr<Door> td(new Door(x, y - ENTDIM, c, false, Door_Trap));
-				_collideVols.push_back(std::unique_ptr<CollisionVolume>(td->getCollisionVolume()));
+				Door* td = new Door(x, y - ENTDIM, c, false, Door_Trap);
+				_collideVols.push_back(td->getCollisionVolume());
 				_entities.push_back(td);
 				_linkableEnts.push_back(td);
 			}
 			else if (!strcmp(element->Attribute("type"), "VaultDoor"))
 			{
-				std::shared_ptr<Door> vd(new Door(x, y - ENTDIM, c, false, Door_Vault));
-				_collideVols.push_back(std::unique_ptr<CollisionVolume>(vd->getCollisionVolume()));
-				_collideVols.push_back(std::unique_ptr<CollisionVolume>(vd->getCollisionVolume2()));
+				Door* vd = new Door(x, y - ENTDIM, c, false, Door_Vault);
+				_collideVols.push_back(vd->getCollisionVolume());
+				_collideVols.push_back(vd->getCollisionVolume2());
 				_entities.push_back(vd);
 				_linkableEnts.push_back(vd);
 			}
@@ -504,39 +541,39 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 					}
 				}
 
-				std::shared_ptr<LightFixture> fixture(new LightFixture(x, y - ENTDIM, c, true));
-				std::unique_ptr<FieldOfView> fov(new FieldOfView(x + (ENTDIM / 2) - 8, y - (ENTDIM / 2) + 4, LIGHTRADIUS, 0, 180, true, FOV_LIGHT));
+				LightFixture* fixture = new LightFixture(x, y - ENTDIM, c, true);
+				FieldOfView* fov = new FieldOfView(x + (ENTDIM / 2) - 8, y - (ENTDIM / 2) + 4, LIGHTRADIUS, 0, 180, true, FOV_LIGHT);
 				fov->setColors(r, g, b);
-				fixture->addFOV(fov.get());
+				fixture->addFOV(fov);
 				_entities.push_back(fixture);
 				_linkableEnts.push_back(fixture);
-				_lights.push_back(std::move(fov));
+				_lights.push_back(fov);
 			}
 			else if (!strcmp(element->Attribute("type"), "Socket"))
 			{
-				std::shared_ptr<PowerSocket> socket(new PowerSocket(x, y - ENTDIM, c));
+				PowerSocket* socket = new PowerSocket(x, y - ENTDIM, c);
 				_entities.push_back(socket);
 				_linkableEnts.push_back(socket);
 			}
 			else if (!strcmp(element->Attribute("type"), "Scanner"))
 			{
-				std::shared_ptr<MotionScanner> scanner(new MotionScanner(x, y - ENTDIM, c));
+				MotionScanner* scanner = new MotionScanner(x, y - ENTDIM, c);
 				_entities.push_back(scanner);
 				_linkableEnts.push_back(scanner);
 			}
 			else if (!strcmp(element->Attribute("type"), "Elevator"))
 			{
-				std::shared_ptr<ElevatorDoor> ed(new ElevatorDoor(x, y - ENTDIM));
-				std::shared_ptr<ElevatorSwitch> sw(new ElevatorSwitch(x + 32, y - ENTDIM, c));
-				sw->registerDoor(ed.get());
-				ed->registerSwitch(sw.get());
+				ElevatorDoor* ed = new ElevatorDoor(x, y - ENTDIM);
+				ElevatorSwitch* sw = new ElevatorSwitch(x + 32, y - ENTDIM, c);
+				sw->registerDoor(ed);
+				ed->registerSwitch(sw);
 				_entities.push_back(ed);
 				_entities.push_back(sw);
 				_linkableEnts.push_back(sw);
 			}
 			else if (!strcmp(element->Attribute("type"), "SoundDetector"))
 			{
-				std::shared_ptr<SoundDetector> sd(new SoundDetector(x, y - ENTDIM, c));
+				SoundDetector* sd = new SoundDetector(x, y - ENTDIM, c);
 				_entities.push_back(sd);
 				_linkableEnts.push_back(sd);
 			}
@@ -561,19 +598,19 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 					}
 				}
 
-				std::unique_ptr<FieldOfView> fov(new FieldOfView(facingRight ? x + ENTDIM/2 + 8 : x + ENTDIM/2 - 8,
-				                                 y - ENTDIM/2 + 8, LIGHTRADIUS, facingRight ? 27 : -27, 27, true, FOV_CAMERA));
+				FieldOfView* fov = new FieldOfView(facingRight ? x + ENTDIM/2 + 8 : x + ENTDIM/2 - 8,
+				                                 y - ENTDIM/2 + 8, LIGHTRADIUS, facingRight ? 27 : -27, 27, true, FOV_CAMERA);
 
 				fov->setColors(0.5, 0.5, 0);
 
-				std::shared_ptr<SecurityCamera> cam(new SecurityCamera(x , y - ENTDIM, c, facingRight ? Right : Left, fov.get()));
+				SecurityCamera* cam = new SecurityCamera(x , y - ENTDIM, c, facingRight ? Right : Left, fov);
 				_entities.push_back(cam);
 				_linkableEnts.push_back(cam);
-				_lights.push_back(std::move(fov));
+				_lights.push_back(fov);
 			}
 			else if (!strcmp(element->Attribute("type"), "Alarm"))
 			{
-				std::shared_ptr<Alarm> alarm(new Alarm(x, y - ENTDIM, c));
+				Alarm* alarm = new Alarm(x, y - ENTDIM, c);
 				_entities.push_back(alarm);
 				_linkableEnts.push_back(alarm);
 			}
@@ -592,7 +629,7 @@ void Map::parseCollisionVolume(TiXmlElement* element)
 		}
 		else
 		{
-			std::unique_ptr<CollisionVolume> vol(new CollisionVolume());
+			CollisionVolume* vol = new CollisionVolume();
 			vol->flags = 0;
 			vol->rect.x = atoi(element->Attribute("x"));
 			vol->rect.y = atoi(element->Attribute("y"));
@@ -611,7 +648,7 @@ void Map::parseCollisionVolume(TiXmlElement* element)
 				vol->flags |= COLLISION_ACTIVE;
 			}
 
-			_collideVols.push_back(std::move(vol));
+			_collideVols.push_back(vol);
 		}
 		element = element->NextSiblingElement("object");
 	}
@@ -662,11 +699,11 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 			if (!strcmp(element->Attribute("type"), "Guard"))
 			{
 				Enemy* guard = new Enemy(x, y - ENTDIM, facingRight ? Right : Left, startPatrolling, Enemy_Guard);
-				_entities.push_back(std::shared_ptr<Enemy>(guard));
+				_entities.push_back(guard);
 				_enemyIndices.push_back(_entities.size() - 1);
-				std::shared_ptr<EnemyGun> eg(new EnemyGun(x, y, RED));
+				EnemyGun* eg = new EnemyGun(x, y, RED);
 				eg->setEnemy(guard);
-				guard->setGun(eg.get());
+				guard->setGun(eg);
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
@@ -674,11 +711,11 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 			if (!strcmp(element->Attribute("type"), "Enforcer"))
 			{
 				Enemy* enforcer = new Enemy(x, y - ENTDIM, facingRight ? Right : Left, startPatrolling, Enemy_Enforcer);
-				_entities.push_back(std::shared_ptr<Enemy>(enforcer));
+				_entities.push_back(enforcer);
 				_enemyIndices.push_back(_entities.size() - 1);
-				std::shared_ptr<EnemyGun> eg(new EnemyGun(x, y, RED));
+				EnemyGun* eg = new EnemyGun(x, y, RED);
 				eg->setEnemy(enforcer);
-				enforcer->setGun(eg.get());
+				enforcer->setGun(eg);
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
@@ -686,38 +723,38 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 			if (!strcmp(element->Attribute("type"), "Professional"))
 			{
 				Enemy* professional = new Enemy(x, y - ENTDIM, facingRight ? Right : Left, startPatrolling, Enemy_Professional);
-				_entities.push_back(std::shared_ptr<Enemy>(professional));
+				_entities.push_back(professional);
 				_enemyIndices.push_back(_entities.size() - 1);
-				std::shared_ptr<EnemyGun> eg(new EnemyGun(x, y, RED));
+				EnemyGun* eg = new EnemyGun(x, y, RED);
 				eg->setEnemy(professional);
-				professional->setGun(eg.get());
+				professional->setGun(eg);
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
 
 			if (!strcmp(element->Attribute("type"), "Stairs"))
 			{
-				_stairDoors.push_back(std::unique_ptr<Stairs>(new Stairs(x, y - ENTDIM)));
+				_stairDoors.push_back(new Stairs(x, y - ENTDIM));
 			}
 
 			if (!strcmp(element->Attribute("type"), "CircuitBoxG"))
 			{
-				_entities.push_back(std::shared_ptr<CircuitBox>(new CircuitBox(x, y - ENTDIM, GREEN)));
+				_entities.push_back(new CircuitBox(x, y - ENTDIM, GREEN));
 			}
 
 			if (!strcmp(element->Attribute("type"), "CircuitBoxB"))
 			{
-				_entities.push_back(std::shared_ptr<CircuitBox>(new CircuitBox(x, y - ENTDIM, BLUE)));
+				_entities.push_back(new CircuitBox(x, y - ENTDIM, BLUE));
 			}
 
 			if (!strcmp(element->Attribute("type"), "CircuitBoxY"))
 			{
-				_entities.push_back(std::shared_ptr<CircuitBox>(new CircuitBox(x, y - ENTDIM, YELLOW)));
+				_entities.push_back(new CircuitBox(x, y - ENTDIM, YELLOW));
 			}
 
 			if (!strcmp(element->Attribute("type"), "CircuitBoxV"))
 			{
-				_entities.push_back(std::shared_ptr<CircuitBox>(new CircuitBox(x, y - ENTDIM, VIOLET)));
+				_entities.push_back(new CircuitBox(x, y - ENTDIM, VIOLET));
 			}
 
 			if (!strncmp(element->Attribute("type"), "tut_", 4))
@@ -753,7 +790,7 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				}
 				if (sm < NUMBER_OF_STRING_MESSAGES)
 				{
-					_tutorials.push_back(std::shared_ptr<TutorialMark>(new TutorialMark(x, y - ENTDIM, sm)));
+					_tutorials.push_back(new TutorialMark(x, y - ENTDIM, sm));
 				}
 			}
 		}
@@ -802,8 +839,8 @@ void Map::parseLight(TiXmlElement* element)
 				}
 			}
 
-			std::unique_ptr<FieldOfView> fov(new FieldOfView(x, y + 4, LIGHTRADIUS, direction, numangles, true, FOV_LIGHT));
-			_lights.push_back(std::move(fov));
+			FieldOfView* fov = new FieldOfView(x, y + 4, LIGHTRADIUS, direction, numangles, true, FOV_LIGHT);
+			_lights.push_back(fov);
 
 		}
 		element = element->NextSiblingElement("object");
@@ -866,7 +903,7 @@ void Map::parseProp(TiXmlElement* element)
 
 			if (prop != "")
 			{
-				_entities.push_back(std::shared_ptr<Entity>(new Entity(x, y, Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", prop))));
+				_entities.push_back(new Entity(x, y, Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", prop)));
 				_entities[_entities.size() - 1]->setCollisionRectDimsAndPosition(x, y - ENTDIM, ENTDIM, ENTDIM, ENTDIM);
 			}
 		}
@@ -915,7 +952,7 @@ void Map::parseObjective(TiXmlElement* element)
 
 			if (!strcmp(element->Attribute("type"), "Terminal"))
 			{
-				_entities.push_back(std::shared_ptr<MainComputer>(new MainComputer(x, y - ENTDIM, true)));
+				_entities.push_back(new MainComputer(x, y - ENTDIM, true));
 			}
 			else if (!strcmp(element->Attribute("type"), "Subway"))
 			{
@@ -935,21 +972,21 @@ void Map::makeElevatorShafts()
 	int iShaft;
 	for (i = 0; i < _entities.size(); i++)
 	{
-		if (dynamic_cast<ElevatorDoor*>(_entities[i].get()))
+		if (dynamic_cast<ElevatorDoor*>(_entities[i]))
 		{
-			ed = (ElevatorDoor*)_entities[i].get();
+			ed = (ElevatorDoor*)_entities[i];
 			iShaft = doesElevatorShaftExist((int)ed->getPosition().x);
 			if (iShaft >= 0) //shaft already exists, just add to that.
 			{
 				_shafts[iShaft]->addDoor(ed);
-				ed->registerShaft(_shafts[iShaft].get());
+				ed->registerShaft(_shafts[iShaft]);
 			}
 			else
 			{
-				std::unique_ptr<ElevatorShaft> shaft(new ElevatorShaft((int)ed->getPosition().x));
+				ElevatorShaft* shaft = new ElevatorShaft((int)ed->getPosition().x);
 				shaft->addDoor(ed);
-				ed->registerShaft(shaft.get());
-				_shafts.push_back(std::move(shaft));
+				ed->registerShaft(shaft);
+				_shafts.push_back(shaft);
 			}
 		}
 	}
@@ -980,19 +1017,19 @@ void Map::makeStairwells()
 	int iStairWell;
 	for (i = 0; i < _stairDoors.size(); i++)
 	{
-		stairs = _stairDoors[i].get();
+		stairs = _stairDoors[i];
 		iStairWell = doesStairwellExist((int)stairs->getPosition().x);
 		if (iStairWell >= 0) //stairwell already exists, just add to that.
 		{
 			_stairwells[iStairWell]->addStairs(stairs);
-			stairs->registerStairwell(_stairwells[iStairWell].get());
+			stairs->registerStairwell(_stairwells[iStairWell]);
 		}
 		else
 		{
-			std::unique_ptr<Stairwell> well(new Stairwell((int)stairs->getPosition().x));
+			Stairwell* well = new Stairwell((int)stairs->getPosition().x);
 			well->addStairs(stairs);
-			stairs->registerStairwell(well.get());
-			_stairwells.push_back(std::move(well));
+			stairs->registerStairwell(well);
+			_stairwells.push_back(well);
 		}
 	}
 #if _WIN32
@@ -1074,8 +1111,8 @@ void Map::parseTileLayer(char* data)
 	mapImageCrosslink = SDL_CreateRGBSurface(SDL_SWSURFACE, _mapWidth, _mapHeight, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 #endif
 
-	SDL_FillRect(mapImage, nullptr, 0xFF00FF);
-	SDL_FillRect(mapImageCrosslink, nullptr, 0xFF00FF);
+	SDL_FillRect(mapImage, NULL, 0xFF00FF);
+	SDL_FillRect(mapImageCrosslink, NULL, 0xFF00FF);
 
 	char* delim = (char*)",";
 	char* token = strtok(data, delim);
@@ -1125,7 +1162,7 @@ void Map::parseTileLayer(char* data)
 		}
 
 		if (token)
-			token = strtok(nullptr, delim);
+			token = strtok(NULL, delim);
 	}
 
 	_mapTex = createTextureFromSurface(mapImage);
@@ -1168,15 +1205,15 @@ vec2f Map::getSubwayPosition()
 	return _subwayPos;
 }
 
-void Map::getLinkableIters(std::vector<std::shared_ptr<LinkableEntity> >::iterator* begin,
-                           std::vector<std::shared_ptr<LinkableEntity> >::iterator* end)
+void Map::getLinkableIters(std::vector<LinkableEntity*>::iterator* begin,
+	                      std::vector<LinkableEntity*>::iterator* end)
 {
 	*begin = _linkableEnts.begin();
 	*end = _linkableEnts.end();
 }
 
-void Map::getTutorialIters(std::vector<std::shared_ptr<TutorialMark> >::iterator* begin,
-	                      std::vector<std::shared_ptr<TutorialMark> >::iterator* end)
+void Map::getTutorialIters(std::vector<TutorialMark*>::iterator* begin,
+	                      std::vector<TutorialMark*>::iterator* end)
 {
 	*begin = _tutorials.begin();
 	*end = _tutorials.end();
@@ -1188,7 +1225,7 @@ void Map::removeEnemyGun(EnemyGun* gun)
 	int gunIndex = -1;
 	for (i = 0; i < _linkableEnts.size(); i++)
 	{
-		if (_linkableEnts[i].get() == gun)
+		if (_linkableEnts[i] == gun)
 		{
 			gunIndex = i;
 			break;
@@ -1205,12 +1242,12 @@ void Map::removeEnemyGun(EnemyGun* gun)
 void Map::addMissingGuns()
 {
 	size_t i;
-	std::shared_ptr<EnemyGun> eg;
+	EnemyGun* eg;
 	for (i = 0; i < _entities.size(); i++)
 	{
-		if (std::dynamic_pointer_cast<EnemyGun>(_entities[i]))
+		if (dynamic_cast<EnemyGun*>(_entities[i]))
 		{
-			eg = std::static_pointer_cast<EnemyGun>(_entities[i]);
+			eg = static_cast<EnemyGun*>(_entities[i]);
 			if (eg->getEnemy()->getType() == Enemy_Sniper)
 			{
 				continue;
@@ -1273,5 +1310,5 @@ void Map::removeSniper()
 
 Enemy* Map::getSniper()
 {
-	return _sniper.get();
+	return _sniper;
 }

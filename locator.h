@@ -29,25 +29,25 @@ class Locator
 {
 public:
 	static AudioManager* getAudio();
-	static void provide(std::unique_ptr<AudioManager> service);
+	static void provide(AudioManager* service);
 
 	static BindingsManager* getBindingsManager();
-	static void provide(std::unique_ptr<BindingsManager> service);
+	static void provide(BindingsManager* service);
 
 	static StaticSpriteManager* getSpriteManager();
-	static void provide(std::unique_ptr<StaticSpriteManager> service);
+	static void provide(StaticSpriteManager* service);
 
 	static AnimationManager* getAnimationManager();
-	static void provide(std::unique_ptr<AnimationManager> service);
+	static void provide(AnimationManager* service);
 
 	static ConfigManager* getConfigManager();
-	static void provide(std::unique_ptr<ConfigManager> service);
+	static void provide(ConfigManager* service);
 private:
-	static std::unique_ptr<AudioManager> _audiomanager;
-	static std::unique_ptr<AnimationManager> _animmanager;
-	static std::unique_ptr<BindingsManager> _bindingsmanager;
-	static std::unique_ptr<ConfigManager> _configmanager;
-	static std::unique_ptr<StaticSpriteManager> _spritemanager;
+	static AudioManager* _audiomanager;
+	static AnimationManager* _animmanager;
+	static BindingsManager* _bindingsmanager;
+	static ConfigManager* _configmanager;
+	static StaticSpriteManager* _spritemanager;
 };
 
 #endif

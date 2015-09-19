@@ -32,12 +32,12 @@ public:
 	void prevPage();
 	void resetPositions(int w, int h);
 private:
-	std::shared_ptr<TextLabel> _chooseLabel;
-	std::shared_ptr<TextLabel> _pageLabel;
-	std::shared_ptr<TextButton> _cancelButton;
-	std::shared_ptr<ImageButton> _prevButton;
-	std::shared_ptr<ImageButton> _nextButton;
-	std::vector<std::vector<std::shared_ptr<Button> > > _pages;
+	TextLabel* _chooseLabel;
+	TextLabel* _pageLabel;
+	TextButton* _cancelButton;
+	ImageButton* _prevButton;
+	ImageButton* _nextButton;
+	std::vector<std::vector<Button*> > _pages;
 	size_t _currPageIndex;
 	void handlePageChange();
 };

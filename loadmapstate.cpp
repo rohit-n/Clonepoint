@@ -29,27 +29,27 @@ LoadMapState::LoadMapState(StateManager* sm) : MenuState(sm)
 {
 	_currPageIndex = 0;
 
-	std::vector<std::shared_ptr<Button> > currPage;
+	std::vector<Button*> currPage;
 
-	_chooseLabel.reset(new TextLabel(0, 0, "Select a map to load.", 1, 1, 1));
-	_pageLabel.reset(new TextLabel(0, 0, "1/1", 1, 1, 1));
+	_chooseLabel = new TextLabel(0, 0, "Select a map to load.", 1, 1, 1);
+	_pageLabel = new TextLabel(0, 0, "1/1", 1, 1, 1);
 	_labels.push_back(_chooseLabel);
 	_labels.push_back(_pageLabel);
 
-	_cancelButton.reset(new TextButton(0, 0, (strlen("Go Back") + 2) * 16, 32, "Go Back"));
+	_cancelButton = new TextButton(0, 0, (strlen("Go Back") + 2) * 16, 32, "Go Back");
 
-	_prevButton.reset(new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowleft"),
-	                                  Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowleft_selected")));
-	_nextButton.reset(new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright"),
-	                                  Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright_selected")));
+	_prevButton = new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowleft"),
+	                                  Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowleft_selected"));
+	_nextButton = new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright"),
+	                                  Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright_selected"));
 
 	DIR *dir = opendir("./data");
 	struct dirent *ent;
 	std::vector<std::string> nameList;
 
-	if (dir != nullptr)
+	if (dir != NULL)
 	{
-		while ((ent = readdir (dir)) != nullptr)
+		while ((ent = readdir (dir)) != NULL)
 		{
 			if (strlen(ent->d_name) > 4 &&
 			        strcmp(ent->d_name, "template.tmx") &&
@@ -73,7 +73,7 @@ LoadMapState::LoadMapState(StateManager* sm) : MenuState(sm)
 
 	for (it = nameList.begin(); it != nameList.end(); ++it)
 	{
-		currPage.push_back(std::shared_ptr<TextButton>(new TextButton(0, 0, ((*it).length() + 2) * 16, 32, *it)));
+		currPage.push_back(new TextButton(0, 0, ((*it).length() + 2) * 16, 32, *it));
 		if (currPage.size() == MAX_ITEMS_PER_PAGE)
 		{
 			currPage.push_back(_cancelButton);
@@ -114,8 +114,8 @@ void LoadMapState::resetPositions(int w, int h)
 	{
 		for (j = 0; j < _pages[i].size(); j++)
 		{
-			button = _pages[i][j].get();
-			if (button != _cancelButton.get() && button != _prevButton.get() && button != _nextButton.get())
+			button = _pages[i][j];
+			if (button != _cancelButton && button != _prevButton && button != _nextButton)
 			{
 				button->setPositionWithOffset(w * 0.45f, 0, 0, iy);
 				iy += 32;
@@ -127,15 +127,15 @@ void LoadMapState::resetPositions(int w, int h)
 
 void LoadMapState::handleButton(Button* button)
 {
-	if (button == _cancelButton.get())
+	if (button == _cancelButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 	}
-	else if (button == _prevButton.get())
+	else if (button == _prevButton)
 	{
 		prevPage();
 	}
-	else if (button == _nextButton.get())
+	else if (button == _nextButton)
 	{
 		nextPage();
 	}

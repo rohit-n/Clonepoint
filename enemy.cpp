@@ -38,7 +38,7 @@ Enemy::Enemy(float x, float y, Direction startingDir, bool startPatrol, EnemyTyp
 	setCollisionRectDims(16, 40, ENTDIM);
 	_waitingForAlert = false;
 	_type = type;
-	_gun = nullptr;
+	_gun = NULL;
 	if (startPatrol)
 	{
 		_state = PATROLLING;
@@ -60,17 +60,18 @@ Enemy::Enemy(float x, float y, Direction startingDir, bool startPatrol, EnemyTyp
 	_timeToTurn2 = TIMETOTURN;
 	_timeToHitSwitch = GUARD_SWITCH_TIME;
 	setResolve(0, Shot_None);
-	_secondaryTarget = nullptr;
+	_secondaryTarget = NULL;
 	_numSwitchAttempts = 0;
-	_lightToActivate = nullptr;
-	_strongestLight = nullptr;
-	_targetSwitch = nullptr;
+	_lightToActivate = NULL;
+	_strongestLight = NULL;
+	_targetSwitch = NULL;
 	_targetType = TARGET_NONE;
 	_alertType = ALERT_NONE;
 	_fullyPunched = false;
 	_ignoreFall = true;
 	_readyToShoot = false;
 	_heldAtGunpoint = false;
+	_scene_trace_bullet = false;
 	_timeToAlert = ENEMYALERTTIME;
 	_timeToResetReactionTime = TIME_TO_RESET_REACTION_TIME;
 
@@ -121,17 +122,17 @@ void Enemy::update(unsigned int dT)
 		}
 	case PATROLLING:
 	case INVESTIGATING:
-		if (_secondaryTarget != nullptr && _overlappingStairs != nullptr && _overlappingStairs == _secondaryTarget)
+		if (_secondaryTarget != NULL && _overlappingStairs != NULL && _overlappingStairs == _secondaryTarget)
 		{
 			//time to move through stairs.
 			setStairMovement(_desiredStairDirection);
 		}
 		//If enemy is close enough to their target switch...
-		else if (_secondaryTarget != nullptr && dynamic_cast<LightSwitch*>(_secondaryTarget) && vec2f_distance(getCollisionRectPosition(), _secondaryTarget->getCollisionRectPosition()) < GUARD_DISTANCE_TO_USE_SWITCH)
+		else if (_secondaryTarget != NULL && dynamic_cast<LightSwitch*>(_secondaryTarget) && vec2f_distance(getCollisionRectPosition(), _secondaryTarget->getCollisionRectPosition()) < GUARD_DISTANCE_TO_USE_SWITCH)
 		{
 			changeState(USING_SWITCH);
 		}
-		else if (_targetSwitch != nullptr && (_targetType == TARGET_LIGHTSWITCH || _targetType == TARGET_ALARM) && vec2f_distance(getCollisionRectPosition(), _target) < GUARD_DISTANCE_TO_USE_SWITCH)
+		else if (_targetSwitch != NULL && (_targetType == TARGET_LIGHTSWITCH || _targetType == TARGET_ALARM) && vec2f_distance(getCollisionRectPosition(), _target) < GUARD_DISTANCE_TO_USE_SWITCH)
 		{
 			changeState(USING_SWITCH);
 		}
@@ -181,7 +182,7 @@ void Enemy::update(unsigned int dT)
 		if (_timeToHitSwitch <= 0)
 		{
 			_timeToHitSwitch = GUARD_SWITCH_TIME;
-			if (_secondaryTarget != nullptr && dynamic_cast<LightSwitch*>(_secondaryTarget))
+			if (_secondaryTarget != NULL && dynamic_cast<LightSwitch*>(_secondaryTarget))
 			{
 				if (_targetType == TARGET_LIGHTSWITCH)
 				{
@@ -195,23 +196,23 @@ void Enemy::update(unsigned int dT)
 				((LightSwitch*)_secondaryTarget)->activate();
 				if (_targetSwitch == _secondaryTarget)
 				{
-					_targetSwitch = nullptr;
+					_targetSwitch = NULL;
 				}
-				_secondaryTarget = nullptr;
+				_secondaryTarget = NULL;
 				_numSwitchAttempts++;
 			}
-			else if (_targetSwitch != nullptr)
+			else if (_targetSwitch != NULL)
 			{
 				if (_targetType == TARGET_LIGHTSWITCH)
 				{
 					_targetSwitch->activate();
 					_numSwitchAttempts++;
-					if ((_lightToActivate != nullptr && _lightToActivate->isActive()) || _numSwitchAttempts == 3) //activate the light, or give up.
+					if ((_lightToActivate != NULL && _lightToActivate->isActive()) || _numSwitchAttempts == 3) //activate the light, or give up.
 					{
-						_targetSwitch = nullptr;
+						_targetSwitch = NULL;
 						_targetType = TARGET_NONE;
 						changeState(PATROLLING);
-						_lightToActivate = nullptr;
+						_lightToActivate = NULL;
 						_numSwitchAttempts = 0;
 					}
 				}
@@ -322,7 +323,7 @@ void Enemy::update(unsigned int dT)
 		}
 	}
 
-	if (_gun != nullptr)
+	if (_gun != NULL)
 		_gun->update(dT);
 
 	int r;
@@ -356,7 +357,7 @@ void Enemy::update(unsigned int dT)
 
 	if (_activeSequence == Locator::getAnimationManager()->getSequence(ANIM_ENEMY_EXIT_STAIRS) && _currentAnimFinished)
 	{
-		_secondaryTarget = nullptr;
+		_secondaryTarget = NULL;
 		_desiredStairDirection = NotMoving;
 		setSprite();
 		if (_state == PATROLLING)
@@ -572,7 +573,7 @@ void Enemy::setSprite()
 
 bool Enemy::goingForStairs()
 {
-	return _secondaryTarget != nullptr && dynamic_cast<Stairs*>(_secondaryTarget);
+	return _secondaryTarget != NULL && dynamic_cast<Stairs*>(_secondaryTarget);
 }
 
 void Enemy::setDesiredStairsAndDirection(Stairs* sw, StairTraversal st)
@@ -588,7 +589,7 @@ void Enemy::setDesiredStairsAndDirection(Stairs* sw, StairTraversal st)
 
 void Enemy::setSecondaryTarget(Entity* ent)
 {
-	if (ent != nullptr)
+	if (ent != NULL)
 	{
 		if (isPositionBehind(ent->getCollisionRectPosition().x))
 		{
@@ -615,15 +616,15 @@ void Enemy::resetSwitchAttempts()
 
 void Enemy::setStrongestLight(FieldOfView* light)
 {
-	if (_lightToActivate != nullptr && light != nullptr && _state == IDLE)
+	if (_lightToActivate != NULL && light != NULL && _state == IDLE)
 	{
 		changeState(PATROLLING);
 	}
 
-	if ((light == _lightToActivate && light != nullptr) || (light != nullptr && _lightToActivate != nullptr && light->getLightFixture() == _lightToActivate->getLightFixture()))
+	if ((light == _lightToActivate && light != NULL) || (light != NULL && _lightToActivate != NULL && light->getLightFixture() == _lightToActivate->getLightFixture()))
 	{
 		//Nothing to activate, since it's now on.
-		_lightToActivate = nullptr;
+		_lightToActivate = NULL;
 		_targetType = TARGET_NONE;
 		//_alertType = ALERT_LOOK;
 	}
@@ -726,11 +727,6 @@ void Enemy::setWaitingForAlert(bool b)
 	_waitingForAlert = b;
 }
 
-void Enemy::setFireFunction(std::function<void(Enemy*, vec2f, GunShotTraceType)> func)
-{
-	fireWeapon = func;
-}
-
 EnemyType Enemy::getType()
 {
 	return _type;
@@ -778,7 +774,7 @@ void Enemy::setCanSeePlayer(bool b)
 
 void Enemy::_fireWeapon(GunShotTraceType gstt)
 {
-	fireWeapon(this, _shootTarget, gstt);
+	_scene_trace_bullet = true;
 	setResolve(1, gstt);
 }
 

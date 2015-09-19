@@ -5,22 +5,22 @@
 char* file_read(const char* filename)
 {
     FILE* input = fopen(filename, "rb");
-    if(input == nullptr) return nullptr;
+    if(input == NULL) return NULL;
 
-    if(fseek(input, 0, SEEK_END) == -1) return nullptr;
+    if(fseek(input, 0, SEEK_END) == -1) return NULL;
     long size = ftell(input);
-    if(size == -1) return nullptr;
-    if(fseek(input, 0, SEEK_SET) == -1) return nullptr;
+    if(size == -1) return NULL;
+    if(fseek(input, 0, SEEK_SET) == -1) return NULL;
 
-    auto content = new char[(size_t)size+1];
-    if(content == nullptr)
-        return nullptr;
+    char* content = new char[(size_t)size+1];
+    if(content == NULL)
+        return NULL;
 
     fread(content, 1, (size_t)size, input);
     if(ferror(input))
     {
         delete [] content;
-        return nullptr;
+        return NULL;
     }
 
     fclose(input);

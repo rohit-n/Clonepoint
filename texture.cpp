@@ -132,7 +132,7 @@ SDL_Surface* loadSurfaceFromImage(const char* filename)
 	if (!data)
 	{
 		LOGF((stderr, "Error loading image %s!\n", filename));
-		return nullptr;
+		return NULL;
 	}
 
 	SDL_Surface* loadedImage = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * bpp,
@@ -151,7 +151,7 @@ SDL_Surface* loadSurfaceFromImage(const char* filename)
 	if(!copied)
 	{
 		LOGF((stderr, "Error creating surface from %s!\n", filename));
-		return nullptr;
+		return NULL;
 	}
 
 	return copied;
@@ -212,9 +212,9 @@ SDL_Surface* reverseSpriteSheet(SDL_Surface* surface, unsigned int tileDim)
 		{
 			srcrect.x = i * tileDim;
 			srcrect.y = j * tileDim;
-			SDL_BlitSurface(surface, &srcrect, subSurf, nullptr);
+			SDL_BlitSurface(surface, &srcrect, subSurf, NULL);
 			subSurf = flipSurface(subSurf, Flip_Horizontal);
-			SDL_BlitSurface(subSurf, nullptr, ret, &srcrect);
+			SDL_BlitSurface(subSurf, NULL, ret, &srcrect);
 		}
 	}
 

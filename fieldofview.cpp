@@ -33,7 +33,7 @@ FieldOfView::FieldOfView(float x, float y, float radius, int direction, int half
 	_green = 1.0f;
 	_blue = 1.0f;
 
-	_fixture = nullptr;
+	_fixture = NULL;
 
 	_type = type;
 }

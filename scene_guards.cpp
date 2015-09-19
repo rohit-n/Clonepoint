@@ -29,7 +29,7 @@ bool Scene::stairsReachableToEnemy(Enemy* enemy, Stairs* stairs)
 	//TODO: this check may fail when it should not...
 	if (stairs->getPosition().y == enemy->getPosition().y)
 	{
-		return !isTraceBlocked(nullptr, enemy->getCollisionRectPosition(), stairs->getCollisionRectPosition(), &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
+		return !isTraceBlocked(NULL, enemy->getCollisionRectPosition(), stairs->getCollisionRectPosition(), &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
 	}
 
 	return false;
@@ -41,7 +41,7 @@ bool Scene::switchReachableToEnemy(Enemy* enemy, LightSwitch* ls)
 	bool door;
 	if (SWITCH_GUARD_HEIGHT_DIFF >= diff && diff >= 0.0f)
 	{
-		bool blocked = isTraceBlocked(nullptr, enemy->getCollisionRectPosition(), ls->getCollisionRectPosition(), &_unused_c, &_unused_index, &door, 64.0f, &Scene::interpStandard);
+		bool blocked = isTraceBlocked(NULL, enemy->getCollisionRectPosition(), ls->getCollisionRectPosition(), &_unused_c, &_unused_index, &door, 64.0f, &Scene::interpStandard);
 
 		return blocked ? door : true;
 
@@ -61,10 +61,10 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 	bool door;
 	int volIndex;
 
-	Door* blockingDoor = nullptr;
+	Door* blockingDoor = NULL;
 
-	bool traceBlocked = isTraceBlocked(nullptr, enemy->getCollisionRectPosition(), enemy->getTarget(), &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
-	bool traceBlockedHoriz = isTraceBlocked(nullptr, enemy->getCollisionRectPosition(), vec2f(targX, posY), &_unused_c, &volIndex, &door, 64.0f, &Scene::interpStandard);
+	bool traceBlocked = isTraceBlocked(NULL, enemy->getCollisionRectPosition(), enemy->getTarget(), &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
+	bool traceBlockedHoriz = isTraceBlocked(NULL, enemy->getCollisionRectPosition(), vec2f(targX, posY), &_unused_c, &volIndex, &door, 64.0f, &Scene::interpStandard);
 
 	if (traceBlockedHoriz)
 	{
@@ -72,7 +72,7 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 		{
 			//try opening the blocking door.
 			blockingDoor = getDoorOfCollisionVolume(_currentMap->getCollideVolPointerAt(volIndex));
-			if (blockingDoor != nullptr)
+			if (blockingDoor != NULL)
 			{
 				if (enemy->getNumSwitchAttempts() < 3)
 				{
@@ -93,7 +93,7 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 		//direct path from enemy to target is blocked - try finding stairs.
 		size_t i;
 		Stairs* sw, *candidate;
-		candidate = nullptr;
+		candidate = NULL;
 		float smallestDist = -1;
 		float dist;
 		for (i = 0; i < _currentMap->getNumberOfStairs(); i++)
@@ -104,12 +104,12 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 			{
 				//can the enemy find stairs to reach *this* one?
 				Stairs* targStairs = (posY < targY) ? sw->getUpstairs() : sw->getDownstairs();
-				if (targStairs != nullptr)
+				if (targStairs != NULL)
 				{
 					if (stairsReachableToEnemy(enemy, targStairs))
 					{
 						dist = fabs(targStairs->getCollisionRectPosition().x - posX);
-						if (candidate == nullptr || dist < smallestDist)
+						if (candidate == NULL || dist < smallestDist)
 						{
 							candidate = targStairs;
 							smallestDist = dist;
@@ -118,7 +118,7 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 				}
 			}
 		}
-		if (candidate != nullptr)
+		if (candidate != NULL)
 		{
 			enemy->setDesiredStairsAndDirection(candidate, (posY < targY) ? MovingDown : MovingUp);
 		}
@@ -134,7 +134,7 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 			{
 				enemy->forgetTarget();
 			}
-			enemy->setSecondaryTarget(nullptr);
+			enemy->setSecondaryTarget(NULL);
 		}
 	}
 }
@@ -142,12 +142,12 @@ void Scene::handleEnemyPathfind(Enemy* enemy)
 void Scene::handleEnemyLightOff(Enemy* enemy)
 {
 	//Need to try lightswitch 3 times - don't try again unless light comes on again.
-	LightSwitch* sw = nullptr;
+	LightSwitch* sw = NULL;
 	_currentMap->getLinkableIters(&linkBegin, &linkEnd);
 	LinkableEntity* le;
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		le = (*linkIter).get();
+		le = *linkIter;
 		if (dynamic_cast<LightSwitch*>(le) && !static_cast<LightSwitch*>(le)->isHandScanner())
 		{
 			sw = static_cast<LightSwitch*>(le);
@@ -166,13 +166,13 @@ void Scene::enemyTryOpenDoor(Enemy* enemy, Door* door)
 {
 	bool leftToRight = door->getCollisionRectPosition().x > enemy->getCollisionRectPosition().x;
 	bool between = false;
-	LightSwitch* sw = nullptr;
+	LightSwitch* sw = NULL;
 	float px;
 	_currentMap->getLinkableIters(&linkBegin, &linkEnd);
 	LinkableEntity* le;
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		le = (*linkIter).get();
+		le = *linkIter;
 		if (dynamic_cast<LightSwitch*>(le) && static_cast<LightSwitch*>(le)->isHandScanner())
 		{
 			sw = static_cast<LightSwitch*>(le);

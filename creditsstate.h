@@ -30,9 +30,9 @@ public:
 	void resetPositions(int w, int h);
 	void handleKeyUp(SDL_Keycode key);
 private:
-	std::shared_ptr<TextButton> _cancelButton;
-	std::shared_ptr<TextLabel> _titleLabel;
-	std::shared_ptr<TextLabel> _credit1;
+	TextButton* _cancelButton;
+	TextLabel* _titleLabel;
+	TextLabel* _credit1;
 };
 
 #endif

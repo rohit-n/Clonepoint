@@ -1,7 +1,7 @@
 SYS := $(shell gcc -dumpmachine)
 
 CXX=g++
-CFLAGS= -Wall -pedantic -std=c++11
+CFLAGS= -Wall -pedantic
 OBJECTS = statemanager.o audio.o locator.o draw.o static_sprites.o animations.o vec.o matrix.o map.o texture.o button.o scene.o scene_guards.o scene_trace.o bindings.o \
 scene_physics.o scene_saved_game.o intersect.o state.o file.o entity.o enemy.o linkableentity.o player.o elevators.o fieldofview.o config.o font.o \
 livingentity.o stairs.o menustate.o mainmenustate.o creditsstate.o gamestate.o levelendstate.o pausestate.o loadmapstate.o optionsstate.o upgradesstate.o sprite.o \

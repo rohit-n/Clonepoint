@@ -599,8 +599,8 @@ public:
 	void setWaitingForAlert(bool b);
 	void setCanSeePlayer(bool b);
 
-	void setFireFunction(std::function<void(Enemy*, vec2f, GunShotTraceType)> func);
-	std::function<void(Enemy*, vec2f, GunShotTraceType)> fireWeapon;
+	bool _scene_trace_bullet;
+	vec2f _shootTarget; //usually set to _target, unless gun is activated by something else...
 	void _fireWeapon(GunShotTraceType gstt); //ugh.
 	EnemyGun* getGun();
 	void setGun(EnemyGun* gun);
@@ -613,7 +613,6 @@ private:
 	bool _playerInSight;
 	bool _hasSeenPlayer; //used to detect how many guards in a level has seen the player for statistical purposes.
 	vec2f _target; //try to move here when INVESTIGATING.
-	vec2f _shootTarget; //usually set to _target, unless gun is activated by something else...
 	GuardState _state;
 	bool _fullyPunched; //used to play punch sound once in punching animation.
 	StairTraversal _desiredStairDirection;

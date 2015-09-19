@@ -38,7 +38,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 Scene::Scene()
 {
-	_player.reset(new Player(0, 0, Right));
+	_player = new Player(0, 0, Right);
 	_crosslink = false;
 	_selecting = false;
 	_levelOver = false;
@@ -47,12 +47,12 @@ Scene::Scene()
 	_stopTrajPoint = 0;
 	_totalObjectives = 0;
 	_numEnemies = 0;
-	_currentMap.reset();
-	_linker = nullptr;
-	_switcher = nullptr;
-	_computer = nullptr;
-	_elevator = nullptr;
-	_circuitBox = nullptr;
+	_currentMap = NULL;
+	_linker = NULL;
+	_switcher = NULL;
+	_computer = NULL;
+	_elevator = NULL;
+	_circuitBox = NULL;
 	_mouseDragPos = vec2f(0, 0);
 	_jumpImpulse = vec2f(0, 0);
 
@@ -81,16 +81,16 @@ Scene::Scene()
 	_saveTimeSince[0] = _saveTimeSince[1] = _saveTimeSince[2] = -1;
 	_mapFilename[0] = '\0';
 
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 0)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 1)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 2)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 3)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 4)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 5)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 6)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 7)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 1)));
-	_particles.push_back(std::unique_ptr<Particle>(new Particle(0, 0, 2)));
+	_particles.push_back(new Particle(0, 0, 0));
+	_particles.push_back(new Particle(0, 0, 1));
+	_particles.push_back(new Particle(0, 0, 2));
+	_particles.push_back(new Particle(0, 0, 3));
+	_particles.push_back(new Particle(0, 0, 4));
+	_particles.push_back(new Particle(0, 0, 5));
+	_particles.push_back(new Particle(0, 0, 6));
+	_particles.push_back(new Particle(0, 0, 7));
+	_particles.push_back(new Particle(0, 0, 1));
+	_particles.push_back(new Particle(0, 0, 2));
 
 	_testAttach = NotAttached;
 
@@ -113,7 +113,20 @@ Scene::Scene()
 Scene::~Scene()
 {
 	LOGF((stdout, "Running scene destructor!\n"));
+	size_t i;
+
+	for (i = 0; i < _particles.size(); i++)
+	{
+		delete _particles[i];
+	}
+
 	_particles.clear();
+	delete _player;
+
+	if (_currentMap)
+	{
+		delete _currentMap;
+	}
 }
 
 void Scene::loadMap(const char* filename, bool savegame)
@@ -131,9 +144,9 @@ void Scene::loadMap(const char* filename, bool savegame)
 	{
 		if (_currentMap)
 		{
-			_currentMap.reset();
+			delete _currentMap;
 		}
-		_currentMap.reset(new Map());
+		_currentMap = new Map();
 		_currentMap->loadFromFile(filename, savegame);
 
 		if (!savegame)
@@ -155,20 +168,7 @@ void Scene::loadMap(const char* filename, bool savegame)
 				Door* door = static_cast<Door*>(_currentMap->getEntAt(i));
 				calculateOverlappingLightsOfDoor(door);
 			}
-			if (dynamic_cast<Enemy*>(_currentMap->getEntAt(i)))
-			{
-				Enemy* enemy = static_cast<Enemy*>(_currentMap->getEntAt(i));
-				enemy->setFireFunction([this](Enemy* enemy, vec2f target, GunShotTraceType gstt)
-				{
-					this->traceBullet(enemy, target, gstt, true);
-				});
-			}
 		}
-
-		_currentMap->getSniper()->setFireFunction([this](Enemy* enemy, vec2f target, GunShotTraceType gstt)
-		{
-			this->traceBullet(_currentMap->getSniper(), target, gstt, true);
-		});
 
 		vec2f startPos = _currentMap->getPlayerStartPos();
 		_player->setCollisionRectPosition(startPos.x, startPos.y);
@@ -222,7 +222,7 @@ void Scene::handleStairCollision(LivingEntity* le)
 		{
 			le->setOverlappingStairs(sw);
 			found = true;
-			if (_player.get() == le)
+			if (_player == le)
 			{
 				_playerOverlappingEnts[UEStairs] = true;
 			}
@@ -232,7 +232,7 @@ void Scene::handleStairCollision(LivingEntity* le)
 
 	if (!found)
 	{
-		le->setOverlappingStairs(nullptr);
+		le->setOverlappingStairs(NULL);
 	}
 }
 
@@ -243,11 +243,11 @@ void Scene::update(unsigned int dT)
 	size_t i;
 	updateCamera();
 	if (!_player->isInElevator())
-		handleMapCollisions(_player.get(), dT);
+		handleMapCollisions(_player, dT);
 	_player->update(dT);
 	_playerOverlappingEnts[UEStairs] = false;
-	handleStairCollision(_player.get());
-	checkIfEntOnGround(_player.get());
+	handleStairCollision(_player);
+	checkIfEntOnGround(_player);
 
 	calculatePlayerVisibility();
 
@@ -367,14 +367,14 @@ void Scene::update(unsigned int dT)
 
 	if (Locator::getConfigManager()->getBool("tutorial_popups"))
 	{
-		std::vector<std::shared_ptr<TutorialMark> >::iterator tutBegin;
-		std::vector<std::shared_ptr<TutorialMark> >::iterator tutEnd;
-		std::vector<std::shared_ptr<TutorialMark> >::iterator it;
+		std::vector<TutorialMark*>::iterator tutBegin;
+		std::vector<TutorialMark*>::iterator tutEnd;
+		std::vector<TutorialMark*>::iterator it;
 		_currentMap->getTutorialIters(&tutBegin, &tutEnd);
 		TutorialMark* tm;
 		for (it = tutBegin; it != tutEnd; ++it)
 		{
-			tm = (*it).get();
+			tm = *it;
 			if (check_collision(tm->getCollisionRect(), _player->getCollisionRect()))
 			{
 				_stringMessage = tm->getTutorialString();
@@ -409,7 +409,7 @@ void Scene::update(unsigned int dT)
 		if (target && fabs(shaft->getElevatorPosition().y - target->getCollisionRectPosition().y) < fabs(shaft->getVelocity()))
 		{
 			shaft->setOpenDoor(target, true);
-			addNoise(shaft->getElevatorPosition().x - _camera.x, shaft->getElevatorPosition().y - _camera.y, 512, true, ALERT_LOOK, nullptr);
+			addNoise(shaft->getElevatorPosition().x - _camera.x, shaft->getElevatorPosition().y - _camera.y, 512, true, ALERT_LOOK, NULL);
 		}
 	}
 
@@ -488,9 +488,16 @@ void Scene::updateEnemy(Enemy* enemy, unsigned int dT)
 	Rect playerRect = _player->getCollisionRect();
 	Rect enemyRect = enemy->getCollisionRect();
 	GuardState state = enemy->getState();
+
+	if (enemy->_scene_trace_bullet)
+	{
+		traceBullet(enemy, enemy->_shootTarget, enemy->getResolve().shotType, true);
+		enemy->_scene_trace_bullet = false;
+	}
+
 	if (state == KNOCKED_OUT || state == FALLING)
 	{
-		if (enemy->getGun() != nullptr)
+		if (enemy->getGun() != NULL)
 		{
 			_currentMap->removeEnemyGun(enemy->getGun());
 		}
@@ -509,7 +516,7 @@ void Scene::updateEnemy(Enemy* enemy, unsigned int dT)
 		}
 	}
 
-	if (enemy->getSecondaryTarget() != nullptr || enemy->getTargetType() != TARGET_NONE)
+	if (enemy->getSecondaryTarget() != NULL || enemy->getTargetType() != TARGET_NONE)
 		handleEnemyPathfind(enemy);
 
 	if (check_collision(playerRect, enemyRect) && _player->isAlive()
@@ -561,7 +568,7 @@ void Scene::updateMotionScanner(MotionScanner* scanner)
 		//account for the player as well.
 		if (!scanner->isTrespassed())
 		{
-			handleMotionScannerWithEnt(scanner, _player.get());
+			handleMotionScannerWithEnt(scanner, _player);
 		}
 	}
 }
@@ -781,7 +788,7 @@ void Scene::handleClick(int mx, int my, unsigned int dT)
 		//find if player clicked on any linkable entity.
 		for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 		{
-			le = (*linkIter).get();
+			le = *linkIter;
 			collRect = le->getCollisionRect();
 			if (vec2InRect(vec2f(locX, locY), collRect))
 			{
@@ -794,7 +801,7 @@ void Scene::handleClick(int mx, int my, unsigned int dT)
 				}
 				else
 				{
-					_linker = nullptr;
+					_linker = NULL;
 				}
 			}
 		}
@@ -886,7 +893,7 @@ void Scene::handleLeftClickRelease(int mx, int my)
 //occurs when left mouse button is no longer held down.
 void Scene::setNewLinkAt(int mx, int my)
 {
-	if (_linker == nullptr)
+	if (_linker == NULL)
 	{
 		return;
 	}
@@ -902,7 +909,7 @@ void Scene::setNewLinkAt(int mx, int my)
 	//find if player dragged pointer on any linkable entity.
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		le = (*linkIter).get();
+		le = *linkIter;
 
 		collRect = le->getCollisionRect();
 		if (vec2InRect(vec2f(locX, locY), collRect))
@@ -923,7 +930,7 @@ void Scene::setNewLinkAt(int mx, int my)
 				}
 			}
 			_linker->link(le, true);
-			_linker = nullptr;
+			_linker = NULL;
 			break;
 		}
 	}
@@ -1008,7 +1015,7 @@ Door* Scene::getDoorOfCollisionVolume(CollisionVolume* vol)
 			}
 		}
 	}
-	return nullptr;
+	return NULL;
 }
 
 //The lighting trace hit a collision volume. Using points before and after the trace collided, get the side of the volume that was hit.
@@ -1215,14 +1222,14 @@ void Scene::warpPlayerTo(int mx, int my)
 	_player->releasePin();
 }
 
-std::shared_ptr<Map> Scene::getMap()
+Map* Scene::getMap()
 {
 	return _currentMap;
 }
 
 Player* Scene::getPlayer()
 {
-	return _player.get();
+	return _player;
 }
 
 vec2f Scene::getPlayerPosition()
@@ -1370,7 +1377,7 @@ void Scene::computeVisibility(FieldOfView* fov)
 	{
 		vi.x = radius * sinf(ToRadian(i)) + pos.x;
 		vi.y = radius * cosf(ToRadian(i)) + pos.y;
-		isTraceBlocked(nullptr, pos, vi, &vn, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
+		isTraceBlocked(NULL, pos, vi, &vn, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
 		fov->addVertex(vn.x, vn.y);
 	}
 }
@@ -1390,7 +1397,7 @@ void Scene::updateVisibility(FieldOfView* fov, int angle1, int angle2)
 	{
 		vi.x = radius * sinf(ToRadian(i)) + pos.x;
 		vi.y = radius * cosf(ToRadian(i)) + pos.y;
-		isTraceBlocked(nullptr, pos, vi, &vn, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
+		isTraceBlocked(NULL, pos, vi, &vn, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard);
 
 		index = i - direction + halfsize;
 		if (index < 0)
@@ -1538,7 +1545,7 @@ bool Scene::isPlayerInFOV(FieldOfView* fov)
 	float testAngle = acos(v1.dot(v2));
 
 	return 	dist < radius &&
-	        !isTraceBlocked(nullptr, pos, lightPos, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::interpStandard) &&
+	        !isTraceBlocked(NULL, pos, lightPos, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::interpStandard) &&
 	        testAngle < ToRadian(halfsize);
 }
 
@@ -1565,7 +1572,7 @@ void Scene::calculateStrongestLight(Enemy* enemy)
 		{
 			lightPos = fov->getPosition();
 			dist = vec2f_distance(pos, lightPos);
-			if (dist < fov->getRadius() && !isTraceBlocked(nullptr, pos, lightPos, &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard))
+			if (dist < fov->getRadius() && !isTraceBlocked(NULL, pos, lightPos, &_unused_c, &_unused_index, &_unused_bool, 64.0f, &Scene::interpStandard))
 			{
 				float attenuation = 100 - ((dist / fov->getRadius()) * 100);
 				if (attenuation > strongestAttenuation)
@@ -1592,7 +1599,7 @@ void Scene::calculateStrongestLight(Enemy* enemy)
 	}
 	else
 	{
-		enemy->setStrongestLight(nullptr);
+		enemy->setStrongestLight(NULL);
 	}
 }
 
@@ -1616,30 +1623,30 @@ void Scene::makeInitialLinks()
 //find two linkable entities whose bounding boxes hit ends of line. If found, link from p1 to p2.
 void Scene::attemptLinkBetween(vec2f p1, vec2f p2)
 {
-	LinkableEntity* le1 = nullptr;
-	LinkableEntity* le2 = nullptr;
+	LinkableEntity* le1 = NULL;
+	LinkableEntity* le2 = NULL;
 	LinkableEntity* le;
 	_currentMap->getLinkableIters(&linkBegin, &linkEnd);
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		le = (*linkIter).get();
-		if (vec2InRect(p1, le->getCollisionRect()) && le1 == nullptr)
+		le = *linkIter;
+		if (vec2InRect(p1, le->getCollisionRect()) && le1 == NULL)
 		{
 			le1 = le;
 
 		}
-		if (vec2InRect(p2, le->getCollisionRect()) && le2 == nullptr)
+		if (vec2InRect(p2, le->getCollisionRect()) && le2 == NULL)
 		{
 			le2 = le;
 		}
 
-		if (le1 != nullptr && le2 != nullptr)
+		if (le1 != NULL && le2 != NULL)
 		{
 			break;
 		}
 	}
 
-	if (le1 != nullptr && le2 != nullptr)
+	if (le1 != NULL && le2 != NULL)
 	{
 		le1->link(le2, false);
 	}
@@ -1647,8 +1654,8 @@ void Scene::attemptLinkBetween(vec2f p1, vec2f p2)
 
 void Scene::attemptLightLinkBetween(vec2f p1, vec2f p2)
 {
-	LightFixture* fixture = nullptr;
-	FieldOfView* fov = nullptr;
+	LightFixture* fixture = NULL;
+	FieldOfView* fov = NULL;
 	size_t i;
 
 	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)
@@ -1675,7 +1682,7 @@ void Scene::attemptLightLinkBetween(vec2f p1, vec2f p2)
 		}
 	}
 
-	if (fixture != nullptr && fov != nullptr)
+	if (fixture != NULL && fov != NULL)
 	{
 		fixture->addFOV(fov);
 	}
@@ -1736,7 +1743,7 @@ void Scene::subPlayerJumpChargeTime(int dec)
 
 Particle* Scene::getParticleAt(size_t i)
 {
-	return _particles[i].get();
+	return _particles[i];
 }
 
 size_t Scene::getNumberOfParticles()
@@ -1813,7 +1820,7 @@ void Scene::handleMouse(unsigned int mx, unsigned int my)
 		}
 
 		_player->setArmRotation(angle);
-		traceBullet(_player.get(), vec2f(mx + _camera.x, my + _camera.y), Shot_FromPlayer, false);
+		traceBullet(_player, vec2f(mx + _camera.x, my + _camera.y), Shot_FromPlayer, false);
 	}
 
 	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)

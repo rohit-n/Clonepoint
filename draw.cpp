@@ -90,6 +90,35 @@ Renderer::~Renderer()
 		glDeleteBuffers(1, &pointVBO);
 	if (_screenVBO)
 		glDeleteBuffers(1, &_screenVBO);
+
+	delete font1;
+	delete font2;
+
+	deleteSpriteSheet(resPlayer);
+	deleteSpriteSheet(resPlayerLeft);
+	deleteSpriteSheet(resGuardRight);
+	deleteSpriteSheet(resGuardLeft);
+	deleteSpriteSheet(resEnforcerLeft);
+	deleteSpriteSheet(resEnforcerRight);
+	deleteSpriteSheet(resProfessionalLeft);
+	deleteSpriteSheet(resProfessionalRight);
+	deleteSpriteSheet(resSniperLeft);
+	deleteSpriteSheet(resSniperRight);
+	deleteSpriteSheet(resObjects);
+	deleteSpriteSheet(resLinkables);
+	deleteSpriteSheet(resInterface);
+	deleteSpriteSheet(resGlass);
+}
+
+void Renderer::deleteSpriteSheet(SpriteSheet* sheet)
+{
+	GLuint vbo = sheet->getVertexBuffer();
+	if (sheet->getNumberOfSprites() > 0)
+	{
+		glDeleteBuffers(sheet->getNumberOfSprites(), sheet->getIndexBuffers());
+	}
+	glDeleteBuffers(1, &vbo);
+	delete sheet;
 }
 
 void Renderer::toggleWireframe()
@@ -151,23 +180,23 @@ bool Renderer::init(int x, int y)
 
 	bufferQuads();
 
-	font1.reset(new Font("./data/fonts/VeraMono.ttf", 32.0f));
-	font2.reset(new Font("./data/fonts/VeraMono.ttf", 16.0f));
+	font1 = new Font("./data/fonts/VeraMono.ttf", 32.0f);
+	font2 = new Font("./data/fonts/VeraMono.ttf", 16.0f);
 
-	resPlayer.reset(new SpriteSheet("./data/sprites/player.png", ENTDIM, false));
-	resPlayerLeft.reset(new SpriteSheet("./data/sprites/player.png", ENTDIM, true));
-	resGuardRight.reset(new SpriteSheet("./data/sprites/guard.png", ENTDIM, false));
-	resGuardLeft.reset(new SpriteSheet("./data/sprites/guard.png", ENTDIM, true));
-	resEnforcerLeft.reset(new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, true));
-	resEnforcerRight.reset(new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, false));
-	resProfessionalLeft.reset(new SpriteSheet("./data/sprites/professional.png", ENTDIM, true));
-	resProfessionalRight.reset(new SpriteSheet("./data/sprites/professional.png", ENTDIM, false));
-	resSniperLeft.reset(new SpriteSheet("./data/sprites/sniper.png", ENTDIM, true));
-	resSniperRight.reset(new SpriteSheet("./data/sprites/sniper.png", ENTDIM, false));
-	resObjects.reset(new SpriteSheet("./data/sprites/objects.png", ENTDIM, false));
-	resLinkables.reset(new SpriteSheet("./data/sprites/linkable.png", ENTDIM, false));
-	resInterface.reset(new SpriteSheet("./data/sprites/interface.png", 32, false));
-	resGlass.reset(new SpriteSheet("./data/sprites/glass.png", 8, false));
+	resPlayer = new SpriteSheet("./data/sprites/player.png", ENTDIM, false);
+	resPlayerLeft = new SpriteSheet("./data/sprites/player.png", ENTDIM, true);
+	resGuardRight = new SpriteSheet("./data/sprites/guard.png", ENTDIM, false);
+	resGuardLeft = new SpriteSheet("./data/sprites/guard.png", ENTDIM, true);
+	resEnforcerLeft = new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, true);
+	resEnforcerRight = new SpriteSheet("./data/sprites/enforcer.png", ENTDIM, false);
+	resProfessionalLeft = new SpriteSheet("./data/sprites/professional.png", ENTDIM, true);
+	resProfessionalRight = new SpriteSheet("./data/sprites/professional.png", ENTDIM, false);
+	resSniperLeft = new SpriteSheet("./data/sprites/sniper.png", ENTDIM, true);
+	resSniperRight = new SpriteSheet("./data/sprites/sniper.png", ENTDIM, false);
+	resObjects = new SpriteSheet("./data/sprites/objects.png", ENTDIM, false);
+	resLinkables = new SpriteSheet("./data/sprites/linkable.png", ENTDIM, false);
+	resInterface = new SpriteSheet("./data/sprites/interface.png", 32, false);
+	resGlass = new SpriteSheet("./data/sprites/glass.png", 8, false);
 
 	if (resPlayer->getTexId() == 0 ||
 		resPlayerLeft->getTexId() == 0 ||
@@ -184,37 +213,37 @@ bool Renderer::init(int x, int y)
 		resInterface->getTexId() == 0 ||
 		resGlass->getTexId() == 0)
 	{
-		resPlayer.reset();
-		resPlayerLeft.reset();
-		resGuardRight.reset();
-		resGuardLeft.reset();
-		resEnforcerLeft.reset();
-		resEnforcerRight.reset();
-		resProfessionalLeft.reset();
-		resProfessionalRight.reset();
-		resSniperLeft.reset();
-		resSniperRight.reset();
-		resObjects.reset();
-		resLinkables.reset();
-		resInterface.reset();
-		resGlass.reset();
+		deleteSpriteSheet(resPlayer);
+		deleteSpriteSheet(resPlayerLeft);
+		deleteSpriteSheet(resGuardRight);
+		deleteSpriteSheet(resGuardLeft);
+		deleteSpriteSheet(resEnforcerLeft);
+		deleteSpriteSheet(resEnforcerRight);
+		deleteSpriteSheet(resProfessionalLeft);
+		deleteSpriteSheet(resProfessionalRight);
+		deleteSpriteSheet(resSniperLeft);
+		deleteSpriteSheet(resSniperRight);
+		deleteSpriteSheet(resObjects);
+		deleteSpriteSheet(resLinkables);
+		deleteSpriteSheet(resInterface);
+		deleteSpriteSheet(resGlass);
 		return false;
 	}
 
-	generateSheetBuffers(resPlayer.get(), ENTDIM);
-	generateSheetBuffers(resPlayerLeft.get(), ENTDIM);
-	generateSheetBuffers(resGuardRight.get(), ENTDIM);
-	generateSheetBuffers(resGuardLeft.get(), ENTDIM);
-	generateSheetBuffers(resEnforcerLeft.get(), ENTDIM);
-	generateSheetBuffers(resEnforcerRight.get(), ENTDIM);
-	generateSheetBuffers(resProfessionalLeft.get(), ENTDIM);
-	generateSheetBuffers(resProfessionalRight.get(), ENTDIM);
-	generateSheetBuffers(resSniperLeft.get(), ENTDIM);
-	generateSheetBuffers(resSniperRight.get(), ENTDIM);
-	generateSheetBuffers(resObjects.get(), ENTDIM);
-	generateSheetBuffers(resLinkables.get(), ENTDIM);
-	generateSheetBuffers(resInterface.get(), 32);
-	generateSheetBuffers(resGlass.get(), 8);
+	generateSheetBuffers(resPlayer, ENTDIM);
+	generateSheetBuffers(resPlayerLeft, ENTDIM);
+	generateSheetBuffers(resGuardRight, ENTDIM);
+	generateSheetBuffers(resGuardLeft, ENTDIM);
+	generateSheetBuffers(resEnforcerLeft, ENTDIM);
+	generateSheetBuffers(resEnforcerRight, ENTDIM);
+	generateSheetBuffers(resProfessionalLeft, ENTDIM);
+	generateSheetBuffers(resProfessionalRight, ENTDIM);
+	generateSheetBuffers(resSniperLeft, ENTDIM);
+	generateSheetBuffers(resSniperRight, ENTDIM);
+	generateSheetBuffers(resObjects, ENTDIM);
+	generateSheetBuffers(resLinkables, ENTDIM);
+	generateSheetBuffers(resInterface, 32);
+	generateSheetBuffers(resGlass, 8);
 
 	_mouseOverStrings[MO_CircuitBox] = "A circuit box. Use it to unlock its circuit.";
 	_mouseOverStrings[MO_LightFixture] = "A light fixture. Toggles its light when activated.";
@@ -367,45 +396,45 @@ void Renderer::takeScreenshot()
 	screenshotIndex++;
 }
 
-void Renderer::drawState(std::shared_ptr<BaseState> state)
+void Renderer::drawState(BaseState* state)
 {
 	size_t i;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (std::dynamic_pointer_cast<MenuState>(state))
+	if (dynamic_cast<MenuState*>(state))
 	{
-		for (i = 0; i < std::static_pointer_cast<MenuState>(state)->getButtonCount(); i++)
+		for (i = 0; i < static_cast<MenuState*>(state)->getButtonCount(); i++)
 		{
-			drawButton(std::static_pointer_cast<MenuState>(state)->getButtonAt(i));
+			drawButton(static_cast<MenuState*>(state)->getButtonAt(i));
 		}
 	}
 	else
 	{
-		drawScene(std::static_pointer_cast<GameState>(state)->getScene());
+		drawScene(static_cast<GameState*>(state)->getScene());
 	}
 
-	for (i = 0; i < std::static_pointer_cast<MenuState>(state)->getLabelCount(); i++)
+	for (i = 0; i < static_cast<MenuState*>(state)->getLabelCount(); i++)
 	{
 		drawTextLabel(state->getLabelAt(i));
 	}
 	drawMouseCursor(state);
 }
 
-void Renderer::drawMouseCursor(std::shared_ptr<BaseState> state)
+void Renderer::drawMouseCursor(BaseState* state)
 {
 	int x, y;
 	state->getMousePosition(&x, &y);
 	bool safe = true;
 
-	if (std::dynamic_pointer_cast<GameState>(state) && std::static_pointer_cast<GameState>(state)->isMouseCursorSeen())
+	if (dynamic_cast<GameState*>(state) && static_cast<GameState*>(state)->isMouseCursorSeen())
 	{
 		safe = false;
 	}
 
-	drawSpriteBind(x, y, 4.0f, 0, resInterface.get(), Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites",
+	drawSpriteBind(x, y, 4.0f, 0, resInterface, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites",
 	               safe ? "pointer_safe" : "pointer_unsafe"), false, 1, 1, 1);
 }
 
-void Renderer::drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, std::shared_ptr<Font> font)
+void Renderer::drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, Font* font)
 {
 	float xCurr = x;
 	glBindBuffer(GL_ARRAY_BUFFER, text_vbo);
@@ -418,7 +447,7 @@ void Renderer::drawText(float x, float y, const char* text, float red, float gre
 	glUniform1f(uniform_alpha_scale, alpha_scale);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 	std::vector<point> coords;
 	point p;
 	point top_left;
@@ -483,7 +512,7 @@ void Renderer::drawText(float x, float y, const char* text, float red, float gre
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Renderer::drawTextButton(std::shared_ptr<TextButton> tb)
+void Renderer::drawTextButton(TextButton* tb)
 {
 	float r, g, b;
 
@@ -492,26 +521,26 @@ void Renderer::drawTextButton(std::shared_ptr<TextButton> tb)
 	drawText(tb->getX(), tb->getY() + 32, tb->getText(), r, g, b, 1.0f, font1);
 }
 
-void Renderer::drawImageButton(std::shared_ptr<ImageButton> ib)
+void Renderer::drawImageButton(ImageButton* ib)
 {
-	drawSprite(ib->getX(), ib->getY(), 2, 0, resInterface.get(), ib->getSpriteIndex(), false, 1, 1, 1);
+	drawSprite(ib->getX(), ib->getY(), 2, 0, resInterface, ib->getSpriteIndex(), false, 1, 1, 1);
 }
 
-void Renderer::drawButton(std::shared_ptr<Button> button)
+void Renderer::drawButton(Button* button)
 {
 	glBindTexture(GL_TEXTURE_2D, resInterface->getTexId());
-	if (std::dynamic_pointer_cast<TextButton>(button))
+	if (dynamic_cast<TextButton*>(button))
 	{
-		drawTextButton(std::static_pointer_cast<TextButton>(button));
+		drawTextButton(static_cast<TextButton*>(button));
 	}
 
-	if (std::dynamic_pointer_cast<ImageButton>(button))
+	if (dynamic_cast<ImageButton*>(button))
 	{
-		drawImageButton(std::static_pointer_cast<ImageButton>(button));
+		drawImageButton(static_cast<ImageButton*>(button));
 	}
 }
 
-void Renderer::drawTextLabel(std::shared_ptr<TextLabel> tl)
+void Renderer::drawTextLabel(TextLabel* tl)
 {
 	if (!tl->isVisible())
 	{
@@ -588,7 +617,7 @@ void Renderer::drawRect(float x, float y, float z, GLuint vbo, float red, float 
 	glUniformMatrix4fv(glGetUniformLocation(pgmMap, "gWorld"), 1, GL_TRUE, &quadTransform.m[0][0]);
 	glEnableVertexAttribArray(glGetAttribLocation(pgmMap, "Position"));
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(glGetAttribLocation(pgmMap, "Position"), 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glVertexAttribPointer(glGetAttribLocation(pgmMap, "Position"), 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	if (!fill)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -644,11 +673,11 @@ void Renderer::drawSprite(float x, float y, float z, float rotation, SpriteSheet
 	glEnableVertexAttribArray(glGetAttribLocation(pgm, "Position"));
 	glEnableVertexAttribArray(glGetAttribLocation(pgm, "TexCoord"));
 
-	SpriteVertex* vert = nullptr;
+	SpriteVertex* vert = NULL;
 	glVertexAttribPointer(glGetAttribLocation(pgm, "Position"), 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), vert->position);
 	glVertexAttribPointer(glGetAttribLocation(pgm, "TexCoord"), 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), vert->texcoord);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 	glDisableVertexAttribArray(glGetAttribLocation(pgm, "Position"));
 	glDisableVertexAttribArray(glGetAttribLocation(pgm, "TexCoord"));
@@ -799,7 +828,7 @@ void Renderer::drawRect2Fill(Rect rect, float red, float green, float blue, int 
 
 void Renderer::drawCollisionVols(Scene* scene)
 {
-	std::shared_ptr<Map> map = scene->getMap();
+	Map* map = scene->getMap();
 
 	int numVols = map->getNumberOfCollideVols();
 	Rect rect;
@@ -826,7 +855,7 @@ void Renderer::drawCollisionVols(Scene* scene)
 
 void Renderer::drawEntities(Scene* scene)
 {
-	std::shared_ptr<Map> map = scene->getMap();
+	Map* map = scene->getMap();
 	Rect cam = scene->getCamera();
 
 	size_t numEnts = map->getNumberOfEnts();
@@ -863,7 +892,7 @@ void Renderer::drawEntities(Scene* scene)
 				            position.y - cam.y,
 				            1,
 				            ent->getRotation(),
-				            resObjects.get(),
+				            resObjects,
 				            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "elevatoropen"),
 				            false, 1, 0, 1);
 			}
@@ -872,7 +901,7 @@ void Renderer::drawEntities(Scene* scene)
 			            position.y - cam.y,
 			            (ed->isOpening() || ed->isClosing()) ? 2.75f : 1.5f,
 			            ent->getRotation(),
-			            resObjects.get(),
+			            resObjects,
 			            ent->getCurrentSprite(),
 			            false, 1, 0, 1);
 		}
@@ -882,7 +911,7 @@ void Renderer::drawEntities(Scene* scene)
 			            position.y - cam.y,
 			            1,
 			            ent->getRotation(),
-			            resObjects.get(),
+			            resObjects,
 			            ent->getCurrentSprite(),
 			            false, 1, 0, 1);
 		}
@@ -894,7 +923,7 @@ void Renderer::drawEntities(Scene* scene)
 		            map->getSubwayPosition().y - cam.y - ENTDIM,
 		            3,
 		            0,
-		            resObjects.get(),
+		            resObjects,
 		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "subwayexit"),
 		            false, 1, 0, 1);
 	}
@@ -907,7 +936,7 @@ void Renderer::drawEntities(Scene* scene)
 		            position.y - cam.y,
 		            1,
 		            0,
-		            resObjects.get(),
+		            resObjects,
 		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "stairs"), false, 0, 0, 0);
 	}
 
@@ -955,7 +984,7 @@ void Renderer::drawEntities(Scene* scene)
 			            position.y - cam.y,
 			            1,
 			            0,
-			            resGlass.get(),
+			            resGlass,
 			            particle->getCurrentSprite(),
 			            false, 1, 0, 1);
 		}
@@ -986,7 +1015,7 @@ void Renderer::drawEntities(Scene* scene)
 
 void Renderer::drawEnemies(Scene* scene, bool crosslink)
 {
-	std::shared_ptr<Map> map = scene->getMap();
+	Map* map = scene->getMap();
 	Rect cam = scene->getCamera();
 
 	size_t numEnemies = map->getNumberOfEnemies();
@@ -1001,17 +1030,17 @@ void Renderer::drawEnemies(Scene* scene, bool crosslink)
 		switch (enemy->getType())
 		{
 		case Enemy_Sniper:
-			sheet = enemy->getDirection() == Right ? resSniperRight.get() : resSniperLeft.get();
+			sheet = enemy->getDirection() == Right ? resSniperRight : resSniperLeft;
 			break;
 		case Enemy_Enforcer:
-			sheet = enemy->getDirection() == Right ? resEnforcerRight.get() : resEnforcerLeft.get();
+			sheet = enemy->getDirection() == Right ? resEnforcerRight : resEnforcerLeft;
 			break;
 		case Enemy_Professional:
-			sheet = enemy->getDirection() == Right ? resProfessionalRight.get() : resProfessionalLeft.get();
+			sheet = enemy->getDirection() == Right ? resProfessionalRight : resProfessionalLeft;
 			break;
 		case Enemy_Guard:
 		default:
-			sheet = enemy->getDirection() == Right ? resGuardRight.get() : resGuardLeft.get();
+			sheet = enemy->getDirection() == Right ? resGuardRight : resGuardLeft;
 			break;
 		}
 		glBindTexture(GL_TEXTURE_2D, sheet->getTexId());
@@ -1056,10 +1085,10 @@ void Renderer::drawEnemies(Scene* scene, bool crosslink)
 
 void Renderer::drawLinkableEntities(Scene* scene)
 {
-	std::shared_ptr<Map> map = scene->getMap();
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkBegin;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkEnd;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkIter;
+	Map* map = scene->getMap();
+	std::vector<LinkableEntity*>::iterator linkBegin;
+	std::vector<LinkableEntity*>::iterator linkEnd;
+	std::vector<LinkableEntity*>::iterator linkIter;
 	LinkableEntity* ent;
 	map->getLinkableIters(&linkBegin, &linkEnd);
 	float r, g, b;
@@ -1069,7 +1098,7 @@ void Renderer::drawLinkableEntities(Scene* scene)
 	glBindTexture(GL_TEXTURE_2D, resLinkables->getTexId());
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		ent = (*linkIter).get();
+		ent = *linkIter;
 		vol = ent->getCollisionRect();
 		vol.x -= scene->getCamera().x;
 		vol.y -= scene->getCamera().y;
@@ -1093,7 +1122,7 @@ void Renderer::drawLinkableEntities(Scene* scene)
 		}
 		if (!dynamic_cast<EnemyGun*>(ent))
 		{
-			drawSprite(position.x - cam.x, position.y - cam.y, 1.5f, 0, resLinkables.get(), ent->getCurrentSprite(), scene->inCrosslinkMode(), r, g, b);
+			drawSprite(position.x - cam.x, position.y - cam.y, 1.5f, 0, resLinkables, ent->getCurrentSprite(), scene->inCrosslinkMode(), r, g, b);
 		}
 		else
 		{
@@ -1105,23 +1134,23 @@ void Renderer::drawLinkableEntities(Scene* scene)
 
 void Renderer::drawTutorialMarks(Scene* scene)
 {
-	std::shared_ptr<Map> map = scene->getMap();
-	std::vector<std::shared_ptr<TutorialMark> >::iterator tutBegin;
-	std::vector<std::shared_ptr<TutorialMark> >::iterator tutEnd;
-	std::vector<std::shared_ptr<TutorialMark> >::iterator it;
+	Map* map = scene->getMap();
+	std::vector<TutorialMark*>::iterator tutBegin;
+	std::vector<TutorialMark*>::iterator tutEnd;
+	std::vector<TutorialMark*>::iterator it;
 	TutorialMark* tm;
 	map->getTutorialIters(&tutBegin, &tutEnd);
 	vec2f position;
 	Rect cam = scene->getCamera();
 	for (it = tutBegin; it != tutEnd; ++it)
 	{
-		tm = (*it).get();
+		tm = *it;
 		position = tm->getPosition();
 		drawSprite(	position.x - cam.x,
 					position.y - cam.y,
 					1,
 					tm->getRotation(),
-					resObjects.get(),
+					resObjects,
 					tm->getCurrentSprite(),
 					false, 1, 0, 1);
 	}
@@ -1198,17 +1227,17 @@ void Renderer::drawCrossLink(Scene* scene)
 	if (!scene->inCrosslinkMode())
 		return;
 
-	std::shared_ptr<Map> map = scene->getMap();
+	Map* map = scene->getMap();
 	Rect cam = scene->getCamera();
 	Circuit c;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkBegin;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkEnd;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkIter;
+	std::vector<LinkableEntity*>::iterator linkBegin;
+	std::vector<LinkableEntity*>::iterator linkEnd;
+	std::vector<LinkableEntity*>::iterator linkIter;
 	LinkableEntity* le;
 	map->getLinkableIters(&linkBegin, &linkEnd);
 	for (linkIter = linkBegin; linkIter != linkEnd; ++linkIter)
 	{
-		le = (*linkIter).get();
+		le = *linkIter;
 		c = le->getCircuitType();
 
 		if (le->getTarget())
@@ -1320,7 +1349,7 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 	glUseProgramObject(0);
 }
 
-void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, std::shared_ptr<Font> font, Rect* rect)
+void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, Font* font, Rect* rect)
 {
 	int longestWidth = 0;
 	int widthCounter = 0;
@@ -1355,7 +1384,7 @@ void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, std::s
 }
 
 //more expensive than above function - used only when strings are changed.
-void Renderer::getBoxDimsAroundText(const char* text, std::shared_ptr<Font> font, vec2f* dims)
+void Renderer::getBoxDimsAroundText(const char* text, Font* font, vec2f* dims)
 {
 	int height = font->getSize();
 	const char* c;
@@ -1403,7 +1432,7 @@ void Renderer::drawScene(Scene* scene)
 			            scene->getPlayerPosition().y - cam.y,
 			            player->isInElevator() ? 2.5f : 2.8f,
 			            player->getRotation(),
-			            player->getDirection() == Right ? resPlayer.get() : resPlayerLeft.get(),
+			            player->getDirection() == Right ? resPlayer : resPlayerLeft,
 			            player->getCurrentSprite(),
 			            false, 0, 0, 0);
 			if (player->isAimingGun())
@@ -1413,7 +1442,7 @@ void Renderer::drawScene(Scene* scene)
 				            scene->getPlayerPosition().y - cam.y - 4,
 				            2.8f,
 				            player->getArmRotation(),
-				            player->getDirection() == Right ? resPlayer.get() : resPlayerLeft.get(),
+				            player->getDirection() == Right ? resPlayer : resPlayerLeft,
 				            spr,
 				            false, 0, 0, 0);
 				drawLine(scene, 1, 0, 0, 0.5f, player->getCollisionRectCenterPosition(), scene->getLaserEnd(), 2.5f);
@@ -1453,7 +1482,7 @@ void Renderer::drawScene(Scene* scene)
 			                scene->getPlayerPosition().y - cam.y,
 			                2.5f,
 			                player->getRotation(),
-			                player->getDirection() == Right ? resPlayer.get() : resPlayerLeft.get(),
+			                player->getDirection() == Right ? resPlayer : resPlayerLeft,
 			                player->getCurrentSprite(),
 			                true, 0, 0, 0);
 		}
@@ -1616,11 +1645,6 @@ void Renderer::setScreenshotIndex(unsigned int value)
 	screenshotIndex = value;
 }
 
-std::function<void()> Renderer::getScreenshotFunc()
-{
-	return [this] {takeScreenshot();};
-}
-
 void Renderer::handleSettingsChange()
 {
 	_enteredLightFlash = (Locator::getConfigManager()->getBool("entered_light_flash"));
@@ -1659,7 +1683,7 @@ void Renderer::addShader(GLuint shader_program, const char* shader_text, GLuint 
 	if (!success)
 	{
 		GLchar InfoLog[1024];
-		glGetInfoLog(shader_id, 1024, nullptr, InfoLog);
+		glGetInfoLog(shader_id, 1024, NULL, InfoLog);
 		LOGF((stderr, "Error compiling shader type: '%s'\n", InfoLog));
 		exit(1);
 	}
@@ -1697,7 +1721,7 @@ GLuint Renderer::compileShaders(const char* vert_filename, const char* frag_file
 	glGetObjectParameteriv(program, GL_LINK_STATUS, &link_successful);
 	if (!link_successful)
 	{
-		glGetInfoLog(program, sizeof(error), nullptr, error);
+		glGetInfoLog(program, sizeof(error), NULL, error);
 		LOGF((stderr, "Error linking shader program: '%s'\n", error));
 		Assert(false);
 	}
@@ -1707,7 +1731,7 @@ GLuint Renderer::compileShaders(const char* vert_filename, const char* frag_file
 
 	if (!link_successful)
 	{
-		glGetInfoLog(program, sizeof(error), nullptr, error);
+		glGetInfoLog(program, sizeof(error), NULL, error);
 		LOGF((stderr, "Invalid shader program: '%s'\n", error));
 		Assert(false);
 	}

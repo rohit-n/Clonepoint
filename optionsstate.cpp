@@ -30,6 +30,7 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	unsigned int right = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright");
 	unsigned int right_selected = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright_selected");
 	unsigned int empty = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "box_empty");
+	_settingsChanged = false;
 	int i;
 
 	_currVolume = 5;
@@ -37,41 +38,41 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_bindingMode = false;
 	_bindToChange = Bind_Nothing;
 
-	_titleLabel.reset(new TextLabel(0, 0, "Options", 1, 1, 1));
-	_exitButton.reset(new TextButton(0, 0, (strlen("Exit") + 2) * 16, 32, "Exit"));
+	_titleLabel = new TextLabel(0, 0, "Options", 1, 1, 1);
+	_exitButton = new TextButton(0, 0, (strlen("Exit") + 2) * 16, 32, "Exit");
 
-	_fullscreenLabel.reset(new TextLabel(0, 0, "Fullscreen", 1, 1, 1));
-	_resolutionLabel.reset(new TextLabel(0, 0, "Resolution", 1, 1, 1));
-	_resolutionText.reset(new TextLabel(0, 0, "0x0", 1, 1, 1));
+	_fullscreenLabel = new TextLabel(0, 0, "Fullscreen", 1, 1, 1);
+	_resolutionLabel = new TextLabel(0, 0, "Resolution", 1, 1, 1);
+	_resolutionText = new TextLabel(0, 0, "0x0", 1, 1, 1);
 
-	_saveChangesButton.reset(new TextButton(0, 0, (strlen("Save Changes") + 2) * 16, 32, "Save Changes"));
+	_saveChangesButton = new TextButton(0, 0, (strlen("Save Changes") + 2) * 16, 32, "Save Changes");
 
-	_resUp.reset(new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowup"),
-	                             Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowup_selected")));
-	_resDown.reset(new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowdown"),
-	                               Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowdown_selected")));
-	_fullscreenState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
-	_lightEnteredAlphaState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
-	_tutorialPopupsState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
-	_inputPopupsState.reset(new ImageButton(0, 0, 32, 32, cbs, cbs));
-	_lightEnteredAlphaText.reset(new TextLabel(0, 0, "Screen flash on entering light", 1, 1, 1));
-	_tutorialPopupsText.reset(new TextLabel(0, 0, "Show tutorial popups", 1, 1, 1));
-	_inputPopupsText.reset(new TextLabel(0, 0, "Show input popups", 1, 1, 1));
+	_resUp = new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowup"),
+	                             Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowup_selected"));
+	_resDown = new ImageButton(0, 0, 32, 32, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowdown"),
+	                               Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowdown_selected"));
+	_fullscreenState = new ImageButton(0, 0, 32, 32, cbs, cbs);
+	_lightEnteredAlphaState = new ImageButton(0, 0, 32, 32, cbs, cbs);
+	_tutorialPopupsState = new ImageButton(0, 0, 32, 32, cbs, cbs);
+	_inputPopupsState = new ImageButton(0, 0, 32, 32, cbs, cbs);
+	_lightEnteredAlphaText = new TextLabel(0, 0, "Screen flash on entering light", 1, 1, 1);
+	_tutorialPopupsText = new TextLabel(0, 0, "Show tutorial popups", 1, 1, 1);
+	_inputPopupsText = new TextLabel(0, 0, "Show input popups", 1, 1, 1);
 
-	_saveMessage.reset(new FloatingMessage(0, 0, "", 0, 1, 0));
-	_toBindingsPage.reset(new TextButton(0, 0, (strlen("Bindings") + 2) * 16, 32, "Bindings"));
-	_volumeDecr.reset(new ImageButton(0, 0, 32, 32, left, left_selected));
-	_volumeIncr.reset(new ImageButton(0, 0, 32, 32, right, right_selected));
+	_saveMessage = new FloatingMessage(0, 0, "", 0, 1, 0);
+	_toBindingsPage = new TextButton(0, 0, (strlen("Bindings") + 2) * 16, 32, "Bindings");
+	_volumeDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
+	_volumeIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
 	_gameplayPage.push_back(_volumeDecr);
 	_gameplayPage.push_back(_volumeIncr);
 
 	for (i = 0; i < NUM_VOLUME_BARS; i++)
 	{
-		_volumeProgress[i].reset(new ImageButton(0, 0, 32, 32, false, empty));
+		_volumeProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
 		_gameplayPage.push_back(_volumeProgress[i]);
 	}
 
-	_volumeLabel.reset(new TextLabel(0, 0, "Volume", 1, 1, 1));
+	_volumeLabel = new TextLabel(0, 0, "Volume", 1, 1, 1);
 
 	_labels.push_back(_titleLabel);
 	_labels.push_back(_resolutionLabel);
@@ -94,17 +95,17 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_gameplayPage.push_back(_toBindingsPage);
 
 	//Bindings page
-	_toGameplayPage.reset(new TextButton(0, 0, (strlen("Gameplay") + 2) * 16, 32, "Gameplay"));
-	_moveLeftLabel.reset(new TextLabel(0, 0, "Move Left", 1, 1, 1));
-	_moveRightLabel.reset(new TextLabel(0, 0, "Move Right", 1, 1, 1));
-	_moveUpLabel.reset(new TextLabel(0, 0, "Move Up", 1, 1, 1));
-	_moveDownLabel.reset(new TextLabel(0, 0, "Move Down", 1, 1, 1));
-	_pressAKeyLabel.reset(new TextLabel(0, 0, "Press a key to bind this action.\nPress delete to clear this binding.\nPress ESC to cancel binding.", 1, 1, 1));
-	_autoSaveMessage.reset(new TextLabel(0, 0, "Key rebindings are automatically saved.", 0.5f, 0.5f, 0.5f));
-	_moveLeftButton.reset(new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None"));
-	_moveRightButton.reset(new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None"));
-	_moveUpButton.reset(new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None"));
-	_moveDownButton.reset(new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None"));
+	_toGameplayPage = new TextButton(0, 0, (strlen("Gameplay") + 2) * 16, 32, "Gameplay");
+	_moveLeftLabel = new TextLabel(0, 0, "Move Left", 1, 1, 1);
+	_moveRightLabel = new TextLabel(0, 0, "Move Right", 1, 1, 1);
+	_moveUpLabel = new TextLabel(0, 0, "Move Up", 1, 1, 1);
+	_moveDownLabel = new TextLabel(0, 0, "Move Down", 1, 1, 1);
+	_pressAKeyLabel = new TextLabel(0, 0, "Press a key to bind this action.\nPress delete to clear this binding.\nPress ESC to cancel binding.", 1, 1, 1);
+	_autoSaveMessage = new TextLabel(0, 0, "Key rebindings are automatically saved.", 0.5f, 0.5f, 0.5f);
+	_moveLeftButton = new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None");
+	_moveRightButton = new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None");
+	_moveUpButton = new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None");
+	_moveDownButton = new TextButton(0, 0, (strlen("None") + 2) * 16, 32, "None");
 
 	_bindingsPage.push_back(_exitButton);
 	// _bindingsPage.push_back(_saveChangesButton);
@@ -142,6 +143,22 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 OptionsState::~OptionsState()
 {
 	LOGF((stdout, "running Options Menu destructor!\n"));
+	size_t i;
+	if (_buttons != _gameplayPage)
+	{
+		for (i = 0; i < NUM_VOLUME_BARS; i++)
+		{
+			delete _volumeProgress[i];
+		}
+	}
+	else //bindings page
+	{
+		delete _toGameplayPage;
+		delete _moveLeftButton;
+		delete _moveRightButton;
+		delete _moveUpButton;
+		delete _moveDownButton;
+	}
 }
 
 void OptionsState::resetPositions(int w, int h)
@@ -211,11 +228,11 @@ void OptionsState::handleButton(Button* button)
 	unsigned int cb = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox");
 	unsigned int cbs = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox_selected");
 
-	if (button == _exitButton.get())
+	if (button == _exitButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 	}
-	else if (button == _fullscreenState.get())
+	else if (button == _fullscreenState)
 	{
 		if (_fullscreenState->getSpriteIndex() == cb)
 		{
@@ -226,7 +243,7 @@ void OptionsState::handleButton(Button* button)
 			_fullscreenState->changeSprites(cb, cb);
 		}
 	}
-	else if (button == _lightEnteredAlphaState.get())
+	else if (button == _lightEnteredAlphaState)
 	{
 		if (_lightEnteredAlphaState->getSpriteIndex() == cb)
 		{
@@ -237,7 +254,7 @@ void OptionsState::handleButton(Button* button)
 			_lightEnteredAlphaState->changeSprites(cb, cb);
 		}
 	}
-	else if (button == _tutorialPopupsState.get())
+	else if (button == _tutorialPopupsState)
 	{
 		if (_tutorialPopupsState->getSpriteIndex() == cb)
 		{
@@ -248,7 +265,7 @@ void OptionsState::handleButton(Button* button)
 			_tutorialPopupsState->changeSprites(cb, cb);
 		}
 	}
-	else if (button == _inputPopupsState.get())
+	else if (button == _inputPopupsState)
 	{
 		if (_inputPopupsState->getSpriteIndex() == cb)
 		{
@@ -259,7 +276,7 @@ void OptionsState::handleButton(Button* button)
 			_inputPopupsState->changeSprites(cb, cb);
 		}
 	}
-	else if (button == _resUp.get())
+	else if (button == _resUp)
 	{
 		if (_modeIndex <= 0)
 		{
@@ -271,7 +288,7 @@ void OptionsState::handleButton(Button* button)
 		}
 		_resolutionText->setText(_modes[_modeIndex]);
 	}
-	else if (button == _resDown.get())
+	else if (button == _resDown)
 	{
 		_modeIndex++;
 		if (_modeIndex >= (int)_modes.size())
@@ -280,51 +297,51 @@ void OptionsState::handleButton(Button* button)
 		}
 		_resolutionText->setText(_modes[_modeIndex]);
 	}
-	else if (button == _volumeDecr.get() && _currVolume > 0)
+	else if (button == _volumeDecr && _currVolume > 0)
 	{
 		_currVolume--;
 	}
-	else if (button == _volumeIncr.get() && _currVolume < NUM_VOLUME_BARS)
+	else if (button == _volumeIncr && _currVolume < NUM_VOLUME_BARS)
 	{
 		_currVolume++;
 	}
-	else if (button == _saveChangesButton.get())
+	else if (button == _saveChangesButton)
 	{
 		saveSettings();
-		_manager->changeSettings();
+		_settingsChanged = true;
 		_saveMessage->init(_manager->getWindowWidth() - 256, 64, "Saved settings.", 2000);
 	}
-	else if (button == _toBindingsPage.get())
+	else if (button == _toBindingsPage)
 	{
 		changeToBindingsPage();
 	}
-	else if (button == _toGameplayPage.get())
+	else if (button == _toGameplayPage)
 	{
 		changeToGameplayPage();
 	}
-	else if (button == _moveLeftButton.get())
+	else if (button == _moveLeftButton)
 	{
 		enterBindingMode();
 		_bindToChange = Bind_MoveLeft;
 	}
-	else if (button == _moveRightButton.get())
+	else if (button == _moveRightButton)
 	{
 		enterBindingMode();
 		_bindToChange = Bind_MoveRight;
 	}
-	else if (button == _moveUpButton.get())
+	else if (button == _moveUpButton)
 	{
 		enterBindingMode();
 		_bindToChange = Bind_MoveUp;
 	}
-	else if (button == _moveDownButton.get())
+	else if (button == _moveDownButton)
 	{
 		enterBindingMode();
 		_bindToChange = Bind_MoveDown;
 	}
 
-	if (button == _volumeDecr.get() ||
-	        button == _volumeIncr.get())
+	if (button == _volumeDecr ||
+	        button == _volumeIncr)
 	{
 		updateProgressBars();
 	}
@@ -495,7 +512,7 @@ void OptionsState::rebindKey(SDL_Keycode key)
 		Locator::getBindingsManager()->addBinding(key, _bindToChange);
 	}
 
-	_manager->changeSettings();
+	_settingsChanged = true;
 	updateBindingButtons();
 
 	_bindToChange = Bind_Nothing;
@@ -531,9 +548,9 @@ void OptionsState::updateProgressBars()
 	handleDecrIncrVisibility(_volumeDecr, _volumeIncr, _currVolume, NUM_VOLUME_BARS);
 }
 
-void OptionsState::handleDecrIncrVisibility(std::shared_ptr<Button> decr, std::shared_ptr<Button> incr, int value, int size)
+void OptionsState::handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size)
 {
-	std::vector<std::shared_ptr<Button> >::iterator it;
+	std::vector<Button* >::iterator it;
 
 	if (value == size)
 	{

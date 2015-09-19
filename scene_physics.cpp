@@ -74,11 +74,11 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 		}
 
 		//extra check for entity rect is necessary if volume is very thin.
-		if ((vol->active() || (ent != _player.get() && vol->guardblock())) && (check_collision(velRect, vol->rect) || check_collision(entRect, vol->rect)))
+		if ((vol->active() || (ent != _player && vol->guardblock())) && (check_collision(velRect, vol->rect) || check_collision(entRect, vol->rect)))
 		{
 			if (vol->glass() && velocity.length_squared() >= GLASSBREAKSPEEDSQUARED)
 			{
-				addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, nullptr);
+				addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, NULL);
 				glassShatter(vol, ent->getVelocity());
 				ent->setVelX(ent->getVelocity().x / 2);
 				continue;
@@ -89,7 +89,7 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 				bool abandonGround = false;
 				vec2f testPoint = velocity.x > 0.0f ? vec2f(entRect.x + entRect.w + velocity.x, entRect.y) : vec2f(entRect.x + velocity.x, entRect.y);
 
-				if (ent == _player.get() && (_player->getAttachType() == RightSide || _player->getAttachType() == LeftSide))
+				if (ent == _player && (_player->getAttachType() == RightSide || _player->getAttachType() == LeftSide))
 				{
 					if (_player->getAttachType() == RightSide || _player->getAttachType() == LeftSide)
 					{
@@ -112,13 +112,13 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 				{
 					//hit the ground.
 					ent->setVelY(0);
-					if (velocity.x != 0.0f && ent == _player.get())
+					if (velocity.x != 0.0f && ent == _player)
 					{
 						setAccel(_player->getAccelerationStruct(), true, velocity.x < 0.0f ? FLOORFRICTION : -FLOORFRICTION, 0.0f);
 					}
 					ent->landOnGround();
 					ent->setCollisionRectPosition(position.x, vol->rect.y - entRect.h);
-					if (ent == _player.get())
+					if (ent == _player)
 					{
 						if (!_player->isAlive())
 						{
@@ -139,12 +139,12 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 				bool abandonCeil = false;
 				vec2f testPoint = velocity.x > 0.0f ? vec2f(entRect.x + entRect.w + velocity.x, entRect.y + entRect.h) : vec2f(entRect.x + velocity.x, entRect.y + entRect.h);
 
-				if (ent == _player.get() && _player->getAttachType() != LeftSide && _player->getAttachType() != RightSide)
+				if (ent == _player && _player->getAttachType() != LeftSide && _player->getAttachType() != RightSide)
 				{
 					ceilCheck = ceilCheck && position.y + entRect.h > vol->rect.y + vol->rect.h;
 				}
 
-				if (ceilCheck && ent == _player.get())
+				if (ceilCheck && ent == _player)
 				{
 					for (j = 0; j < _numCollideVols; j++)
 					{
@@ -181,7 +181,7 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 			{
 				ent->setCollisionRectPosition(velocity.x > 0.0f ? vol->rect.x - entRect.w : vol->rect.x + vol->rect.w, position.y);
 
-				if (ent == _player.get())
+				if (ent == _player)
 				{
 					ent->setVelX(0);
 					ent->setVelY(0);
@@ -305,7 +305,7 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 			checkLeft = vec2InRect(testPointLeft, vol->rect);
 			checkRight = vec2InRect(testPointRight, vol->rect);
 
-			if (ent == _player.get())
+			if (ent == _player)
 			{
 				if (checkLeft || checkRight)
 				{
@@ -668,7 +668,7 @@ void Scene::checkPlayerCeilingEnd()
 	vec2f testPoint1, testPoint2;
 	CollisionVolume* currentVol = _player->getAttachedVolume();
 
-	if (currentVol == nullptr)
+	if (currentVol == NULL)
 	{
 		return;
 	}
@@ -874,7 +874,7 @@ void Scene::handlePlayerPounceEnemy(Enemy* enemy, unsigned int dT)
 
 	if (glassBroken) //add the noise for a broken glass later, so that another enemy besides this is nominated to be alerted
 	{
-		addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, nullptr);
+		addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, NULL);
 	}
 }
 

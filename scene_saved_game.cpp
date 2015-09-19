@@ -108,7 +108,7 @@ void Scene::loadGame(const char* filename)
 			{
 				enemy->setIgnoreFall(false);
 			}
-			enemy->setSecondaryTarget(states[i].index5 >= 0 ? _currentMap->getEntAt(states[i].index5) : nullptr);
+			enemy->setSecondaryTarget(states[i].index5 >= 0 ? _currentMap->getEntAt(states[i].index5) : NULL);
 			calculateStrongestLight(enemy); //placed here to prevent idle guard from patrolling if game was saved with activated light and was loaded while it was deactivated.
 			enemy->changeState(states[i].gs);
 			enemy->setResolve(states[i].esr.timeSinceShot, states[i].esr.shotType);
@@ -253,15 +253,15 @@ void Scene::getLinks(std::vector<SavedGameLink>* container)
 	LinkableEntity* curr;
 	LinkableEntity* target;
 	SavedGameLink sgl;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator begin;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator end;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator i;
+	std::vector<LinkableEntity*>::iterator begin;
+	std::vector<LinkableEntity*>::iterator end;
+	std::vector<LinkableEntity*>::iterator i;
 	_currentMap->getLinkableIters(&begin, &end);
 	for (i = begin; i != end; ++i)
 	{
-		curr = (*i).get();
+		curr = *i;
 		target = curr->getTarget();
-		if (target != nullptr)
+		if (target != NULL)
 		{
 			sgl.start = curr->getCollisionRectPosition();
 			sgl.end = target->getCollisionRectPosition();

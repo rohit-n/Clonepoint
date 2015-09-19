@@ -155,7 +155,7 @@ public:
 	void setCameraDims(int w, int h);
 
 	void movePlayer(bool left, bool right, bool down, bool up);
-	std::shared_ptr<Map> getMap();
+	Map* getMap();
 	vec2f getPlayerPosition();
 	vec2f getMouseDragPosition();
 	Rect getCamera();
@@ -278,8 +278,8 @@ private:
 	void playerJump();
 	void setNewLinkAt(int mx, int my);
 	vec2f _mouseDragPos; //used to draw link from an linkableEnd to the mouse pointer when being moved by player.
-	std::unique_ptr<Player> _player;
-	std::shared_ptr<Map> _currentMap;
+	Player* _player;
+	Map* _currentMap;
 	size_t _numCollideVols;
 	Rect _camera;
 	vec2f _trajPoints[200];
@@ -305,9 +305,9 @@ private:
 	Rect _endRect; //player ends the level by completing all objectives and colliding with this.
 
 	//used to iterate linkable entities only.
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkBegin;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkEnd;
-	std::vector<std::shared_ptr<LinkableEntity> >::iterator linkIter;
+	std::vector<LinkableEntity*>::iterator linkBegin;
+	std::vector<LinkableEntity*>::iterator linkEnd;
+	std::vector<LinkableEntity*>::iterator linkIter;
 
 	//statistics
 	unsigned int _numEnemies;
@@ -329,7 +329,7 @@ private:
 
 	bool _circuitUnlocked[4];
 
-	std::vector<std::unique_ptr<Particle> > _particles;
+	std::vector<Particle*> _particles;
 
 	MouseOverObject _mousedOverObject;
 	int _stringMessageTimer;

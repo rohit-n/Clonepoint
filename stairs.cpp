@@ -21,9 +21,9 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 Stairs::Stairs(float x, float y) : Entity(x, y)
 {
-	_upstairs = nullptr;
-	_downstairs = nullptr;
-	_well = nullptr;
+	_upstairs = NULL;
+	_downstairs = NULL;
+	_well = NULL;
 
 	setCollisionRectDims(30, 42, ENTDIM);
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "stairs");
@@ -47,14 +47,14 @@ Stairs* Stairs::getDownstairs()
 void Stairs::setUpstairs(Stairs* target)
 {
 	_upstairs = target;
-	if (target->getDownstairs() == nullptr)
+	if (target->getDownstairs() == NULL)
 		target->setDownstairs(this);
 }
 
 void Stairs::setDownstairs(Stairs* target)
 {
 	_downstairs = target;
-	if (target->getUpstairs() == nullptr)
+	if (target->getUpstairs() == NULL)
 		target->setUpstairs(this);
 }
 

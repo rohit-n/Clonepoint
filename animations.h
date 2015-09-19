@@ -58,7 +58,7 @@ public:
 	unsigned int getNextSprite(AnimationSequence* sequence, unsigned int* index, float* timeLeft, unsigned int dT, bool* finished);
 	AnimationSequence* getSequence(eAnimations index);
 private:
-	std::unique_ptr<AnimationSequence> _sequences[NUM_ANIMATIONS];
+	AnimationSequence* _sequences[NUM_ANIMATIONS];
 };
 
 #endif

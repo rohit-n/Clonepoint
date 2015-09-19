@@ -26,7 +26,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 SpriteSheet::SpriteSheet(const char* filename, int tileDim, bool flip)
 {
 	_numberOfSprites = 0;
-	_indexBuffers = nullptr;
+	_indexBuffers = NULL;
 	if (flip)
 	{
 		SDL_Surface* surf = loadSurfaceFromImage(filename);

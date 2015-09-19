@@ -23,11 +23,11 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 GameState::GameState(StateManager* sm) : BaseState(sm)
 {
 	_playerMovingLeft = _playerMovingRight = _playerMovingDown = _playerMovingUp = false;
-	_scene.reset();
+	_scene = NULL;
 	_movementLocked = false;
 	_LMBHeldDown = false;
 	_RMBHeldDown = false;
-	_saveMessage.reset(new FloatingMessage(0, 0, "", 0, 1, 0));
+	_saveMessage = new FloatingMessage(0, 0, "", 0, 1, 0);
 	_labels.push_back(_saveMessage);
 }
 
@@ -37,12 +37,13 @@ GameState::~GameState()
 
 void GameState::deleteScene()
 {
-	_scene.reset();
+	delete _scene;
+	_scene = NULL;
 }
 
 void GameState::initSceneAndMap(const char* filename)
 {
-	_scene.reset(new Scene());
+	_scene = new Scene();
 	_scene->loadMap(filename, false);
 	_saveMessage->setText("");
 }
@@ -104,7 +105,7 @@ void GameState::update(unsigned int dT)
 
 Scene* GameState::getScene()
 {
-	return _scene.get();
+	return _scene;
 }
 
 void GameState::handleMouseWheel(int dir)
@@ -155,7 +156,7 @@ void GameState::handleKeyUp(SDL_Keycode key)
 		break;
 #endif
 	case SDLK_PRINTSCREEN:
-		_takeScreenshot();
+		tookScreenshot = 1;
 		break;
 	case SDLK_F5:
 		_scene->saveGame("quick.sav");

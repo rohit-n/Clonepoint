@@ -19,58 +19,58 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "locator.h"
 
-std::unique_ptr<AudioManager> Locator::_audiomanager;
-std::unique_ptr<AnimationManager> Locator::_animmanager;
-std::unique_ptr<BindingsManager> Locator::_bindingsmanager;
-std::unique_ptr<ConfigManager> Locator::_configmanager;
-std::unique_ptr<StaticSpriteManager> Locator::_spritemanager;
+AudioManager* Locator::_audiomanager;
+AnimationManager* Locator::_animmanager;
+BindingsManager* Locator::_bindingsmanager;
+ConfigManager* Locator::_configmanager;
+StaticSpriteManager* Locator::_spritemanager;
 
 AudioManager* Locator::getAudio()
 {
-	return _audiomanager.get();
+	return _audiomanager;
 }
 
-void Locator::provide(std::unique_ptr<AudioManager> service)
+void Locator::provide(AudioManager* service)
 {
-	_audiomanager = std::move(service);
+	_audiomanager = service;
 }
 
 BindingsManager* Locator::getBindingsManager()
 {
-	return _bindingsmanager.get();
+	return _bindingsmanager;
 }
 
-void Locator::provide(std::unique_ptr<BindingsManager> service)
+void Locator::provide(BindingsManager* service)
 {
-	_bindingsmanager = std::move(service);
+	_bindingsmanager = service;
 }
 
 StaticSpriteManager* Locator::getSpriteManager()
 {
-	return _spritemanager.get();
+	return _spritemanager;
 }
 
-void Locator::provide(std::unique_ptr<StaticSpriteManager> service)
+void Locator::provide(StaticSpriteManager* service)
 {
-	_spritemanager = std::move(service);
+	_spritemanager = service;
 }
 
 AnimationManager* Locator::getAnimationManager()
 {
-	return _animmanager.get();
+	return _animmanager;
 }
 
-void Locator::provide(std::unique_ptr<AnimationManager> service)
+void Locator::provide(AnimationManager* service)
 {
-	_animmanager = std::move(service);
+	_animmanager = service;
 }
 
 ConfigManager* Locator::getConfigManager()
 {
-	return _configmanager.get();
+	return _configmanager;
 }
 
-void Locator::provide(std::unique_ptr<ConfigManager> service)
+void Locator::provide(ConfigManager* service)
 {
-	_configmanager = std::move(service);
+	_configmanager = service;
 }

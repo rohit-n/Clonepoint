@@ -26,7 +26,7 @@ class TextLabel
 {
 public:
 	TextLabel(int x, int y, std::string text, float r, float g, float b);
-	~TextLabel();
+	virtual ~TextLabel();
 	std::string& getText();
 	virtual void update(unsigned int dT);
 	bool isMouseIntersecting(int mx, int my);

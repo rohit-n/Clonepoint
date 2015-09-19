@@ -47,14 +47,14 @@ bool ConfigManager::isKeyValid(const char* key)
 
 std::string ConfigManager::getValue(std::string key)
 {
-	auto it = _settings.find(key);
+	std::map<std::string, std::string>::iterator it = _settings.find(key);
 
 	return it != _settings.end() ? it->second : "";
 }
 
 bool ConfigManager::getBool(std::string key)
 {
-	auto it = _settings.find(key);
+	std::map<std::string, std::string>::iterator it = _settings.find(key);
 
 	return it != _settings.end() ? (it->second == "1") : false;
 }
@@ -84,7 +84,7 @@ void ConfigManager::loadConfig(const char* filename)
 	while (token)
 	{
 		key = token;
-		token = strtok(nullptr, delim);
+		token = strtok(NULL, delim);
 
 		if (isKeyValid(key))
 		{
@@ -92,13 +92,13 @@ void ConfigManager::loadConfig(const char* filename)
 		}
 
 		if (token)
-			token = strtok(nullptr, delim);
+			token = strtok(NULL, delim);
 	}
 	delete [] text;
 	delete [] token;
-	text = nullptr;
-	token = nullptr;
-	delim = nullptr;
+	text = NULL;
+	token = NULL;
+	delim = NULL;
 }
 
 void ConfigManager::saveConfig(const char* filename, std::vector<std::string> bindings)

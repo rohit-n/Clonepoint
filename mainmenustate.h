@@ -30,11 +30,11 @@ public:
 	void handleButton(Button* button);
 	void resetPositions(int w, int h);
 private:
-	std::shared_ptr<TextLabel> _titleLabel;
-	std::shared_ptr<TextButton> _quitButton;
-	std::shared_ptr<TextButton> _creditsButton;
-	std::shared_ptr<TextButton> _loadMapButton;
-	std::shared_ptr<TextButton> _optionsButton;
+	TextLabel* _titleLabel;
+	TextButton* _quitButton;
+	TextButton* _creditsButton;
+	TextButton* _loadMapButton;
+	TextButton* _optionsButton;
 };
 
 #endif

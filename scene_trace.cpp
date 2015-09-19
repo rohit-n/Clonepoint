@@ -107,7 +107,7 @@ void Scene::traceBullet(LivingEntity* entity, vec2f target, GunShotTraceType gst
 	{
 		if (gstt == Shot_FromEnemyVoluntary)
 		{
-			isTraceBlocked(nullptr, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::bulletFiredFromEnemy);
+			isTraceBlocked(NULL, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::bulletFiredFromEnemy);
 		}
 		else
 		{
@@ -120,7 +120,7 @@ void Scene::traceBullet(LivingEntity* entity, vec2f target, GunShotTraceType gst
 				_numPlayerBullets--;
 				madeNoise = true;
 				_playerShotFired = true;
-				isTraceBlocked(nullptr, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::bulletFiredFromPlayer);
+				isTraceBlocked(NULL, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::bulletFiredFromPlayer);
 			}
 			else
 			{
@@ -131,7 +131,7 @@ void Scene::traceBullet(LivingEntity* entity, vec2f target, GunShotTraceType gst
 	}
 	else
 	{
-		isTraceBlocked(nullptr, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::traceLaserSight);
+		isTraceBlocked(NULL, position, target, &_unused_c, &_unused_index, &_unused_bool, 16.0f, &Scene::traceLaserSight);
 	}
 
 	if (!_player->isAlive() && dynamic_cast<Enemy*>(entity))
@@ -141,7 +141,7 @@ void Scene::traceBullet(LivingEntity* entity, vec2f target, GunShotTraceType gst
 	}
 
 	if (madeNoise) //make noise last, in case an enemy is killed and another may be alerted in its place
-		addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, nullptr);
+		addNoise(position.x - _camera.x, position.y - _camera.y, 512, true, ALERT_RUN, NULL);
 }
 
 void Scene::bulletFiredFromEnemy(Entity* source, vec2f interpolatedPoint, vec2f start, int* index, bool* b1, bool* stop, vec2f* end)

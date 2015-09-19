@@ -85,7 +85,7 @@ bool fullscreen;
 int winX, winY;
 
 std::string fontFilename;
-std::unique_ptr<StateManager> sm;
+StateManager* sm;
 
 void init(void)
 {
@@ -93,22 +93,22 @@ void init(void)
 	winY = 600;
 	fullscreen = false;
 
-	std::unique_ptr<AudioManager> manager(new AudioManager());
-	Locator::provide(std::move(manager));
+	AudioManager* manager = new AudioManager();
+	Locator::provide(manager);
 
-	std::unique_ptr<StaticSpriteManager> spriteManager(new StaticSpriteManager());
-	Locator::provide(std::move(spriteManager));
+	StaticSpriteManager* spriteManager = new StaticSpriteManager();
+	Locator::provide(spriteManager);
 
-	std::unique_ptr<AnimationManager> animationManager(new AnimationManager());
-	Locator::provide(std::move(animationManager));
+	AnimationManager* animationManager = new AnimationManager();
+	Locator::provide(animationManager);
 
-	std::unique_ptr<ConfigManager> configManager(new ConfigManager());
-	Locator::provide(std::move(configManager));
+	ConfigManager* configManager = new ConfigManager();
+	Locator::provide(configManager);
 
-	std::unique_ptr<BindingsManager> bindingsManager(new BindingsManager());
-	Locator::provide(std::move(bindingsManager));
+	BindingsManager* bindingsManager = new BindingsManager();
+	Locator::provide(bindingsManager);
 
-	srand(time(nullptr));
+	srand(time(NULL));
 }
 
 void draw_frame(void)
@@ -189,6 +189,13 @@ void quit()
 	sprintf(scrstr, "%i", renderer.getScreenshotIndex());
 	Locator::getConfigManager()->setValue("screenshot_index", std::string(scrstr));
 	Locator::getConfigManager()->saveConfig("config.cfg", Locator::getBindingsManager()->getBindingsToSave());
+	delete Locator::getAudio();
+	delete Locator::getBindingsManager();
+	delete Locator::getSpriteManager();
+	delete Locator::getAnimationManager();
+	delete Locator::getConfigManager();
+	delete sm;
+
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(screen);
 	SDL_Quit();
@@ -247,6 +254,18 @@ void loop1()
 		}
 
 		draw_frame();
+
+		if (sm->settingsChanged())
+		{
+			handleSettingsChange();
+			sm->resetSettingsFlag();
+		}
+
+		if (sm->screenshotTaken())
+		{
+			renderer.takeScreenshot();
+			sm->resetScreenShotFlag();
+		}
 	}
 }
 
@@ -279,11 +298,9 @@ and place them in the data/ directory?\n\n");
 
 	renderer.setScreenshotIndex(atoi(Locator::getConfigManager()->getValue("screenshot_index").c_str()));
 
-	sm.reset(new StateManager());
+	sm = new StateManager();
 	sm->setWindowDims(winX, winY);
 	Locator::getAudio()->setVolume((float)atoi(Locator::getConfigManager()->getValue("volume").c_str()) / 10);
-	sm->registerScreenshotFunctions(renderer.getScreenshotFunc());
-	sm->registerSettingsChange(handleSettingsChange);
 
 	loop1();
 

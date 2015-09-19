@@ -77,25 +77,25 @@ void StaticSpriteManager::loadSpriteIndicesFromFile(std::string filename)
 	while (token)
 	{
 		spriteName = std::string(token);
-		token = strtok(nullptr, delim);
+		token = strtok(NULL, delim);
 		LOGF((stdout, "Inserting sprite %s with index %i with filename %s.\n", spriteName.c_str(), atoi(token), filename.c_str()));
 		indices.insert(std::pair<std::string, unsigned int>(spriteName, atoi(token)));
 
 		if (token)
-			token = strtok(nullptr, delim);
+			token = strtok(NULL, delim);
 	}
 	delete [] text;
 	delete [] token;
-	text = nullptr;
-	token = nullptr;
-	delim = nullptr;
+	text = NULL;
+	token = NULL;
+	delim = NULL;
 
 	_spriteMap.insert(std::pair<std::string, std::map<std::string, unsigned int> >(filename, indices));
 }
 
 unsigned int StaticSpriteManager::getIndex(std::string filename, std::string name)
 {
-	auto it = _spriteMap.find(filename);
+	std::map<std::string, std::map<std::string, unsigned int> >::iterator it = _spriteMap.find(filename);
 	std::map<std::string, unsigned int> innerMap;
 	std::map<std::string, unsigned int>::iterator it2;
 

@@ -32,7 +32,7 @@ Entity::Entity(float x, float y)
 
 	_rotation = 0.0f;
 
-	_activeSequence = nullptr;
+	_activeSequence = NULL;
 
 	_sprite = 0;
 
@@ -56,7 +56,7 @@ Entity::Entity(float x, float y, unsigned int sprite)
 
 	_rotation = 0.0f;
 
-	_activeSequence = nullptr;
+	_activeSequence = NULL;
 
 	_sprite = sprite;
 
@@ -190,7 +190,7 @@ unsigned int Entity::getCurrentSprite()
 void Entity::changeToStaticSprite(unsigned int sprite)
 {
 	_sprite = sprite;
-	_activeSequence = nullptr;
+	_activeSequence = NULL;
 	_currentAnimFinished = true;
 }
 

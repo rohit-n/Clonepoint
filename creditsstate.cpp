@@ -22,9 +22,9 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 CreditsState::CreditsState(StateManager* sm) : MenuState(sm)
 {
-	_cancelButton.reset(new TextButton(128, 600, (strlen("Go Back") + 2) * 16, 32, "Go Back"));
-	_titleLabel.reset(new TextLabel(0, 0, "Credits", 1, 1, 1));
-	_credit1.reset(new TextLabel(0, 0,
+	_cancelButton = new TextButton(128, 600, (strlen("Go Back") + 2) * 16, 32, "Go Back");
+	_titleLabel = new TextLabel(0, 0, "Credits", 1, 1, 1);
+	_credit1 = new TextLabel(0, 0,
 	                             "Clonepoint created by Rohit Nirmal\n\
 	Gunpoint created by Tom Francis (www.pentadact.com)\n\
 	\n\n\
@@ -36,7 +36,7 @@ CreditsState::CreditsState(StateManager* sm) : MenuState(sm)
 	\n\n\
 	Special Thanks:\n\
 	/agdg/ <3\
-	", 1, 1, 1));
+	", 1, 1, 1);
 	_buttons.push_back(_cancelButton);
 	_labels.push_back(_titleLabel);
 	_labels.push_back(_credit1);
@@ -55,7 +55,7 @@ void CreditsState::resetPositions(int w, int h)
 
 void CreditsState::handleButton(Button* button)
 {
-	if (button == _cancelButton.get())
+	if (button == _cancelButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 	}
@@ -66,7 +66,7 @@ void CreditsState::handleKeyUp(SDL_Keycode key)
 	switch(key)
 	{
 	case SDLK_PRINTSCREEN:
-		_takeScreenshot();
+		tookScreenshot = 1;
 		break;
 	default:
 		break;

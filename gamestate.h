@@ -43,8 +43,8 @@ private:
 	bool _playerMovingLeft, _playerMovingRight, _playerMovingDown, _playerMovingUp;
 	bool _movementLocked;
 	bool _LMBHeldDown, _RMBHeldDown;
-	std::unique_ptr<Scene> _scene;
-	std::shared_ptr<FloatingMessage> _saveMessage;
+	Scene* _scene;
+	FloatingMessage* _saveMessage;
 };
 
 #endif

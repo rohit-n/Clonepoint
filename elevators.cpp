@@ -23,7 +23,7 @@ ElevatorDoor::ElevatorDoor(float x, float y) : Entity(x, y)
 {
 	setCollisionRectDims(32, 48, ENTDIM);
 	_open = false;
-	_switch = nullptr;
+	_switch = NULL;
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "elevatorclosed");
 }
 
@@ -118,9 +118,9 @@ ElevatorShaft::ElevatorShaft(int x)
 {
 	_moving = false;
 	_waitingForClose = false;
-	_target = nullptr;
+	_target = NULL;
 	_x = x;
-	_openDoor = nullptr;
+	_openDoor = NULL;
 	_elevatorPosition = vec2f(_x, 0);
 	_yVel = 0;
 
@@ -173,7 +173,7 @@ void ElevatorShaft::update()
 		_rect.y = _elevatorPosition.y;
 	}
 
-	if (_waitingForClose && !_openDoor->isClosing() && _target != nullptr)
+	if (_waitingForClose && !_openDoor->isClosing() && _target != NULL)
 	{
 		_yVel = _target->getCollisionRectPosition().y - _elevatorPosition.y;
 		_yVel /= fabs(_yVel);
@@ -193,6 +193,7 @@ int ElevatorShaft::getX()
 void ElevatorShaft::setOpenDoor(ElevatorDoor* door, bool animate)
 {
 	int index = containsDoor(door);
+	size_t i;
 	if (index < 0)
 	{
 		return;
@@ -203,11 +204,11 @@ void ElevatorShaft::setOpenDoor(ElevatorDoor* door, bool animate)
 	_openDoor->open(animate);
 	_moving = false;
 
-	for (ElevatorDoor* door : _doors)
+	for (i = 0; i < _doors.size(); i++)
 	{
-		if (door != _openDoor)
+		if (_doors[i] != _openDoor)
 		{
-			door->close(false);
+			_doors[i]->close(false);
 		}
 	}
 
@@ -310,7 +311,7 @@ ElevatorDoor* ElevatorShaft::getDoorAbove(ElevatorDoor* door)
 	int index = getDoorIndexOrdered(containsDoor(door));
 	if (index <= 0)
 	{
-		return nullptr; //door is already the highest or does not exist in this shaft
+		return NULL; //door is already the highest or does not exist in this shaft
 	}
 
 	return _doors[_order[index - 1]];
@@ -321,7 +322,7 @@ ElevatorDoor* ElevatorShaft::getDoorBelow(ElevatorDoor* door)
 	int index = getDoorIndexOrdered(containsDoor(door));
 	if (index == -1 || index + 1 >= (int)_order.size())
 	{
-		return nullptr; //door is already the lowest or does not exist in this shaft
+		return NULL; //door is already the lowest or does not exist in this shaft
 	}
 
 	return _doors[_order[index + 1]];

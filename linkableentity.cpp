@@ -25,7 +25,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 LinkableEntity::LinkableEntity(float x, float y, Circuit c) : Entity(x, y)
 {
 	_circuit = c;
-	_other = nullptr;
+	_other = NULL;
 }
 
 LinkableEntity* LinkableEntity::getTarget()
@@ -54,12 +54,12 @@ void LinkableEntity::link(LinkableEntity* target, bool playSound)
 
 void LinkableEntity::unlink()
 {
-	_other = nullptr;
+	_other = NULL;
 }
 
 void LinkableEntity::activate()
 {
-	if (_other != nullptr)
+	if (_other != NULL)
 	{
 		//TODO: Find some other way of avoiding a segfault.
 		//I would rather allow for entities to activate each other at least for a time.
@@ -78,7 +78,7 @@ void LinkableEntity::activate()
 //Thank you, Robert Floyd.
 bool LinkableEntity::hasCycle()
 {
-	if(_other == nullptr)
+	if(_other == NULL)
 	{
 		return false;
 	}
@@ -91,12 +91,12 @@ bool LinkableEntity::hasCycle()
 	{
 		slow = slow->getTarget();
 
-		if(fast->getTarget() != nullptr)
+		if(fast->getTarget() != NULL)
 			fast = fast->getTarget()->getTarget();
 		else
 			return false;
 
-		if(slow == nullptr || fast == nullptr)
+		if(slow == NULL || fast == NULL)
 			return false;
 
 		if(slow == fast)
@@ -174,7 +174,7 @@ Door::Door(float x, float y, Circuit c, bool open, DoorType type) : LinkableEnti
 	_type = type;
 	_cvol = new CollisionVolume();
 	_cvol->flags = 0;
-	_cvol2 = nullptr;
+	_cvol2 = NULL;
 
 	switch(type)
 	{
@@ -393,7 +393,7 @@ MotionScanner::MotionScanner(float x, float y, Circuit c) : LinkableEntity(x, y,
 {
 	setCollisionRectDims(14, 48, ENTDIM);
 	_trespassed = false;
-	_trespasser = nullptr;
+	_trespasser = NULL;
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "motionscanner");
 }
 
@@ -421,7 +421,7 @@ void MotionScanner::setTrespasser(Entity* ent)
 void MotionScanner::resetTrespasser()
 {
 	_trespassed = false;
-	_trespasser = nullptr;
+	_trespasser = NULL;
 }
 
 SecurityCamera::SecurityCamera(float x, float y, Circuit c, Direction dir, FieldOfView* fov) : LinkableEntity(x, y, c)
@@ -494,8 +494,9 @@ void LightFixture::addFOV(FieldOfView* fov)
 
 void LightFixture::toggleAllFOVs()
 {
-	for(auto& elem : _lights)
-		elem->setActive(_switchedOn);
+	size_t i;
+	for(i = 0; i < _lights.size(); i++)
+		_lights[i]->setActive(_switchedOn);
 }
 
 PowerSocket::PowerSocket(float x, float y, Circuit c) : LinkableEntity(x, y, c)
@@ -541,7 +542,7 @@ void SoundDetector::activate()
 	if (!hasCycle())
 	{
 		LinkableEntity* ent = this;
-		while (ent != nullptr)
+		while (ent != NULL)
 		{
 			if (dynamic_cast<Alarm*>(ent))
 			{
@@ -621,7 +622,7 @@ EnemyGun::EnemyGun(float x, float y, Circuit c) : LinkableEntity(x, y, c)
 {
 	setCollisionRectDims(8, 8, ENTDIM);
 	_sprite = 0;
-	_enemy = nullptr;
+	_enemy = NULL;
 }
 
 void EnemyGun::activate()
@@ -634,7 +635,7 @@ void EnemyGun::fire(GunShotTraceType gstt)
 {
 	LinkableEntity* other = _other; //if this gun is linked to another, _other may be made null when activating.
 	LinkableEntity::activate();
-	if (other == nullptr)
+	if (other == NULL)
 	{
 		_enemy->_fireWeapon(gstt);
 	}

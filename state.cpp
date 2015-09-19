@@ -22,6 +22,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 BaseState::BaseState(StateManager* sm)
 {
 	_quitting = false;
+	tookScreenshot = false;
 	_manager = sm;
 	_mouseX = 0;
 	_mouseY = 0;
@@ -29,6 +30,12 @@ BaseState::BaseState(StateManager* sm)
 
 BaseState::~BaseState()
 {
+	size_t i;
+	for (i = 0; i < _labels.size(); i++)
+	{
+		delete _labels[i];
+	}
+	_labels.clear();
 }
 
 bool BaseState::isQuitting()
@@ -36,17 +43,12 @@ bool BaseState::isQuitting()
 	return _quitting;
 }
 
-void BaseState::registerScreenshotFunction(std::function<void()> func)
-{
-	_takeScreenshot = func;
-}
-
 size_t BaseState::getLabelCount()
 {
 	return _labels.size();
 }
 
-std::shared_ptr<TextLabel> BaseState::getLabelAt(size_t i)
+TextLabel* BaseState::getLabelAt(size_t i)
 {
 	return _labels[i];
 }

@@ -37,23 +37,23 @@ public:
 private:
 	void updateProgressBars();
 	void updateAvailableUpgrades();
-	void handleDecrIncrVisibility(std::shared_ptr<Button> decr, std::shared_ptr<Button> incr, int value, int size);
+	void handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size);
 
-	std::shared_ptr<TextLabel> _titleLabel;
-	std::shared_ptr<TextLabel> _jumpTimeLabel;
-	std::shared_ptr<TextLabel> _jumpPowerLabel;
-	std::shared_ptr<TextLabel> _upgradesLeft;
+	TextLabel* _titleLabel;
+	TextLabel* _jumpTimeLabel;
+	TextLabel* _jumpPowerLabel;
+	TextLabel* _upgradesLeft;
 
-	std::shared_ptr<ImageButton> _jumpPowerDecr;
-	std::shared_ptr<ImageButton> _jumpPowerIncr;
-	std::shared_ptr<ImageButton> _jumpTimeDecr;
-	std::shared_ptr<ImageButton> _jumpTimeIncr;
+	ImageButton* _jumpPowerDecr;
+	ImageButton* _jumpPowerIncr;
+	ImageButton* _jumpTimeDecr;
+	ImageButton* _jumpTimeIncr;
 
-	std::shared_ptr<TextButton> _exitButton;
-	std::shared_ptr<TextButton> _startMapButton;
+	TextButton* _exitButton;
+	TextButton* _startMapButton;
 
-	std::shared_ptr<ImageButton> _jumpPowerProgress[NUM_JUMP_POWER_UPGRADES];
-	std::shared_ptr<ImageButton> _jumpTimeProgress[NUM_JUMP_TIME_UPGRADES];
+	ImageButton* _jumpPowerProgress[NUM_JUMP_POWER_UPGRADES];
+	ImageButton* _jumpTimeProgress[NUM_JUMP_TIME_UPGRADES];
 
 	std::string _mapFilename;
 	int _jumpPower;

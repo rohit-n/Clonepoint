@@ -29,10 +29,10 @@ Player::Player(float x, float y, Direction startingDir) : LivingEntity(x, y, sta
 	_inElevator = false;
 	_attach = NotAttached;
 	_lastAttach = NotAttached;
-	_attachedVolume = nullptr;
-	_door = nullptr;
-	_pinnedEnemy = nullptr;
-	_hackedTerminal = nullptr;
+	_attachedVolume = NULL;
+	_door = NULL;
+	_pinnedEnemy = NULL;
+	_hackedTerminal = NULL;
 	_numPunches = 0;
 	_numHackedTerminals = 0;
 	_armRotation = 0;
@@ -68,7 +68,7 @@ Player::Player(float x, float y, Direction startingDir) : LivingEntity(x, y, sta
 Player::~Player()
 {
 	LOGF((stdout, "running player destructor!\n"));
-	_activeSequence = nullptr;
+	_activeSequence = NULL;
 }
 
 void Player::update(unsigned int dT)
@@ -78,7 +78,7 @@ void Player::update(unsigned int dT)
 	_fixDirection = _aimingGun;
 	_affectedByGravity = (_attach == NotAttached);
 
-	if (_attachedVolume != nullptr && !_attachedVolume->active())
+	if (_attachedVolume != NULL && !_attachedVolume->active())
 	{
 		detach();
 	}
@@ -86,7 +86,7 @@ void Player::update(unsigned int dT)
 	if (_activeSequence == _hackingSequence && _currentAnimFinished)
 	{
 		_hackedTerminal->setActive(false);
-		_hackedTerminal = nullptr;
+		_hackedTerminal = NULL;
 		_numHackedTerminals++;
 		changeToStaticSprite(Locator::getSpriteManager()->getPlayerSpriteIndex(_alive ? PLAYER_IDLE_GROUND : PLAYER_DEAD_GROUND));
 	}
@@ -311,7 +311,7 @@ void Player::releasePin()
 		_pinnedEnemy->changeState(KNOCKED_OUT);
 	}
 	_numPunches = 0;
-	_pinnedEnemy = nullptr;
+	_pinnedEnemy = NULL;
 	_pinning = false;
 }
 
@@ -346,7 +346,7 @@ void Player::switchElevator(ElevatorDoor* door)
 void Player::leaveElevator()
 {
 	_inElevator = false;
-	_door = nullptr;
+	_door = NULL;
 }
 
 ElevatorDoor* Player::getElevatorDoor()
@@ -401,7 +401,7 @@ void Player::detach()
 {
 	_lastAttach = _attach;
 	_attach = NotAttached;
-	_attachedVolume = nullptr;
+	_attachedVolume = NULL;
 }
 
 void Player::setLightVisibility(unsigned int lightVisibility)

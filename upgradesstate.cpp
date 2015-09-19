@@ -31,19 +31,19 @@ UpgradesState::UpgradesState(StateManager* sm) : MenuState(sm)
 	unsigned int right_selected = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "arrowright_selected");
 	unsigned int empty = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "box_empty");
 
-	_titleLabel.reset(new TextLabel(0, 0, "Select your upgrades.", 1, 1, 1));
-	_jumpPowerLabel.reset(new TextLabel(0, 0, "Jump Power", 1, 1, 1));
-	_jumpTimeLabel.reset(new TextLabel(0, 0, "Time to Charge Jump", 1, 1, 1));
-	_upgradesLeft.reset(new TextLabel(0, 0, "0", 1, 1, 1));
+	_titleLabel = new TextLabel(0, 0, "Select your upgrades.", 1, 1, 1);
+	_jumpPowerLabel = new TextLabel(0, 0, "Jump Power", 1, 1, 1);
+	_jumpTimeLabel = new TextLabel(0, 0, "Time to Charge Jump", 1, 1, 1);
+	_upgradesLeft = new TextLabel(0, 0, "0", 1, 1, 1);
 
-	_exitButton.reset(new TextButton(0, 0, (strlen("Go Back") + 2) * 16, 32, "Go Back"));
-	_startMapButton.reset(new TextButton(0, 0, (strlen("Start Map") + 2) * 16, 32, "Start Map"));
+	_exitButton = new TextButton(0, 0, (strlen("Go Back") + 2) * 16, 32, "Go Back");
+	_startMapButton = new TextButton(0, 0, (strlen("Start Map") + 2) * 16, 32, "Start Map");
 
-	_jumpPowerDecr.reset(new ImageButton(0, 0, 32, 32, left, left_selected));
-	_jumpPowerIncr.reset(new ImageButton(0, 0, 32, 32, right, right_selected));
+	_jumpPowerDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
+	_jumpPowerIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
 
-	_jumpTimeDecr.reset(new ImageButton(0, 0, 32, 32, left, left_selected));
-	_jumpTimeIncr.reset(new ImageButton(0, 0, 32, 32, right, right_selected));
+	_jumpTimeDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
+	_jumpTimeIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
 
 	_buttons.push_back(_jumpPowerDecr);
 	_buttons.push_back(_jumpPowerIncr);
@@ -52,13 +52,13 @@ UpgradesState::UpgradesState(StateManager* sm) : MenuState(sm)
 
 	for (i = 0; i < NUM_JUMP_POWER_UPGRADES; i++)
 	{
-		_jumpPowerProgress[i].reset(new ImageButton(0, 0, 32, 32, false, empty));
+		_jumpPowerProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
 		_buttons.push_back(_jumpPowerProgress[i]);
 	}
 
 	for (i = 0; i < NUM_JUMP_TIME_UPGRADES; i++)
 	{
-		_jumpTimeProgress[i].reset(new ImageButton(0, 0, 32, 32, false, empty));
+		_jumpTimeProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
 		_buttons.push_back(_jumpTimeProgress[i]);
 	}
 
@@ -83,6 +83,25 @@ UpgradesState::UpgradesState(StateManager* sm) : MenuState(sm)
 
 UpgradesState::~UpgradesState()
 {
+	if (_jumpTime == 0)
+	{
+		delete _jumpTimeDecr;
+	}
+
+	if (_jumpPower == 0)
+	{
+		delete _jumpPowerDecr;
+	}
+
+	if (_availableUpgrades == 0 || _jumpTime == NUM_JUMP_TIME_UPGRADES)
+	{
+		delete _jumpTimeIncr;
+	}
+
+	if (_availableUpgrades == 0 || _jumpPower == NUM_JUMP_POWER_UPGRADES)
+	{
+		delete _jumpPowerIncr;
+	}
 }
 
 void UpgradesState::resetPositions(int w, int h)
@@ -128,41 +147,41 @@ void UpgradesState::update(unsigned int dT)
 
 void UpgradesState::handleButton(Button* button)
 {
-	if (button == _exitButton.get())
+	if (button == _exitButton)
 	{
 		_manager->switchToState(LOADMAP_SCREEN);
 	}
-	else if (button == _startMapButton.get())
+	else if (button == _startMapButton)
 	{
 		_manager->initSceneAndMap(_mapFilename.c_str());
 		_manager->switchToState(GAME_SCREEN);
 		_manager->makeStartSave();
 	}
-	else if (button == _jumpPowerDecr.get() && _jumpPower > 0)
+	else if (button == _jumpPowerDecr && _jumpPower > 0)
 	{
 		_jumpPower--;
 		_availableUpgrades++;
 	}
-	else if (button == _jumpPowerIncr.get() && _jumpPower < NUM_JUMP_POWER_UPGRADES && _availableUpgrades > 0)
+	else if (button == _jumpPowerIncr && _jumpPower < NUM_JUMP_POWER_UPGRADES && _availableUpgrades > 0)
 	{
 		_jumpPower++;
 		_availableUpgrades--;
 	}
-	else if (button == _jumpTimeDecr.get() && _jumpTime > 0)
+	else if (button == _jumpTimeDecr && _jumpTime > 0)
 	{
 		_jumpTime--;
 		_availableUpgrades++;
 	}
-	else if (button == _jumpTimeIncr.get() && _jumpTime < NUM_JUMP_TIME_UPGRADES && _availableUpgrades > 0)
+	else if (button == _jumpTimeIncr && _jumpTime < NUM_JUMP_TIME_UPGRADES && _availableUpgrades > 0)
 	{
 		_jumpTime++;
 		_availableUpgrades--;
 	}
 
-	if (button == _jumpPowerDecr.get() ||
-	        button == _jumpPowerIncr.get() ||
-	        button == _jumpTimeDecr.get() ||
-	        button == _jumpTimeIncr.get())
+	if (button == _jumpPowerDecr ||
+	        button == _jumpPowerIncr ||
+	        button == _jumpTimeDecr ||
+	        button == _jumpTimeIncr)
 	{
 		updateProgressBars();
 		updateAvailableUpgrades();
@@ -203,9 +222,9 @@ void UpgradesState::updateProgressBars()
 	handleDecrIncrVisibility(_jumpTimeDecr, _jumpTimeIncr, _jumpTime, NUM_JUMP_TIME_UPGRADES);
 }
 
-void UpgradesState::handleDecrIncrVisibility(std::shared_ptr<Button> decr, std::shared_ptr<Button> incr, int value, int size)
+void UpgradesState::handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size)
 {
-	std::vector<std::shared_ptr<Button> >::iterator it;
+	std::vector<Button* >::iterator it;
 
 	if (value == size || _availableUpgrades == 0)
 	{

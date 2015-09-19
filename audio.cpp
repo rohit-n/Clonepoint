@@ -22,8 +22,8 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 AudioManager::AudioManager()
 {
-	_device = alcOpenDevice(nullptr);
-	_context = alcCreateContext(_device, nullptr);
+	_device = alcOpenDevice(NULL);
+	_context = alcCreateContext(_device, NULL);
 	alcMakeContextCurrent(_context);
 
 	ALCint maxmono = 0, maxstereo = 0;
@@ -61,8 +61,12 @@ AudioManager::AudioManager()
 
 AudioManager::~AudioManager()
 {
-	for(auto& elem : _loadedSources)
-		alDeleteSources(1, &elem);
+	size_t i;
+
+	for (i = 0; i < _loadedSources.size(); i++)
+	{
+		alDeleteSources(1, &_loadedSources[i]);
+	}
 
 	_loadedSources.clear();
 
@@ -75,7 +79,7 @@ AudioManager::~AudioManager()
 		alDeleteBuffers(1, &buf);
 	}
 
-	alcMakeContextCurrent(nullptr);
+	alcMakeContextCurrent(NULL);
 	if (_context) alcDestroyContext(_context);
 	if (_device) alcCloseDevice(_device);
 }
@@ -106,7 +110,7 @@ void AudioManager::loadWAV(std::string filename)
 	Uint32 wav_length = 0;
 	Uint8* wav_buffer;
 
-	if (SDL_LoadWAV(filename.c_str(), &wav_spec, &wav_buffer, &wav_length) != nullptr)
+	if (SDL_LoadWAV(filename.c_str(), &wav_spec, &wav_buffer, &wav_length) != NULL)
 	{
 		ALenum format;
 		switch(wav_spec.format)
@@ -148,7 +152,7 @@ void AudioManager::loadWAV(std::string filename)
 
 ALuint AudioManager::getBuffer(std::string filename)
 {
-	auto it = _loadedBuffers.find(filename);
+	std::map<std::string, ALuint>::iterator it = _loadedBuffers.find(filename);
 	if (it == _loadedBuffers.end())
 	{
 		LOGF((stderr, "Failed to find buffer for %s\n", filename.c_str()));
@@ -161,12 +165,13 @@ ALuint AudioManager::getBuffer(std::string filename)
 ALuint AudioManager::getNextAvailableSource()
 {
 	int status;
-	for (auto& elem : _loadedSources)
+	size_t i;
+	for (i = 0; i < _loadedSources.size(); i++)
 	{
-		alGetSourcei(elem, AL_SOURCE_STATE, &status);
+		alGetSourcei(_loadedSources[i], AL_SOURCE_STATE, &status);
 		if (status != AL_PLAYING)
 		{
-			return elem;
+			return _loadedSources[i];
 		}
 	}
 
@@ -176,8 +181,9 @@ ALuint AudioManager::getNextAvailableSource()
 
 void AudioManager::setVolume(float volume)
 {
-	for (auto& elem : _loadedSources)
+	size_t i;
+	for (i = 0; i < _loadedSources.size(); i++)
 	{
-		alSourcef(elem, AL_GAIN, volume);
+		alSourcef(_loadedSources[i], AL_GAIN, volume);
 	}
 }

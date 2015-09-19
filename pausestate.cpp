@@ -23,8 +23,8 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 PauseState::PauseState(StateManager* sm) : MenuState(sm)
 {
-	_resumeButton.reset(new TextButton(320, 320, (strlen("Resume") + 2) * 16, 32, "Resume"));
-	_exitButton.reset(new TextButton(320, 640, (strlen("Exit") + 2) * 16, 32, "Exit"));
+	_resumeButton = new TextButton(320, 320, (strlen("Resume") + 2) * 16, 32, "Resume");
+	_exitButton = new TextButton(320, 640, (strlen("Exit") + 2) * 16, 32, "Exit");
 	_buttons.push_back(_resumeButton);
 	_buttons.push_back(_exitButton);
 }
@@ -47,12 +47,12 @@ void PauseState::resetPositions(int w, int h)
 
 void PauseState::handleButton(Button* button)
 {
-	if (button == _resumeButton.get())
+	if (button == _resumeButton)
 	{
 		_manager->switchToState(GAME_SCREEN);
 	}
 
-	if (button == _exitButton.get())
+	if (button == _exitButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 		_manager->destroyScene();

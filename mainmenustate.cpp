@@ -23,11 +23,11 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 MainMenuState::MainMenuState(StateManager* sm) : MenuState(sm)
 {
-	_titleLabel.reset(new TextLabel(0, 0, "Clonepoint", 1, 1, 1));
-	_quitButton.reset(new TextButton(0, 0, (strlen("Quit Game") + 2) * 16, 32, "Quit Game"));
-	_creditsButton.reset(new TextButton(640, 576, (strlen("View Credits") + 2) * 16, 32, "View Credits"));
-	_loadMapButton.reset(new TextButton(0, 0, (strlen("Load a Map") + 2) * 16, 32, "Load a Map"));
-	_optionsButton.reset(new TextButton(0, 0, (strlen("Options") + 2) * 16, 32, "Options"));
+	_titleLabel = new TextLabel(0, 0, "Clonepoint", 1, 1, 1);
+	_quitButton = new TextButton(0, 0, (strlen("Quit Game") + 2) * 16, 32, "Quit Game");
+	_creditsButton = new TextButton(640, 576, (strlen("View Credits") + 2) * 16, 32, "View Credits");
+	_loadMapButton = new TextButton(0, 0, (strlen("Load a Map") + 2) * 16, 32, "Load a Map");
+	_optionsButton = new TextButton(0, 0, (strlen("Options") + 2) * 16, 32, "Options");
 
 	_labels.push_back(_titleLabel);
 	_buttons.push_back(_quitButton);
@@ -57,19 +57,19 @@ void MainMenuState::update(unsigned int dT)
 
 void MainMenuState::handleButton(Button* button)
 {
-	if (button == _quitButton.get())
+	if (button == _quitButton)
 	{
 		_quitting = true;
 	}
-	else if (button == _creditsButton.get())
+	else if (button == _creditsButton)
 	{
 		_manager->switchToState(CREDITS_SCREEN);
 	}
-	else if (button == _loadMapButton.get())
+	else if (button == _loadMapButton)
 	{
 		_manager->switchToState(LOADMAP_SCREEN);
 	}
-	else if (button == _optionsButton.get())
+	else if (button == _optionsButton)
 	{
 		_manager->switchToState(OPTIONS_SCREEN);
 	}

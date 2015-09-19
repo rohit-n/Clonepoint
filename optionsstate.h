@@ -42,13 +42,14 @@ public:
 	void rebindKey(SDL_Keycode key);
 	void updateBindingButtons();
 	void updateProgressBars();
-	void handleDecrIncrVisibility(std::shared_ptr<Button> decr, std::shared_ptr<Button> incr, int value, int size);
+	void handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size);
+	bool _settingsChanged;
 private:
-	std::shared_ptr<TextLabel> _titleLabel;
-	std::shared_ptr<TextButton> _exitButton;
-	std::shared_ptr<TextButton> _saveChangesButton;
+	TextLabel* _titleLabel;
+	TextButton* _exitButton;
+	TextButton* _saveChangesButton;
 
-	std::shared_ptr<FloatingMessage> _saveMessage;
+	FloatingMessage* _saveMessage;
 
 	std::vector<std::string> _modes;
 	int _modeIndex;
@@ -57,39 +58,39 @@ private:
 	int _currVolume;
 
 	//gameplay page
-	std::shared_ptr<TextButton> _toBindingsPage;
-	std::shared_ptr<ImageButton> _lightEnteredAlphaState;
-	std::shared_ptr<TextLabel> _lightEnteredAlphaText;
-	std::shared_ptr<TextLabel> _resolutionText;
-	std::shared_ptr<TextLabel> _resolutionLabel;
-	std::shared_ptr<TextLabel> _volumeLabel;
-	std::shared_ptr<ImageButton> _resUp;
-	std::shared_ptr<ImageButton> _resDown;
-	std::shared_ptr<TextLabel> _fullscreenLabel;
-	std::shared_ptr<ImageButton> _fullscreenState;
-	std::shared_ptr<ImageButton> _volumeDecr;
-	std::shared_ptr<ImageButton> _volumeIncr;
-	std::shared_ptr<ImageButton> _volumeProgress[NUM_VOLUME_BARS];
-	std::shared_ptr<TextLabel> _tutorialPopupsText;
-	std::shared_ptr<TextLabel> _inputPopupsText;
-	std::shared_ptr<ImageButton> _tutorialPopupsState;
-	std::shared_ptr<ImageButton> _inputPopupsState;
+	TextButton* _toBindingsPage;
+	ImageButton* _lightEnteredAlphaState;
+	TextLabel* _lightEnteredAlphaText;
+	TextLabel* _resolutionText;
+	TextLabel* _resolutionLabel;
+	TextLabel* _volumeLabel;
+	ImageButton* _resUp;
+	ImageButton* _resDown;
+	TextLabel* _fullscreenLabel;
+	ImageButton* _fullscreenState;
+	ImageButton* _volumeDecr;
+	ImageButton* _volumeIncr;
+	ImageButton* _volumeProgress[NUM_VOLUME_BARS];
+	TextLabel* _tutorialPopupsText;
+	TextLabel* _inputPopupsText;
+	ImageButton* _tutorialPopupsState;
+	ImageButton* _inputPopupsState;
 
 	//bindings page
-	std::shared_ptr<TextLabel> _pressAKeyLabel;
-	std::shared_ptr<TextLabel> _moveLeftLabel;
-	std::shared_ptr<TextLabel> _moveRightLabel;
-	std::shared_ptr<TextLabel> _moveUpLabel;
-	std::shared_ptr<TextLabel> _moveDownLabel;
-	std::shared_ptr<TextLabel> _autoSaveMessage;
-	std::shared_ptr<TextButton> _moveLeftButton;
-	std::shared_ptr<TextButton> _moveRightButton;
-	std::shared_ptr<TextButton> _moveUpButton;
-	std::shared_ptr<TextButton> _moveDownButton;
-	std::shared_ptr<TextButton> _toGameplayPage;
+	TextLabel* _pressAKeyLabel;
+	TextLabel* _moveLeftLabel;
+	TextLabel* _moveRightLabel;
+	TextLabel* _moveUpLabel;
+	TextLabel* _moveDownLabel;
+	TextLabel* _autoSaveMessage;
+	TextButton* _moveLeftButton;
+	TextButton* _moveRightButton;
+	TextButton* _moveUpButton;
+	TextButton* _moveDownButton;
+	TextButton* _toGameplayPage;
 
-	std::vector<std::shared_ptr<Button> > _bindingsPage;
-	std::vector<std::shared_ptr<Button> > _gameplayPage;
+	std::vector<Button*> _bindingsPage;
+	std::vector<Button*> _gameplayPage;
 };
 
 #endif

@@ -30,8 +30,8 @@ public:
 	void handleButton(Button* button);
 	void resetPositions(int w, int h);
 private:
-	std::shared_ptr<TextButton> _resumeButton;
-	std::shared_ptr<TextButton> _exitButton;
+	TextButton* _resumeButton;
+	TextButton* _exitButton;
 };
 
 #endif

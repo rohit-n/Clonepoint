@@ -23,8 +23,8 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 LevelEndState::LevelEndState(StateManager* sm) : MenuState(sm)
 {
-	_lvlCompleteLabel.reset(new TextLabel(640, 64, "Level Complete!", 1, 1, 1));
-	_OKButton.reset(new TextButton(320, 320, (strlen("OK") + 2) * 16, 32, "OK"));
+	_lvlCompleteLabel = new TextLabel(640, 64, "Level Complete!", 1, 1, 1);
+	_OKButton = new TextButton(320, 320, (strlen("OK") + 2) * 16, 32, "OK");
 	_buttons.push_back(_OKButton);
 	_labels.push_back(_lvlCompleteLabel);
 }
@@ -47,7 +47,7 @@ void LevelEndState::update(unsigned int dT)
 
 void LevelEndState::handleButton(Button* button)
 {
-	if (button == _OKButton.get())
+	if (button == _OKButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 		_manager->destroyScene();

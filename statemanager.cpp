@@ -30,14 +30,14 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 StateManager::StateManager()
 {
-	_gameState.reset(new GameState(this));
-	_mainMenuState.reset(new MainMenuState(this));
-	_creditsState.reset(new CreditsState(this));
-	_levelEndState.reset(new LevelEndState(this));
-	_pauseState.reset(new PauseState(this));
-	_loadMapState.reset(new LoadMapState(this));
-	_optionsState.reset(new OptionsState(this));
-	_upgradesState.reset(new UpgradesState(this));
+	_gameState = new GameState(this);
+	_mainMenuState = new MainMenuState(this);
+	_creditsState = new CreditsState(this);
+	_levelEndState = new LevelEndState(this);
+	_pauseState = new PauseState(this);
+	_loadMapState = new LoadMapState(this);
+	_optionsState = new OptionsState(this);
+	_upgradesState = new UpgradesState(this);
 	_activeState = _mainMenuState;
 	_winX = 800;
 	_winY = 600;
@@ -48,23 +48,31 @@ StateManager::StateManager()
 StateManager::~StateManager()
 {
 	LOGF((stdout, "Running Statemanager destructor!\n"));
-	_activeState = nullptr;
+	_activeState = NULL;
+	delete _gameState;
+	delete _mainMenuState;
+	delete _creditsState;
+	delete _levelEndState;
+	delete _pauseState;
+	delete _loadMapState;
+	delete _optionsState;
+	delete _upgradesState;
 }
 
-std::shared_ptr<BaseState> StateManager::getGameState()
+BaseState* StateManager::getGameState()
 {
 	return _gameState;
 }
 
-std::shared_ptr<BaseState> StateManager::getActiveState()
+BaseState* StateManager::getActiveState()
 {
 	return _activeState;
 }
 
 void StateManager::switchToState(eState state)
 {
-	std::shared_ptr<GameState> gs = std::static_pointer_cast<GameState>(_gameState);
-	std::shared_ptr<UpgradesState> us = std::static_pointer_cast<UpgradesState>(_upgradesState);
+	GameState* gs = static_cast<GameState*>(_gameState);
+	UpgradesState* us = static_cast<UpgradesState*>(_upgradesState);
 	int jp, jt, timeToSniper, old_x, old_y;
 	unsigned int ammo, energy;
 	_activeState->getMousePosition(&old_x, &old_y);
@@ -100,7 +108,7 @@ void StateManager::switchToState(eState state)
 		break;
 	case OPTIONS_SCREEN:
 		_activeState = _optionsState;
-		std::static_pointer_cast<OptionsState>(_optionsState)->setLabels();
+		static_cast<OptionsState*>(_optionsState)->setLabels();
 		break;
 	case UPGRADES_SCREEN:
 		us->setMap(_activeMapFilename);
@@ -114,7 +122,7 @@ void StateManager::switchToState(eState state)
 
 void StateManager::initSceneAndMap(const char* filename)
 {
-	std::shared_ptr<GameState> gs = std::static_pointer_cast<GameState>(_gameState);
+	GameState* gs = static_cast<GameState*>(_gameState);
 	_activeMapFilename = std::string(filename);
 
 	if (!gs->getScene())
@@ -133,29 +141,24 @@ void StateManager::setWindowDims(int w, int h)
 	_winX = w;
 	_winY = h;
 
-	std::static_pointer_cast<MenuState>(_mainMenuState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_creditsState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_levelEndState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_pauseState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_loadMapState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_optionsState)->resetPositions(w, h);
-	std::static_pointer_cast<MenuState>(_upgradesState)->resetPositions(w, h);
+	static_cast<MenuState*>(_mainMenuState)->resetPositions(w, h);
+	static_cast<MenuState*>(_creditsState)->resetPositions(w, h);
+	static_cast<MenuState*>(_levelEndState)->resetPositions(w, h);
+	static_cast<MenuState*>(_pauseState)->resetPositions(w, h);
+	static_cast<MenuState*>(_loadMapState)->resetPositions(w, h);
+	static_cast<MenuState*>(_optionsState)->resetPositions(w, h);
+	static_cast<MenuState*>(_upgradesState)->resetPositions(w, h);
 }
 
 void StateManager::destroyScene()
 {
-	std::static_pointer_cast<GameState>(_gameState)->deleteScene();
+	static_cast<GameState*>(_gameState)->deleteScene();
 	_activeMapFilename = "";
 }
 
 void StateManager::update(unsigned int dT)
 {
 	_activeState->update(dT);
-}
-
-void StateManager::changeSettings()
-{
-	_changeSettings();
 }
 
 void StateManager::setActiveMapFilename(std::string filename)
@@ -225,23 +228,6 @@ void StateManager::getMapVariables(std::string filename, int* money, int* upgrad
 	}
 }
 
-void StateManager::registerScreenshotFunctions(std::function<void()> func)
-{
-	_gameState->registerScreenshotFunction(func);
-	_mainMenuState->registerScreenshotFunction(func);
-	_creditsState->registerScreenshotFunction(func);
-	_levelEndState->registerScreenshotFunction(func);
-	_pauseState->registerScreenshotFunction(func);
-	_loadMapState->registerScreenshotFunction(func);
-	_optionsState->registerScreenshotFunction(func);
-	_upgradesState->registerScreenshotFunction(func);
-}
-
-void StateManager::registerSettingsChange(std::function<void()> func)
-{
-	_changeSettings = func;
-}
-
 int StateManager::getWindowWidth()
 {
 	return _winX;
@@ -253,6 +239,42 @@ int StateManager::getWindowHeight()
 
 void StateManager::makeStartSave()
 {
-	std::shared_ptr<GameState> gs = std::static_pointer_cast<GameState>(_gameState);
+	GameState* gs = static_cast<GameState*>(_gameState);
 	gs->getScene()->saveGame("start.sav");
+}
+
+bool StateManager::settingsChanged()
+{
+	OptionsState* os = static_cast<OptionsState*>(_optionsState);
+	return os->_settingsChanged;
+}
+
+void StateManager::resetSettingsFlag()
+{
+	OptionsState* os = static_cast<OptionsState*>(_optionsState);
+	os->_settingsChanged = false;
+}
+
+bool StateManager::screenshotTaken()
+{
+	return _gameState->tookScreenshot ||
+	_mainMenuState->tookScreenshot ||
+	_creditsState->tookScreenshot ||
+	_levelEndState->tookScreenshot ||
+	_pauseState->tookScreenshot ||
+	_loadMapState->tookScreenshot ||
+	_optionsState->tookScreenshot ||
+	_upgradesState->tookScreenshot;
+}
+
+void StateManager::resetScreenShotFlag()
+{
+	_gameState->tookScreenshot = false;
+	_mainMenuState->tookScreenshot = false;
+	_creditsState->tookScreenshot = false;
+	_levelEndState->tookScreenshot = false;
+	_pauseState->tookScreenshot = false;
+	_loadMapState->tookScreenshot = false;
+	_optionsState->tookScreenshot = false;
+	_upgradesState->tookScreenshot = false;
 }

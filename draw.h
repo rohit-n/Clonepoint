@@ -73,13 +73,13 @@ public:
 	bool init(int x, int y);
 	void setResolution(int x, int y);
 	bool initShaders();
-	void drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, std::shared_ptr<Font> font);
-	void drawTextLabel(std::shared_ptr<TextLabel> tl);
-	void drawTextButton(std::shared_ptr<TextButton> tb);
-	void drawImageButton(std::shared_ptr<ImageButton> ib);
-	void drawButton(std::shared_ptr<Button> button);
-	void drawState(std::shared_ptr<BaseState> state);
-	void drawMouseCursor(std::shared_ptr<BaseState> state);
+	void drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, Font* font);
+	void drawTextLabel(TextLabel* tl);
+	void drawTextButton(TextButton* tb);
+	void drawImageButton(ImageButton* ib);
+	void drawButton(Button* button);
+	void drawState(BaseState* state);
+	void drawMouseCursor(BaseState* state);
 	void drawScene(Scene* scene);
 	void drawDebugSceneText(Scene* scene);
 	void toggleWireframe();
@@ -96,6 +96,7 @@ public:
 	void drawFieldOfView(Scene* scene, FieldOfView* fov, GLuint program);
 	void drawTileLayer(Scene* scene, int z);
 	void updateLinkProgress(unsigned int dT);
+	void deleteSpriteSheet(SpriteSheet* sheet);
 
 	void generateSheetBuffers(SpriteSheet* sheet, int tileDim);
 
@@ -123,10 +124,8 @@ public:
 	void setScreenshotIndex(unsigned int value);
 
 	void handleSettingsChange();
-	void getBoxCoordsAroundText(const char* text, float x, float y, std::shared_ptr<Font> font, Rect* rect);
-	void getBoxDimsAroundText(const char* text, std::shared_ptr<Font> font, vec2f* dims);
-
-	std::function<void()> getScreenshotFunc();
+	void getBoxCoordsAroundText(const char* text, float x, float y, Font* font, Rect* rect);
+	void getBoxDimsAroundText(const char* text, Font* font, vec2f* dims);
 
 private:
 	GLuint entRectVBO; //vbo for storing tile-sized quads.
@@ -177,39 +176,25 @@ private:
 	float px, py;
 	char print[256];
 
-	struct SpriteSheetDeleter
-	{
-		void operator()(SpriteSheet* sheet) const
-		{
-			GLuint vbo = sheet->getVertexBuffer();
-			if (sheet->getNumberOfSprites() > 0)
-			{
-				glDeleteBuffers(sheet->getNumberOfSprites(), sheet->getIndexBuffers());
-			}
-			glDeleteBuffers(1, &vbo);
-			delete sheet;
-		}
-	};
-
 	//Fonts
-	std::shared_ptr<Font> font1;
-	std::shared_ptr<Font> font2;
+	Font* font1;
+	Font* font2;
 
 	//Sprite Resources
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resPlayer;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resPlayerLeft;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resGuardRight;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resGuardLeft;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resEnforcerRight;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resEnforcerLeft;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resProfessionalRight;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resProfessionalLeft;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resSniperRight;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resSniperLeft;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resObjects;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resLinkables;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resInterface;
-	std::unique_ptr<SpriteSheet, SpriteSheetDeleter> resGlass;
+	SpriteSheet* resPlayer;
+	SpriteSheet* resPlayerLeft;
+	SpriteSheet* resGuardRight;
+	SpriteSheet* resGuardLeft;
+	SpriteSheet* resEnforcerRight;
+	SpriteSheet* resEnforcerLeft;
+	SpriteSheet* resProfessionalRight;
+	SpriteSheet* resProfessionalLeft;
+	SpriteSheet* resSniperRight;
+	SpriteSheet* resSniperLeft;
+	SpriteSheet* resObjects;
+	SpriteSheet* resLinkables;
+	SpriteSheet* resInterface;
+	SpriteSheet* resGlass;
 
 	//Gameplay strings
 	const char* _mouseOverStrings[NUMBER_OF_MOUSEOVER_OBJECTS];

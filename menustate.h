@@ -29,14 +29,14 @@ public:
 	~MenuState();
 	void update(unsigned int dT);
 	size_t getButtonCount();
-	std::shared_ptr<Button> getButtonAt(int i);
+	Button* getButtonAt(int i);
 	virtual void resetPositions(int w, int h) = 0;
 	void handleKeyDown(SDL_Keycode key);
 	void handleKeyUp(SDL_Keycode key);
 	void handleMouseDown(SDL_MouseButtonEvent event);
 	void handleMouseUp(SDL_MouseButtonEvent event);
 protected:
-	std::vector<std::shared_ptr<Button> > _buttons;
+	std::vector<Button*> _buttons;
 	virtual void handleButton(Button* button) = 0;
 };
 

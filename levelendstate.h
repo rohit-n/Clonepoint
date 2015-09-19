@@ -30,8 +30,8 @@ public:
 	void handleButton(Button* button);
 	void resetPositions(int w, int h);
 private:
-	std::shared_ptr<TextLabel> _lvlCompleteLabel;
-	std::shared_ptr<TextButton> _OKButton;
+	TextLabel* _lvlCompleteLabel;
+	TextButton* _OKButton;
 };
 
 #endif
