@@ -144,7 +144,7 @@ OptionsState::~OptionsState()
 {
 	LOGF((stdout, "running Options Menu destructor!\n"));
 	size_t i;
-	if (_buttons != _gameplayPage)
+	if (_page != OPTION_PAGE_GAMEPLAY)
 	{
 		for (i = 0; i < NUM_VOLUME_BARS; i++)
 		{
@@ -448,6 +448,7 @@ void OptionsState::addMode(std::string mode)
 
 void OptionsState::changeToGameplayPage()
 {
+	_page = OPTION_PAGE_GAMEPLAY;
 	_buttons = _gameplayPage;
 	_fullscreenLabel->setVisible(true);
 	_resolutionText->setVisible(true);
@@ -467,6 +468,7 @@ void OptionsState::changeToGameplayPage()
 
 void OptionsState::changeToBindingsPage()
 {
+	_page = OPTION_PAGE_BINDINGS;
 	_buttons = _bindingsPage;
 	_fullscreenLabel->setVisible(false);
 	_resolutionText->setVisible(false);

@@ -24,6 +24,12 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 
 #define NUM_VOLUME_BARS 10
 
+enum OptionsPage
+{
+	OPTION_PAGE_GAMEPLAY = 0,
+	OPTION_PAGE_BINDINGS
+};
+
 class OptionsState : public MenuState
 {
 public:
@@ -56,6 +62,7 @@ private:
 	bool _bindingMode;
 	eBinding _bindToChange;
 	int _currVolume;
+	OptionsPage _page;
 
 	//gameplay page
 	TextButton* _toBindingsPage;
