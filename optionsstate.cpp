@@ -150,6 +150,17 @@ OptionsState::~OptionsState()
 		{
 			delete _volumeProgress[i];
 		}
+
+		delete _saveChangesButton;
+		delete _toBindingsPage;
+		delete _volumeDecr;
+		delete _volumeIncr;
+		delete _inputPopupsState;
+		delete _tutorialPopupsState;
+		delete _lightEnteredAlphaState;
+		delete _fullscreenState;
+		delete _resUp;
+		delete _resDown;
 	}
 	else //bindings page
 	{
