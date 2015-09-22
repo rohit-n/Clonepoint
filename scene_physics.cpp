@@ -596,13 +596,14 @@ void Scene::tryPlayerAttachSide()
 {
 	setAccel(_player->getAccelerationStruct(), false, 0.0f, 0.0f);
 	Rect pRect = _player->getCollisionRect();
-	vec2f testPoint1, testPoint2;
+	vec2f testPoint1, testPoint2, testPoint3;
 	CollisionVolume* vol;
 	CollisionVolume* vol2;
 	size_t i, j;
 
 	testPoint1 = vec2f(pRect.x, pRect.y + pRect.h + 1);
 	testPoint2 = vec2f(pRect.x + pRect.w, pRect.y + pRect.h + 1);
+	testPoint3 = vec2f(pRect.x + (pRect.w / 2.0f), pRect.y + pRect.h + 1);
 	bool check1, check2;
 	Rect finalRect = {0, 0, pRect.w, pRect.h};
 
@@ -616,11 +617,14 @@ void Scene::tryPlayerAttachSide()
 			check2 = vec2InRect(testPoint2, vol->rect);
 			if (check1 xor check2) //if the player is standing on the edge of a volume's "roof"
 			{
-				for (j = i + 1; j < _numCollideVols; j++)
+				for (j = 0; j < _numCollideVols; j++)
 				{
+					if (j == i) continue;
 					vol2 = _currentMap->getCollideVolPointerAt(j);
 
-					if (vol2->active() && vec2InRect(check1 ? testPoint2 : testPoint1, vol2->rect))
+					if (vol2->active() && (vec2InRect(testPoint1, vol2->rect) ||
+						vec2InRect(testPoint2, vol2->rect) ||
+						vec2InRect(testPoint3, vol2->rect)))
 					{
 						//if player is on top of two separate collision volumes, don't attach.
 						return;
