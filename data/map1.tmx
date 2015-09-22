@@ -187,5 +187,10 @@
  </objectgroup>
  <objectgroup name="Props">
   <object type="LightPanel" gid="1051" x="916" y="592"/>
+  <object type="Shelf" gid="1058" x="944" y="832"/>
+  <object type="Couch" gid="1060" x="804" y="1028"/>
+  <object type="Plant1" gid="1061" x="856" y="1016"/>
+  <object type="Watercooler" gid="1057" x="1112" y="700"/>
+  <object type="Trashcan" gid="1059" x="1096" y="838.727"/>
  </objectgroup>
 </map>
