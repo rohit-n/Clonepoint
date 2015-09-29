@@ -112,6 +112,11 @@ Renderer::~Renderer()
 
 void Renderer::deleteSpriteSheet(SpriteSheet* sheet)
 {
+	if (sheet == NULL || sheet->getTexId() == 0)
+	{
+		return;
+	}
+
 	GLuint vbo = sheet->getVertexBuffer();
 	if (sheet->getNumberOfSprites() > 0)
 	{

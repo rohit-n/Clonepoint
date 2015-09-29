@@ -290,9 +290,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error! Some files were not able to be loaded.\n\
 Did you download the Clonepoint data files from rohit.itch.io/clonepoint\n\
 and place them in the data/ directory?\n\n");
-		SDL_GL_DeleteContext(context);
-		SDL_DestroyWindow(screen);
-		SDL_Quit();
+		quit();
 		return 1;
 	}
 
