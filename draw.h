@@ -34,6 +34,13 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_WHITE 1.0f, 1.0f, 1.0f
 #define RGB_RED 1.0f, 0.0f, 0.0f
 
+enum SpriteDrawMode
+{
+	SDM_Normal = 0,
+	SDM_LinkableCross,
+	SDM_PropCross
+};
+
 extern PFNGLATTACHSHADERPROC glAttachShader;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObject;
@@ -91,8 +98,8 @@ public:
 	void drawRect(float x, float y, float z, GLuint vbo, float red, float green, float blue, float alpha, bool fill);
 	void drawRect2(Rect rect, float red, float green, float blue, int z);
 	void drawRect2Fill(Rect rect, float red, float green, float blue, int z);
-	void drawSprite(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, bool colorOverride, float red, float green, float blue);
-	void drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, bool colorOverride, float red, float green, float blue);
+	void drawSprite(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue);
+	void drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue);
 	void drawFieldOfView(Scene* scene, FieldOfView* fov, GLuint program);
 	void drawTileLayer(Scene* scene, int z);
 	void updateLinkProgress(unsigned int dT);
@@ -145,10 +152,11 @@ private:
 	//programs
 	GLuint pgmText;
 	GLuint pgmButton;
-	GLuint pgmColoredSprite; //for use with crosslink.
+	GLuint pgmColoredSprite; //for linkable entities in crosslink.
 	GLuint pgmMap;
 	GLuint pgmLight;
 	GLuint pgmCamera;
+	GLuint pgmCrosslinkProp; //for props in crosslink.
 
 	//transformations
 	mat4f orthographic;

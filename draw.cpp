@@ -82,6 +82,8 @@ Renderer::~Renderer()
 		glDeleteObject(pgmButton);
 	if (pgmColoredSprite)
 		glDeleteObject(pgmColoredSprite);
+	if (pgmCrosslinkProp)
+		glDeleteObject(pgmCrosslinkProp);
 	if (text_vbo)
 		glDeleteBuffers(1, &text_vbo);
 	if (entRectVBO)
@@ -155,6 +157,7 @@ bool Renderer::init(int x, int y)
 	pgmColoredSprite = compileShaders("shaders/sprite_colored.vert", "shaders/sprite_colored.frag");
 	pgmLight = compileShaders("shaders/main.vert", "shaders/light.frag");
 	pgmCamera = compileShaders("shaders/main.vert", "shaders/camera.frag");
+	pgmCrosslinkProp = compileShaders("shaders/button.vert", "shaders/sprite_crosslink.frag");
 
 	//initialize map shader variables
 
@@ -436,7 +439,7 @@ void Renderer::drawMouseCursor(BaseState* state)
 	}
 
 	drawSpriteBind(x, y, 4.0f, 0, resInterface, Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites",
-	               safe ? "pointer_safe" : "pointer_unsafe"), false, 1, 1, 1);
+	               safe ? "pointer_safe" : "pointer_unsafe"), SDM_Normal, 1, 1, 1);
 }
 
 void Renderer::drawText(float x, float y, const char* text, float red, float green, float blue, float alpha_scale, Font* font)
@@ -528,7 +531,7 @@ void Renderer::drawTextButton(TextButton* tb)
 
 void Renderer::drawImageButton(ImageButton* ib)
 {
-	drawSprite(ib->getX(), ib->getY(), 2, 0, resInterface, ib->getSpriteIndex(), false, 1, 1, 1);
+	drawSprite(ib->getX(), ib->getY(), 2, 0, resInterface, ib->getSpriteIndex(), SDM_Normal, 1, 1, 1);
 }
 
 void Renderer::drawButton(Button* button)
@@ -640,19 +643,19 @@ void Renderer::drawRect(float x, float y, float z, GLuint vbo, float red, float 
 	glUseProgramObject(0);
 }
 
-void Renderer::drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, bool colorOverride, float red, float green, float blue)
+void Renderer::drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue)
 {
 	glBindTexture(GL_TEXTURE_2D, resource->getTexId());
-	drawSprite(x, y, z, rotation, resource, index, colorOverride, red, green, blue);
+	drawSprite(x, y, z, rotation, resource, index, mode, red, green, blue);
 }
 
-void Renderer::drawSprite(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, bool colorOverride, float red, float green, float blue)
+void Renderer::drawSprite(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue)
 {
 	float xOff, yOff;
 	GLuint pgm;
 	resource->getClipPosition(index, &xOff, &yOff);
 
-	if (colorOverride)
+	if (mode == SDM_LinkableCross)
 	{
 		pgm = pgmColoredSprite;
 		glUseProgramObject(pgm);
@@ -660,7 +663,7 @@ void Renderer::drawSprite(float x, float y, float z, float rotation, SpriteSheet
 	}
 	else
 	{
-		pgm = pgmButton;
+		pgm = (mode == SDM_Normal) ? pgmButton : pgmCrosslinkProp;
 		glUseProgramObject(pgm);
 	}
 
@@ -899,7 +902,7 @@ void Renderer::drawEntities(Scene* scene)
 				            ent->getRotation(),
 				            resObjects,
 				            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "elevatoropen"),
-				            false, 1, 0, 1);
+				            scene->inCrosslinkMode() ? SDM_PropCross : SDM_Normal, 1, 0, 1);
 			}
 
 			drawSprite(	position.x - cam.x,
@@ -908,7 +911,7 @@ void Renderer::drawEntities(Scene* scene)
 			            ent->getRotation(),
 			            resObjects,
 			            ent->getCurrentSprite(),
-			            false, 1, 0, 1);
+			            scene->inCrosslinkMode() ? SDM_PropCross : SDM_Normal, 1, 0, 1);
 		}
 		else
 		{
@@ -918,7 +921,7 @@ void Renderer::drawEntities(Scene* scene)
 			            ent->getRotation(),
 			            resObjects,
 			            ent->getCurrentSprite(),
-			            false, 1, 0, 1);
+			            scene->inCrosslinkMode() ? SDM_PropCross : SDM_Normal, 1, 0, 1);
 		}
 	}
 
@@ -930,7 +933,7 @@ void Renderer::drawEntities(Scene* scene)
 		            0,
 		            resObjects,
 		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "subwayexit"),
-		            false, 1, 0, 1);
+		            scene->inCrosslinkMode() ? SDM_PropCross : SDM_Normal, 1, 0, 1);
 	}
 
 	for (i = 0; i < map->getNumberOfStairs(); i++)
@@ -942,7 +945,7 @@ void Renderer::drawEntities(Scene* scene)
 		            1,
 		            0,
 		            resObjects,
-		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "stairs"), false, 0, 0, 0);
+		            Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "stairs"), scene->inCrosslinkMode() ? SDM_PropCross : SDM_Normal, 0, 0, 0);
 	}
 
 	drawLinkableEntities(scene);
@@ -991,7 +994,7 @@ void Renderer::drawEntities(Scene* scene)
 			            0,
 			            resGlass,
 			            particle->getCurrentSprite(),
-			            false, 1, 0, 1);
+			            SDM_Normal, 1, 0, 1);
 		}
 	}
 
@@ -1055,7 +1058,7 @@ void Renderer::drawEnemies(Scene* scene, bool crosslink)
 		            enemy->getRotation(),
 		            sheet,
 		            enemy->getCurrentSprite(),
-		            crosslink, 0, 0, 0);
+		            crosslink ? SDM_LinkableCross : SDM_Normal, 0, 0, 0);
 #ifdef DEBUG
 
 		sprintf(print, "%i", enemy->getAlertType());
@@ -1127,7 +1130,7 @@ void Renderer::drawLinkableEntities(Scene* scene)
 		}
 		if (!dynamic_cast<EnemyGun*>(ent))
 		{
-			drawSprite(position.x - cam.x, position.y - cam.y, 1.5f, 0, resLinkables, ent->getCurrentSprite(), scene->inCrosslinkMode(), r, g, b);
+			drawSprite(position.x - cam.x, position.y - cam.y, 1.5f, 0, resLinkables, ent->getCurrentSprite(), scene->inCrosslinkMode() ? SDM_LinkableCross : SDM_Normal, r, g, b);
 		}
 		else
 		{
@@ -1157,7 +1160,7 @@ void Renderer::drawTutorialMarks(Scene* scene)
 					tm->getRotation(),
 					resObjects,
 					tm->getCurrentSprite(),
-					false, 1, 0, 1);
+					SDM_Normal, 1, 0, 1);
 	}
 }
 
@@ -1439,7 +1442,7 @@ void Renderer::drawScene(Scene* scene)
 			            player->getRotation(),
 			            player->getDirection() == Right ? resPlayer : resPlayerLeft,
 			            player->getCurrentSprite(),
-			            false, 0, 0, 0);
+			            SDM_Normal, 0, 0, 0);
 			if (player->isAimingGun())
 			{
 				unsigned int spr = Locator::getSpriteManager()->getIndex("./data/sprites/player.sprites", "player_arm_gun");
@@ -1449,7 +1452,7 @@ void Renderer::drawScene(Scene* scene)
 				            player->getArmRotation(),
 				            player->getDirection() == Right ? resPlayer : resPlayerLeft,
 				            spr,
-				            false, 0, 0, 0);
+				            SDM_Normal, 0, 0, 0);
 				drawLine(scene, 1, 0, 0, 0.5f, player->getCollisionRectCenterPosition(), scene->getLaserEnd(), 2.5f);
 			}
 		}
@@ -1489,7 +1492,7 @@ void Renderer::drawScene(Scene* scene)
 			                player->getRotation(),
 			                player->getDirection() == Right ? resPlayer : resPlayerLeft,
 			                player->getCurrentSprite(),
-			                true, 0, 0, 0);
+			                SDM_LinkableCross, 0, 0, 0);
 		}
 		drawEnemies(scene, true);
 		sprintf(print, "Energy: %i", scene->getPlayerEnergy());
