@@ -37,6 +37,7 @@ Map::~Map()
 {
 	LOGF((stdout, "Running map destructor!\n"));
 	size_t i;
+	bool sniper_active = std::find(_entities.begin(), _entities.end(), _sniper) != _entities.end();
 	for (i = 0; i < _entities.size(); i++)
 	{
 		delete _entities[i];
@@ -72,7 +73,10 @@ Map::~Map()
 		delete _shafts[i];
 	}
 
-	delete _sniper;
+	if (!sniper_active)
+	{
+		delete _sniper;
+	}
 
 	_collideVols.clear();
 	_entities.clear();
