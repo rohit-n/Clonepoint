@@ -127,7 +127,6 @@
   <object type="Door" gid="1069" x="1768" y="936"/>
   <object type="Elevator" gid="1049" x="1040" y="1048"/>
   <object type="Elevator" gid="1049" x="1040" y="520"/>
-  <object type="Switch" gid="1072" x="976" y="512"/>
   <object type="Switch" gid="1072" x="1648" y="928"/>
   <object type="Elevator" gid="1049" x="592" y="664"/>
   <object type="Elevator" gid="1049" x="592" y="792"/>
@@ -140,13 +139,14 @@
   <object type="LightFixture" gid="1089" x="672" y="848"/>
   <object type="LightFixture" gid="1089" x="1680" y="832"/>
   <object type="LightFixture" gid="1089" x="1600" y="976"/>
-  <object type="LightFixture" gid="1089" x="1088" y="432"/>
  </objectgroup>
  <objectgroup color="#aa00ff" name="VioletLinkable">
   <object type="Switch" gid="1072" x="1648" y="784"/>
   <object type="VaultDoor" gid="1079" x="1600" y="896"/>
   <object type="LightFixture" gid="1089" x="1504" y="592"/>
   <object type="TrapDoor" gid="1075" x="896" y="422.08"/>
+  <object type="Switch" gid="1072" x="976" y="512"/>
+  <object type="LightFixture" gid="1089" x="1096" y="432"/>
  </objectgroup>
  <objectgroup color="#008080" name="Links">
   <object x="1496" y="520">
