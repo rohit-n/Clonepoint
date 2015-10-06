@@ -150,6 +150,7 @@ public:
 	void updateSecurityCamera(SecurityCamera* camera);
 	bool handleMotionScannerWithEnt(MotionScanner* scanner, LivingEntity* le);
 	void updatePowerSocket(PowerSocket* socket);
+	void checkDoorHitEnemy(Door* door);
 
 	void updateCamera();
 	void setCameraDims(int w, int h);

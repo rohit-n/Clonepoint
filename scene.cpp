@@ -296,6 +296,10 @@ void Scene::update(unsigned int dT)
 			door->update(dT);
 			if (door->dirty)
 			{
+				if (door->getType() == Door_Normal)
+				{
+					checkDoorHitEnemy(door);
+				}
 				updateOverlappingFOVs(door);
 				if (door->getType() == Door_Vault && !door->isOpened())
 				{
@@ -623,6 +627,34 @@ void Scene::updatePowerSocket(PowerSocket* socket)
 				//Any enemy near a live power socket is knocked out.
 				((Enemy*)_currentMap->getEntAt(j))->changeState(KNOCKED_OUT);
 				break;
+			}
+		}
+	}
+}
+
+void Scene::checkDoorHitEnemy(Door* door)
+{
+	Enemy* enemy;
+	size_t i;
+	Rect testRect = door->getCollisionRect();
+	testRect.x += door->getOpenDirection() == Right ? 12 : -12;
+	testRect.w = 26;
+
+	for (i = 0; i < _currentMap->getNumberOfEnemies(); i++)
+	{
+		enemy = _currentMap->getEnemyAt(i);
+		if (check_collision(enemy->getCollisionRect(), testRect))
+		{
+			if (enemy->getType() != Enemy_Enforcer)
+			{
+				enemy->setAlive(false);
+				enemy->changeState(KNOCKED_OUT);
+			}
+			else
+			{
+				enemy->setVelX(door->getOpenDirection() == Right ? 0.25f : -0.25f);
+				setAccel(enemy->getAccelerationStruct(), true, door->getOpenDirection() == Left ? 0.04f : -0.04f, 0.0f);
+				enemy->changeState(IDLE_CAUTION);
 			}
 		}
 	}
