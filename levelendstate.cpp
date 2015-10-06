@@ -36,8 +36,8 @@ LevelEndState::~LevelEndState()
 
 void LevelEndState::resetPositions(int w, int h)
 {
-	_lvlCompleteLabel->setPosition(w * 0.48f, h * 0.1f);
-	_OKButton->setPosition(w * 0.48f, h * 0.8f);
+	_lvlCompleteLabel->setPosition(w * 0.4f, h * 0.1f);
+	_OKButton->setPosition(w * 0.48f, h * 0.5f);
 }
 
 void LevelEndState::update(unsigned int dT)
