@@ -148,12 +148,13 @@ void Scene::loadGame(const char* filename)
 			door = static_cast<Door*>(_currentMap->getEntAt(states[i].index1));
 			if (states[i].b1 && !door->isOpened())
 			{
-				door->open();
+				door->open(states[i].dir);
 			}
 			if (!states[i].b1 && door->isOpened())
 			{
-				door->close();
+				door->close(states[i].dir);
 			}
+			door->setOpenDirection(states[i].dir);
 			door->updateCollisionVolume();
 			break;
 		case SGET_LightFixture:
@@ -312,6 +313,7 @@ void Scene::getSGESs(std::vector<SavedGameEntityState>* container)
 			sges.index4 = 0;
 			sges.b1 = door->isOpened();
 			sges.timeToClose = door->getTimeToClose();
+			sges.dir = door->getOpenDirection();
 		}
 
 		if (dynamic_cast<MainComputer*>(ent))

@@ -57,7 +57,7 @@ void LinkableEntity::unlink()
 	_other = NULL;
 }
 
-void LinkableEntity::activate()
+void LinkableEntity::activate(LinkableEntity* activator)
 {
 	if (_other != NULL)
 	{
@@ -65,7 +65,7 @@ void LinkableEntity::activate()
 		//I would rather allow for entities to activate each other at least for a time.
 		if (!hasCycle())
 		{
-			_other->activate();
+			_other->activate(this);
 		}
 
 		if (dynamic_cast<EnemyGun*>(_other))
@@ -121,13 +121,13 @@ LightSwitch::LightSwitch(float x, float y, Circuit c, bool hs) : LinkableEntity(
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", sprite);
 }
 
-void LightSwitch::activate()
+void LightSwitch::activate(LinkableEntity* activator)
 {
 	if (!_isHandScanner)
 	{
 		Locator::getAudio()->playSound("switch");
 	}
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 bool LightSwitch::isHandScanner()
@@ -151,7 +151,7 @@ ElevatorDoor* ElevatorSwitch::getElevatorDoor()
 	return _door;
 }
 
-void ElevatorSwitch::activate()
+void ElevatorSwitch::activate(LinkableEntity* activator)
 {
 	if (_door->getShaft()->getOpenDoor() != _door)
 	{
@@ -161,7 +161,7 @@ void ElevatorSwitch::activate()
 
 void ElevatorSwitch::activateTarget()
 {
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 void ElevatorSwitch::changeSprite(unsigned int sprite)
@@ -222,9 +222,14 @@ Door::Door(float x, float y, Circuit c, bool open, DoorType type) : LinkableEnti
 	{
 		_cvol->flags |= COLLISION_ACTIVE;
 	}
+	else
+	{
+		_opendir = Right;
+	}
+
 	_cvol->flags |= COLLISION_DOOR;
 	_timeToClose = _type == Door_Trap ? TRAPDOOR_TIMEMS : VAULTDOOR_TIMEMS;
-	_dirty = false;
+	dirty = false;
 }
 
 CollisionVolume* Door::getCollisionVolume()
@@ -237,15 +242,20 @@ CollisionVolume* Door::getCollisionVolume2()
 	return _cvol2;
 }
 
-void Door::activate()
+void Door::activate(LinkableEntity* activator)
 {
+	Direction opendir = Right;
+	if (activator)
+	{
+		opendir = getCollisionRectPosition().x > activator->getCollisionRectPosition().x ? Right : Left;
+	}
 	if (_opened)
-		closeSound();
+		closeSound(opendir);
 	else
-		openSound();
+		openSound(opendir);
 
 	updateCollisionVolume();
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 bool Door::isOpened()
@@ -253,7 +263,7 @@ bool Door::isOpened()
 	return _opened;
 }
 
-void Door::open()
+void Door::open(Direction opendir)
 {
 	std::string name;
 
@@ -267,16 +277,17 @@ void Door::open()
 		changeAnimationSequence(Locator::getAnimationManager()->getSequence(ANIM_VAULT_OPEN));
 		break;
 	default:
-		name = "dooropen";
+		name = (opendir == Right) ? "dooropen" : "dooropenleft";
 		break;
 	}
 
 	_opened = true;
-	_dirty = true;
+	_opendir = opendir;
+	dirty = true;
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", name);
 }
 
-void Door::close()
+void Door::close(Direction opendir)
 {
 	std::string name;
 
@@ -295,21 +306,21 @@ void Door::close()
 	}
 
 	_opened = false;
-	_dirty = true;
+	dirty = true;
 	_timeToClose = _type == Door_Trap ? TRAPDOOR_TIMEMS : VAULTDOOR_TIMEMS;
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", name);
 }
 
-void Door::openSound()
+void Door::openSound(Direction opendir)
 {
 	Locator::getAudio()->playSound("door_open");
-	open();
+	open(opendir);
 }
 
-void Door::closeSound()
+void Door::closeSound(Direction opendir)
 {
 	Locator::getAudio()->playSound("door_close");
-	close();
+	close(opendir);
 }
 
 void Door::update(unsigned int dT)
@@ -329,7 +340,7 @@ void Door::update(unsigned int dT)
 			_timeToClose -= dT;
 			if (_timeToClose <= 0)
 			{
-				closeSound();
+				closeSound(Right); //Not like the direction matters.
 				updateCollisionVolume();
 			}
 		}
@@ -353,6 +364,21 @@ size_t Door::getNumberOfOverlappingLights()
 	return _overlappingLights.size();
 }
 
+void Door::setOpenDirection(Direction opendir)
+{
+	_opendir = opendir;
+	if (_type == Door_Normal && _opened)
+	{
+		_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites",
+			(opendir == Right) ? "dooropen" : "dooropenleft");
+	}
+}
+
+Direction Door::getOpenDirection()
+{
+	return _opendir;
+}
+
 FieldOfView* Door::getLightAndAnglesAt(int i, int* angle1, int* angle2)
 {
 	*angle1 = _overlappingLights[i].angle1;
@@ -367,16 +393,6 @@ void Door::addOverlappingLight(FieldOfView* fov, int angle1, int angle2)
 	laa.angle1 = angle1;
 	laa.angle2 = angle2;
 	_overlappingLights.push_back(laa);
-}
-
-bool Door::isDirty()
-{
-	return _dirty;
-}
-
-void Door::setDirty(bool b)
-{
-	_dirty = b;
 }
 
 DoorType Door::getType()
@@ -433,13 +449,13 @@ SecurityCamera::SecurityCamera(float x, float y, Circuit c, Direction dir, Field
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", dir == Right ? "camera_right" : "camera_left");
 }
 
-void SecurityCamera::activate()
+void SecurityCamera::activate(LinkableEntity* activator)
 {
 	if (_trespassed)
 	{
 		return;
 	}
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 bool SecurityCamera::isTrespassed()
@@ -469,10 +485,10 @@ LightFixture::~LightFixture()
 	_lights.clear();
 }
 
-void LightFixture::activate()
+void LightFixture::activate(LinkableEntity* activator)
 {
 	setSwitchedOn(!_switchedOn);
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 void LightFixture::setSwitchedOn(bool sw)
@@ -506,9 +522,9 @@ PowerSocket::PowerSocket(float x, float y, Circuit c) : LinkableEntity(x, y, c)
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "powersocket");
 }
 
-void PowerSocket::activate()
+void PowerSocket::activate(LinkableEntity* activator)
 {
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 	//TODO: Play sound here.
 	_live = true;
 }
@@ -536,7 +552,7 @@ void SoundDetector::unlink()
 	_soundedAlarm = false;
 }
 
-void SoundDetector::activate()
+void SoundDetector::activate(LinkableEntity* activator)
 {
 	bool hasAlarm = false;
 	if (!hasCycle())
@@ -569,7 +585,7 @@ void SoundDetector::activate()
 		}
 	}
 
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 }
 
 Alarm::Alarm(float x, float y, Circuit c) : LinkableEntity(x, y, c)
@@ -579,7 +595,7 @@ Alarm::Alarm(float x, float y, Circuit c) : LinkableEntity(x, y, c)
 	_sounded = false;
 }
 
-void Alarm::activate()
+void Alarm::activate(LinkableEntity* activator)
 {
 	changeAnimationSequence(Locator::getAnimationManager()->getSequence(ANIM_ALARM_ACTIVE));
 	setSounded(true);
@@ -625,16 +641,16 @@ EnemyGun::EnemyGun(float x, float y, Circuit c) : LinkableEntity(x, y, c)
 	_enemy = NULL;
 }
 
-void EnemyGun::activate()
+void EnemyGun::activate(LinkableEntity* activator)
 {
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 	_enemy->_fireWeapon(Shot_FromEnemyInvoluntary);
 }
 
 void EnemyGun::fire(GunShotTraceType gstt)
 {
 	LinkableEntity* other = _other; //if this gun is linked to another, _other may be made null when activating.
-	LinkableEntity::activate();
+	LinkableEntity::activate(this);
 	if (other == NULL)
 	{
 		_enemy->_fireWeapon(gstt);

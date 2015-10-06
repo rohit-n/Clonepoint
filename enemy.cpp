@@ -193,7 +193,7 @@ void Enemy::update(unsigned int dT)
 					changeState(INVESTIGATING);
 				}
 
-				((LightSwitch*)_secondaryTarget)->activate();
+				((LightSwitch*)_secondaryTarget)->activate(NULL);
 				if (_targetSwitch == _secondaryTarget)
 				{
 					_targetSwitch = NULL;
@@ -205,7 +205,7 @@ void Enemy::update(unsigned int dT)
 			{
 				if (_targetType == TARGET_LIGHTSWITCH)
 				{
-					_targetSwitch->activate();
+					_targetSwitch->activate(NULL);
 					_numSwitchAttempts++;
 					if ((_lightToActivate != NULL && _lightToActivate->isActive()) || _numSwitchAttempts == 3) //activate the light, or give up.
 					{

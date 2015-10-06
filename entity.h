@@ -392,7 +392,7 @@ public:
 	LinkableEntity* getTarget();
 	void link(LinkableEntity* target, bool playSound);
 	virtual void unlink();
-	virtual void activate();
+	virtual void activate(LinkableEntity* activator);
 	bool hasCycle();
 protected:
 	Circuit _circuit;
@@ -404,7 +404,7 @@ class LightSwitch : public LinkableEntity
 {
 public:
 	LightSwitch(float x, float y, Circuit c, bool hs); //hs = isHandScanner
-	void activate();
+	void activate(LinkableEntity* activator);
 	bool isHandScanner();
 private:
 	bool _isHandScanner;
@@ -414,7 +414,7 @@ class ElevatorSwitch : public LinkableEntity
 {
 public:
 	ElevatorSwitch(float x, float y, Circuit c);
-	void activate();
+	void activate(LinkableEntity* activator);
 	void registerDoor(ElevatorDoor* door);
 	ElevatorDoor* getElevatorDoor();
 	void activateTarget();
@@ -431,19 +431,20 @@ public:
 	CollisionVolume* getCollisionVolume2();
 	void update(unsigned int dT);
 	void updateCollisionVolume();
-	void activate();
+	void activate(LinkableEntity* activator);
 	bool isOpened();
-	void open();
-	void close();
-	void openSound();
-	void closeSound();
+	void open(Direction opendir);
+	void close(Direction opendir);
+	void openSound(Direction opendir);
+	void closeSound(Direction opendir);
 	void addOverlappingLight(FieldOfView* fov, int angle1, int angle2);
 	size_t getNumberOfOverlappingLights();
+	void setOpenDirection(Direction opendir);
+	Direction getOpenDirection();
 	FieldOfView* getLightAndAnglesAt(int i, int* angle1, int* angle2);
-	bool isDirty();
-	void setDirty(bool b);
 	DoorType getType();
 	int getTimeToClose(); //for save games.
+	bool dirty;
 private:
 	DoorType _type;
 	int _timeToClose; //for trap and vault doors only.
@@ -451,7 +452,7 @@ private:
 	CollisionVolume* _cvol;
 	CollisionVolume* _cvol2;
 	std::vector<LightAndAngles> _overlappingLights; //all lights here update when opened or closed.
-	bool _dirty;
+	Direction _opendir;
 };
 
 class MotionScanner : public LinkableEntity
@@ -472,7 +473,7 @@ class SecurityCamera : public LinkableEntity
 {
 public:
 	SecurityCamera(float x, float y, Circuit c, Direction dir, FieldOfView* fov);
-	void activate();
+	void activate(LinkableEntity* activator);
 	void setTrespassed(bool b);
 	bool isTrespassed();
 	FieldOfView* getFOV();
@@ -487,7 +488,7 @@ class LightFixture : public LinkableEntity
 public:
 	LightFixture(float x, float y, Circuit c, bool switchedOn);
 	~LightFixture();
-	void activate();
+	void activate(LinkableEntity* activator);
 	void toggleAllFOVs();
 	void setSwitchedOn(bool sw);
 	bool isSwitchedOn();
@@ -501,7 +502,7 @@ class PowerSocket : public LinkableEntity
 {
 public:
 	PowerSocket(float x, float y, Circuit c);
-	void activate();
+	void activate(LinkableEntity* activator);
 	void deactivate();
 	bool isLive();
 private:
@@ -513,7 +514,7 @@ class SoundDetector : public LinkableEntity
 public:
 	SoundDetector(float x, float y, Circuit c);
 	void unlink();
-	void activate();
+	void activate(LinkableEntity* activator);
 private:
 	bool _soundedAlarm;
 };
@@ -522,7 +523,7 @@ class Alarm : public LinkableEntity
 {
 public:
 	Alarm(float x, float y, Circuit c);
-	void activate();
+	void activate(LinkableEntity* activator);
 	void deactivate();
 	void setSounded(bool b);
 	bool isSounded();
@@ -538,7 +539,7 @@ class EnemyGun : public LinkableEntity
 {
 public:
 	EnemyGun(float x, float y, Circuit c);
-	void activate();
+	void activate(LinkableEntity* activator);
 	void fire(GunShotTraceType gstt);
 	void update(unsigned int dT);
 	void setEnemy(Enemy* enemy);

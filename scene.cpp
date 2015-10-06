@@ -294,14 +294,14 @@ void Scene::update(unsigned int dT)
 		{
 			Door* door = static_cast<Door*>(ent);
 			door->update(dT);
-			if (door->isDirty())
+			if (door->dirty)
 			{
 				updateOverlappingFOVs(door);
 				if (door->getType() == Door_Vault && !door->isOpened())
 				{
 					handleVaultDoorClose(door);
 				}
-				door->setDirty(false);
+				door->dirty = false;
 			}
 		}
 		else if (dynamic_cast<LightSwitch*>(ent))
@@ -588,7 +588,7 @@ void Scene::updateSecurityCamera(SecurityCamera* camera)
 	{
 		if (isPlayerInFOV(camera->getFOV()))
 		{
-			camera->activate();
+			camera->activate(NULL);
 			camera->setTrespassed(true);
 			camera->getFOV()->setColors(0.5, 0.0, 0);
 		}
@@ -599,7 +599,7 @@ bool Scene::handleMotionScannerWithEnt(MotionScanner* scanner, LivingEntity* le)
 {
 	if (check_collision(scanner->getCollisionRect(), le->getCollisionRect()) && !scanner->isTrespassed())
 	{
-		scanner->activate();
+		scanner->activate(NULL);
 		scanner->setTrespasser(le);
 		return true;
 	}
@@ -1096,7 +1096,7 @@ void Scene::handlePlayerFrob(bool up)
 	{
 		if (_playerOverlappingEnts[UESwitch])
 		{
-			_switcher->activate();
+			_switcher->activate(NULL);
 		}
 		if (_player->isOverlappingStairs())
 		{
@@ -1179,7 +1179,7 @@ void Scene::addNoise(int x, int y, int radius, bool alertGuards, AlertType atype
 			currentDistance = vec2f_distance(p, sd->getCollisionRectPosition());
 			if (currentDistance <= radius)
 			{
-				sd->activate();
+				sd->activate(NULL);
 			}
 		}
 	}

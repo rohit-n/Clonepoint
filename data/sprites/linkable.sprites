@@ -16,3 +16,4 @@ lightfixture = 20
 elev_switch_off = 21
 elev_switch_wait = 22
 elev_switch_open = 23
+dooropenleft = 24
