@@ -792,6 +792,14 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				{
 					sm = SM_Crosslink2;
 				}
+				if (!strcmp(element->Attribute("type"), "tut_08"))
+				{
+					sm = SM_Objectives;
+				}
+				if (!strcmp(element->Attribute("type"), "tut_09"))
+				{
+					sm = SM_Elevators;
+				}
 				if (sm < NUMBER_OF_STRING_MESSAGES)
 				{
 					_tutorials.push_back(new TutorialMark(x, y - ENTDIM, sm));

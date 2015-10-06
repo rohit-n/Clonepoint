@@ -159,6 +159,7 @@
   <object type="tut_06" gid="1052" x="1200" y="1008"/>
   <object type="tut_07" gid="1052" x="1036" y="1008"/>
   <object type="tut_05" gid="1052" x="928" y="684"/>
+  <object type="tut_09" gid="1052" x="1192" y="684"/>
  </objectgroup>
  <objectgroup name="Objectives">
   <object type="Terminal" gid="1046" x="1056" y="832"/>

@@ -108,6 +108,8 @@ enum StringMessage
 	SM_Guards2,
 	SM_Crosslink1,
 	SM_Crosslink2,
+	SM_Objectives,
+	SM_Elevators,
 	SM_ObjectivesIncomplete,
 	NUMBER_OF_STRING_MESSAGES
 };
