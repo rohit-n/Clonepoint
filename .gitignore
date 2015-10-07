@@ -1,3 +1,9 @@
 clonepoint
+*.exe
+*.dll
 *.o
 *.sav
+data/fonts
+data/sprites/*.png
+data/sounds/
+data/tilesets/
