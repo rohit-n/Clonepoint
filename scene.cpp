@@ -643,12 +643,19 @@ void Scene::checkDoorHitEnemy(Door* door)
 	for (i = 0; i < _currentMap->getNumberOfEnemies(); i++)
 	{
 		enemy = _currentMap->getEnemyAt(i);
+		if (enemy->getState() == KNOCKED_OUT)
+		{
+			continue;
+		}
 		if (check_collision(enemy->getCollisionRect(), testRect))
 		{
 			if (enemy->getType() != Enemy_Enforcer)
 			{
 				enemy->setAlive(false);
 				enemy->changeState(KNOCKED_OUT);
+				//play twice to hear better over the door opening sound.
+				Locator::getAudio()->playSound("punch2");
+				Locator::getAudio()->playSound("punch2");
 			}
 			else
 			{
