@@ -76,7 +76,7 @@ void ConfigManager::setValue(std::string key, std::string value)
 
 void ConfigManager::loadConfig(const char* filename)
 {
-	char* text = file_read(filename);
+	char* text = file_read(filename, NULL);
 	char* delim = (char*)" =\t\n\r";
 	char* token = strtok(text, delim);
 	char* key;

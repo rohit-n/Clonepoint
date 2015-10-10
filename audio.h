@@ -35,14 +35,19 @@ public:
 	AudioManager();
 	~AudioManager();
 	void playSound(std::string filename);
+	void playMusic(std::string filename);
+	void stopMusic();
 	void playSound3D(const char* filename, float x, float y, float z);
 	void loadWAV(std::string filename);
+	ALuint bufferFromOGG(std::string filename);
 	ALuint getBuffer(std::string filename);
 	ALuint getNextAvailableSource();
 	void setVolume(float volume);
 private:
 	std::map<std::string, ALuint> _loadedBuffers;
 	std::vector<ALuint> _loadedSources;
+	ALuint _musicSource;
+	ALuint _musicBuffer;
 	ALCdevice* _device;
 	ALCcontext* _context;
 };

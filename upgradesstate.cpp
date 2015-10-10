@@ -156,6 +156,7 @@ void UpgradesState::handleButton(Button* button)
 		_manager->initSceneAndMap(_mapFilename.c_str());
 		_manager->switchToState(GAME_SCREEN);
 		_manager->makeStartSave();
+		Locator::getAudio()->playMusic("groove_grove.ogg");
 	}
 	else if (button == _jumpPowerDecr && _jumpPower > 0)
 	{

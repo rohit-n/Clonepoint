@@ -18,7 +18,7 @@ Default Controls:
 
 Credits:
 	Tom Francis for creating Gunpoint.
-	Sean Barrett for stb_image and stb_ttf (public domain).
+	Sean Barrett for stb_image, stb_ttf, and stb_vorbis (public domain).
 	TinyXML and SDL2 are under the Zlib license.
 	OpenAL Soft is under the LGPL license.
 
@@ -124,3 +124,10 @@ Credits:
 			- By qubodup
 			- http://opengameart.org/content/simple-light-graysacle-cursors-16x16
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
+
+	Music
+	1. groove_grove.ogg
+		- By Kevin MacLeod
+		- incompetech.com
+		- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
+		- Converted from MP3 to OGG

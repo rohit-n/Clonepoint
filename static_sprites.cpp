@@ -68,7 +68,7 @@ unsigned int StaticSpriteManager::getPlayerSpriteIndex(PlayerStaticSprites pss)
 
 void StaticSpriteManager::loadSpriteIndicesFromFile(std::string filename)
 {
-	char* text = file_read(filename.c_str());
+	char* text = file_read(filename.c_str(), NULL);
 	char* delim = (char*)" =\t\n\r";
 	char* token = strtok(text, delim);
 	std::string spriteName;

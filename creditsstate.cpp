@@ -29,7 +29,7 @@ CreditsState::CreditsState(StateManager* sm) : MenuState(sm)
 	Gunpoint created by Tom Francis (www.pentadact.com)\n\
 	\n\n\
 	Libraries Used:\n\
-	stb_image and stb_ttf by Sean Barrett (www.nothings.org)\n\
+	stb_image, stb_ttf, stb_vorbis by Sean Barrett (www.nothings.org)\n\
 	TinyXML (www.grinninglizard.com/tinyxml/)\n\
 	SDL2 (www.libsdl.org)\n\
 	OpenAL Soft (kcat.strangesoft.net/openal.html)\n\

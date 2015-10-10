@@ -1718,8 +1718,8 @@ GLuint Renderer::compileShaders(const char* vert_filename, const char* frag_file
 	GLuint vert_shader = glCreateShaderObject(GL_VERTEX_SHADER);
 	GLuint frag_shader = glCreateShaderObject(GL_FRAGMENT_SHADER);
 
-	char* vertString = file_read(vert_filename);
-	char* fragString = file_read(frag_filename);
+	char* vertString = file_read(vert_filename, NULL);
+	char* fragString = file_read(frag_filename, NULL);
 
 	addShader(program, vertString, vert_shader);
 	addShader(program, fragString, frag_shader);

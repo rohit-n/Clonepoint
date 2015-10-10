@@ -49,6 +49,7 @@ void LevelEndState::handleButton(Button* button)
 {
 	if (button == _OKButton)
 	{
+		Locator::getAudio()->stopMusic();
 		_manager->switchToState(MAINMENU_SCREEN);
 		_manager->destroyScene();
 	}

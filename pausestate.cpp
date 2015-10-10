@@ -54,6 +54,7 @@ void PauseState::handleButton(Button* button)
 
 	if (button == _exitButton)
 	{
+		Locator::getAudio()->stopMusic();
 		_manager->switchToState(MAINMENU_SCREEN);
 		_manager->destroyScene();
 	}

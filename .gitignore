@@ -4,6 +4,7 @@ clonepoint
 *.o
 *.sav
 data/fonts
+data/music/
 data/sprites/*.png
 data/sounds/
 data/tilesets/

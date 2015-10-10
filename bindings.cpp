@@ -189,7 +189,7 @@ eBinding BindingsManager::getBindingFromKey(SDL_Keycode key)
 
 void BindingsManager::loadBindingsFromConfig(const char* filename)
 {
-	char* text = file_read(filename);
+	char* text = file_read(filename, NULL);
 	char* delim = (char*)" =\t\n\r";
 	char* token = strtok(text, delim);
 	eBinding binding;
