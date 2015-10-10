@@ -37,7 +37,7 @@ file.o: file.cpp file.h
 audio.o: audio.cpp audio.h
 	$(CXX) audio.cpp $(CFLAGS) -c
 
-locator.o: locator.cpp locator.h audio.o
+locator.o: locator.cpp locator.h audio.h
 	$(CXX) locator.cpp $(CFLAGS) -c
 
 button.o: button.cpp button.h
