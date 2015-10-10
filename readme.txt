@@ -126,8 +126,8 @@ Credits:
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
 
 	Music
-	1. groove_grove.ogg
-		- By Kevin MacLeod
-		- incompetech.com
-		- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
-		- Converted from MP3 to OGG
+		1. groove_grove.ogg
+			- By Kevin MacLeod
+			- incompetech.com
+			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
+			- Converted from MP3 to OGG
