@@ -124,6 +124,7 @@ void AudioManager::playMusic(std::string filename)
 
 	alSourcei(_musicSource, AL_BUFFER, _musicBuffer);
 	alSource3f(_musicSource, AL_POSITION, 0, 0, 0);
+	alSourcei(_musicSource, AL_LOOPING, 1);
 	alSourcePlay(_musicSource);
 }
 
