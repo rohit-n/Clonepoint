@@ -18,6 +18,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "texture.h"
+#undef L //L is #define'd in stb_vorbis.c, which causes an error in unity builds.
 #include "stb_image.c"
 #include "global.h"
 
