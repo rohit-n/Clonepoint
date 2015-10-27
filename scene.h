@@ -210,13 +210,7 @@ public:
 	float getLightEnteredAlpha();
 	float getInputPopupAlpha();
 	bool hasPlayerFiredShot();
-	int getTimeToSniper();
-	unsigned int getNumPlayerBullets();
-	unsigned int getPlayerEnergy();
 	int getStringMessageTime();
-	void setTimeToSniper(int time);
-	void setNumPlayerBullets(unsigned int bullets);
-	void setPlayerEnergy(unsigned int energy);
 	StringMessage getStringMessage();
 	UsableEnts getFirstOverlappedEnt();
 
@@ -271,6 +265,10 @@ public:
 	void breakOnGlass(vec2f interpolatedPoint, vec2f start, bool* stop);
 	void killEnemies(Entity* source, vec2f interpolatedPoint, bool* stop);
 	bool isMouseCursorSeen(int mx, int my);
+
+	unsigned int _numPlayerBullets;
+	int _timeToSniper;
+	unsigned int _playerEnergy;
 private:
 	void makeInitialLinks();
 	void attemptLinkBetween(vec2f p1, vec2f p2);
@@ -338,9 +336,6 @@ private:
 	float _lightEnteredAlpha;
 	float _inputPopupAlpha;
 	bool _playerShotFired;
-	int _timeToSniper;
-	unsigned int _numPlayerBullets;
-	unsigned int _playerEnergy;
 	StringMessage _stringMessage;
 
 	//saving

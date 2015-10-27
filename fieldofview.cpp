@@ -63,11 +63,6 @@ int FieldOfView::getSize()
 	return _halfSize;
 }
 
-bool FieldOfView::isActive()
-{
-	return _active;
-}
-
 void FieldOfView::addVertex(float x, float y)
 {
 	_verts.push_back(x);
@@ -94,12 +89,6 @@ int FieldOfView::getNumberOfVerts()
 	return _verts.size() / 2;
 }
 
-void FieldOfView::rotate(int deg)
-{
-	_direction += deg;
-	clearVerts();
-}
-
 void FieldOfView::moveTo(float x, float y)
 {
 	_position.x = x;
@@ -113,23 +102,11 @@ void FieldOfView::clearVerts()
 	addVertex(_position.x, _position.y);
 }
 
-void FieldOfView::setActive(bool b)
-{
-	_active = b;
-}
-
 void FieldOfView::getColors(float* r, float* g, float* b)
 {
 	*r = _red;
 	*g = _green;
 	*b = _blue;
-}
-
-void FieldOfView::setColors(float r, float g, float b)
-{
-	_red = r;
-	_green = g;
-	_blue = b;
 }
 
 Rect FieldOfView::getCollisionRect()
@@ -140,16 +117,6 @@ Rect FieldOfView::getCollisionRect()
 	rect.w = 32;
 	rect.h = 32;
 	return rect;
-}
-
-LightFixture* FieldOfView::getLightFixture()
-{
-	return _fixture;
-}
-
-void FieldOfView::registerLightFixture(LightFixture* fixture)
-{
-	_fixture = fixture;
 }
 
 FOVType FieldOfView::getType()

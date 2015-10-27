@@ -220,7 +220,7 @@ void Scene::handleStairCollision(LivingEntity* le)
 		sw = _currentMap->getStairsAt(i);
 		if (check_collision(le->getCollisionRect(), sw->getCollisionRect()))
 		{
-			le->setOverlappingStairs(sw);
+			le->_overlappingStairs = sw;
 			found = true;
 			if (_player == le)
 			{
@@ -232,7 +232,7 @@ void Scene::handleStairCollision(LivingEntity* le)
 
 	if (!found)
 	{
-		le->setOverlappingStairs(NULL);
+		le->_overlappingStairs = NULL;
 	}
 }
 
@@ -361,9 +361,9 @@ void Scene::update(unsigned int dT)
 		{
 			Alarm* alarm = static_cast<Alarm*>(ent);
 			alarm->update(dT);
-			if (alarm->isSounded())
+			if (alarm->_sounded)
 			{
-				alarm->setSounded(false);
+				alarm->_sounded = false;
 				addNoise(alarm->getCollisionRectPosition().x - _camera.x, alarm->getCollisionRectPosition().y - _camera.y, 512, true, ALERT_RUN, alarm);
 			}
 		}
@@ -381,7 +381,7 @@ void Scene::update(unsigned int dT)
 			tm = *it;
 			if (check_collision(tm->getCollisionRect(), _player->getCollisionRect()))
 			{
-				_stringMessage = tm->getTutorialString();
+				_stringMessage = tm->_ts;
 				_stringMessageTimer = TIME_TO_SHOW_TUTORIAL_MSG;
 			}
 		}
@@ -410,7 +410,7 @@ void Scene::update(unsigned int dT)
 		shaft = _currentMap->getShaftAt(i);
 		shaft->update();
 		target = shaft->getTarget();
-		if (target && fabs(shaft->getElevatorPosition().y - target->getCollisionRectPosition().y) < fabs(shaft->getVelocity()))
+		if (target && fabs(shaft->getElevatorPosition().y - target->getCollisionRectPosition().y) < fabs(shaft->_yVel))
 		{
 			shaft->setOpenDoor(target, true);
 			addNoise(shaft->getElevatorPosition().x - _camera.x, shaft->getElevatorPosition().y - _camera.y, 512, true, ALERT_LOOK, NULL);
@@ -442,7 +442,7 @@ void Scene::update(unsigned int dT)
 
 	if (check_collision(_player->getCollisionRect(), _endRect))
 	{
-		if (_totalObjectives == _player->getNumHackedTerminals())
+		if (_totalObjectives == _player->_numHackedTerminals)
 		{
 			endLevel();
 		}
@@ -501,9 +501,9 @@ void Scene::updateEnemy(Enemy* enemy, unsigned int dT)
 
 	if (state == KNOCKED_OUT || state == FALLING)
 	{
-		if (enemy->getGun() != NULL)
+		if (enemy->_gun != NULL)
 		{
-			_currentMap->removeEnemyGun(enemy->getGun());
+			_currentMap->removeEnemyGun(enemy->_gun);
 		}
 	}
 
@@ -527,7 +527,7 @@ void Scene::updateEnemy(Enemy* enemy, unsigned int dT)
 	        && !_player->isInElevator() && !_player->isMovingThroughStairs() && state != KNOCKED_OUT && state != FALLING && state != PINNED
 	        && !enemy->isAnimatingThroughStairs())
 	{
-		if (!_player->isOnGround())
+		if (!_player->_onGround)
 		{
 			handlePlayerPounceEnemy(enemy, dT);
 		}
@@ -550,7 +550,7 @@ void Scene::updateEnemy(Enemy* enemy, unsigned int dT)
 void Scene::updateMotionScanner(MotionScanner* scanner)
 {
 	size_t j;
-	if (scanner->isTrespassed() && !check_collision(scanner->getCollisionRect(), scanner->getTrespasser()->getCollisionRect()))
+	if (scanner->_trespassed && !check_collision(scanner->getCollisionRect(), scanner->getTrespasser()->getCollisionRect()))
 	{
 		//this motion scanner is no longer being trespassed, and is ready to activate again.
 		scanner->resetTrespasser();
@@ -570,7 +570,7 @@ void Scene::updateMotionScanner(MotionScanner* scanner)
 		}
 
 		//account for the player as well.
-		if (!scanner->isTrespassed())
+		if (!scanner->_trespassed)
 		{
 			handleMotionScannerWithEnt(scanner, _player);
 		}
@@ -579,13 +579,15 @@ void Scene::updateMotionScanner(MotionScanner* scanner)
 
 void Scene::updateSecurityCamera(SecurityCamera* camera)
 {
-	if (camera->isTrespassed() && !isPlayerInFOV(camera->getFOV()))
+	if (camera->_trespassed && !isPlayerInFOV(camera->getFOV()))
 	{
 		//this camera is no longer being trespassed, and is ready to activate again.
-		camera->setTrespassed(false);
+		camera->_trespassed = false;
 		if (!_crosslink)
 		{
-			camera->getFOV()->setColors(0.5, 0.5, 0);
+			camera->getFOV()->_red = 0.5f;
+			camera->getFOV()->_green = 0.5f;
+			camera->getFOV()->_blue = 0.0f;
 		}
 	}
 	else //camera has not been trespassed yet - is the player intersecting it?
@@ -593,15 +595,17 @@ void Scene::updateSecurityCamera(SecurityCamera* camera)
 		if (isPlayerInFOV(camera->getFOV()))
 		{
 			camera->activate(NULL);
-			camera->setTrespassed(true);
-			camera->getFOV()->setColors(0.5, 0.0, 0);
+			camera->_trespassed = true;
+			camera->getFOV()->_red = 0.5f;
+			camera->getFOV()->_green = 0.0f;
+			camera->getFOV()->_blue = 0.0f;
 		}
 	}
 }
 
 bool Scene::handleMotionScannerWithEnt(MotionScanner* scanner, LivingEntity* le)
 {
-	if (check_collision(scanner->getCollisionRect(), le->getCollisionRect()) && !scanner->isTrespassed())
+	if (check_collision(scanner->getCollisionRect(), le->getCollisionRect()) && !scanner->_trespassed)
 	{
 		scanner->activate(NULL);
 		scanner->setTrespasser(le);
@@ -733,7 +737,7 @@ void Scene::movePlayer(bool left, bool right, bool down, bool up)
 	{
 		_player->setVelY(0);
 	}
-	else if (down && !up && _player->getAttachType() == NotAttached && _player->isOnGround() && !(left || right))
+	else if (down && !up && _player->getAttachType() == NotAttached && _player->_onGround && !(left || right))
 	{
 		//check if player is trying to attach to volume from the side.
 		tryPlayerAttachSide();
@@ -765,7 +769,7 @@ void Scene::movePlayer(bool left, bool right, bool down, bool up)
 			finalVel *= PLAYERAIMINGSPEEDMOD;
 		}
 
-		if (_player->isOnGround() && !_player->isAccelerating())
+		if (_player->_onGround && !_player->getAccelerationStruct()->accelerating)
 		{
 			if (_player->isPinning())
 			{
@@ -782,7 +786,7 @@ void Scene::movePlayer(bool left, bool right, bool down, bool up)
 		}
 		else if (_player->getAttachType() == Ceiling)
 		{
-			if (!_player->isAccelerating())
+			if (!_player->getAccelerationStruct()->accelerating)
 			{
 				_player->setVelX(finalVel);
 			}
@@ -796,7 +800,7 @@ void Scene::movePlayer(bool left, bool right, bool down, bool up)
 
 	if (!right && !left)
 	{
-		if ((_player->isOnGround() || _player->getAttachType() == Ceiling) && _player->getAcceleration() == 0.0f)
+		if ((_player->_onGround || _player->getAttachType() == Ceiling) && _player->getAccelerationStruct()->accel == 0.0f)
 			_player->setVelX(0);
 	}
 
@@ -845,7 +849,7 @@ void Scene::handleClick(int mx, int my, unsigned int dT)
 			}
 		}
 	}
-	else if (!_player->isInElevator() && (_player->isOnGround() || _player->getAttachType() != NotAttached)) //can only jump if not in crosslink.
+	else if (!_player->isInElevator() && (_player->_onGround || _player->getAttachType() != NotAttached)) //can only jump if not in crosslink.
 	{
 		if (_jumpPowerTimer > 0)
 		{
@@ -859,7 +863,7 @@ void Scene::handleClick(int mx, int my, unsigned int dT)
 
 		_jumpPower = ((float)(_timeToFullChargeJump - _jumpPowerTimer) / _timeToFullChargeJump);
 
-		if (_player->isOnGround() || _player->getAttachType() != NotAttached)
+		if (_player->_onGround || _player->getAttachType() != NotAttached)
 			calculateJumpTrajectory(mx, my, dT);
 	}
 }
@@ -918,9 +922,9 @@ void Scene::handleLeftClickRelease(int mx, int my)
 				collRect = es->getCollisionRect();
 				if (vec2InRect(vec2f(locX, locY), collRect))
 				{
-					if (es->getElevatorDoor() != _player->getElevatorDoor())
+					if (es->_door != _player->getElevatorDoor())
 					{
-						_player->getElevatorDoor()->getShaft()->setTarget(es->getElevatorDoor());
+						_player->getElevatorDoor()->_shaft->setTarget(es->_door);
 						break;
 					}
 				}
@@ -1137,7 +1141,7 @@ void Scene::handlePlayerFrob(bool up)
 		{
 			_switcher->activate(NULL);
 		}
-		if (_player->isOverlappingStairs())
+		if (_player->_overlappingStairs != NULL)
 		{
 			_player->setStairMovement(up ? MovingUp : MovingDown);
 		}
@@ -1161,13 +1165,13 @@ void Scene::handlePlayerFrob(bool up)
 			else
 			{
 				//call elevator to this location.
-				_elevator->getShaft()->setTarget(_elevator);
+				_elevator->_shaft->setTarget(_elevator);
 			}
 		}
-		if (_player->isInElevator() && !_player->getElevatorDoor()->getShaft()->isMoving() && !_elevatorLocked)
+		if (_player->isInElevator() && !_player->getElevatorDoor()->_shaft->_moving && !_elevatorLocked)
 		{
 			ElevatorDoor* door = _player->getElevatorDoor();
-			ElevatorShaft* shaft = door->getShaft();
+			ElevatorShaft* shaft = door->_shaft;
 			shaft->setTarget(up ? shaft->getDoorAbove(door) : shaft->getDoorBelow(door));
 		}
 	}
@@ -1240,7 +1244,7 @@ void Scene::playerJump()
 
 	_jumpPowerTimer = _timeToFullChargeJump - JUMPSTARTTIME;
 
-	if (_player->isOnGround() || _player->getAttachType() != NotAttached)
+	if (_player->_onGround || _player->getAttachType() != NotAttached)
 	{
 		if ((at == RightSide && _jumpImpulse.x > 0) ||
 		        (at == LeftSide && _jumpImpulse.x < 0) ||
@@ -1256,7 +1260,7 @@ void Scene::playerJump()
 void Scene::warpPlayerTo(int mx, int my)
 {
 	_player->setCollisionRectPosition(mx + _camera.x, my + _camera.y);
-	_player->setOnGround(false);
+	_player->_onGround = false;
 	_player->detach();
 	_player->releasePin();
 }
@@ -1333,24 +1337,32 @@ void Scene::toggleCrosslinkMode()
 
 			if (!_crosslink)
 			{
-				if (camera->isTrespassed())
+				if (camera->_trespassed)
 				{
-					fov->setColors(0.5, 0.0, 0);
+					fov->_red = 0.5f;
+					fov->_green = 0.0f;
+					fov->_blue = 0.0f;
 				}
 				else
 				{
-					fov->setColors(0.5, 0.5, 0);
+					fov->_red = 0.5f;
+					fov->_green = 0.5f;
+					fov->_blue = 0.0f;
 				}
 			}
 			else
 			{
 				if (isCircuitUnlocked(camera->getCircuitType()))
 				{
-					fov->setColors(r , g , b);
+					fov->_red = r;
+					fov->_green = g;
+					fov->_blue = b;
 				}
 				else
 				{
-					fov->setColors(0.25, 0.25, 0.25);
+					fov->_red = 0.25f;
+					fov->_green = 0.25f;
+					fov->_blue = 0.25f;
 				}
 			}
 		}
@@ -1532,7 +1544,7 @@ void Scene::calculatePlayerVisibility()
 {
 	if (_player->isInElevator())
 	{
-		_player->setLightVisibility(0);
+		_player->_lightVisibility = 0;
 		return;
 	}
 
@@ -1542,11 +1554,11 @@ void Scene::calculatePlayerVisibility()
 	float radius = 0;
 	vec2f lightPos;
 	float dist = 0;
-	int prevLight = _player->getLightVisibility();
+	int prevLight = _player->_lightVisibility;
 
 	for (i = 0; i < _currentMap->getNumberOfLights(); i++)
 	{
-		if (_currentMap->getLightAt(i)->isActive() && _currentMap->getLightAt(i)->getType() == FOV_LIGHT)
+		if (_currentMap->getLightAt(i)->_active && _currentMap->getLightAt(i)->getType() == FOV_LIGHT)
 		{
 			if (isPlayerInFOV(_currentMap->getLightAt(i)))
 			{
@@ -1566,7 +1578,7 @@ void Scene::calculatePlayerVisibility()
 	{
 		_lightEnteredAlpha = 0.3f;
 	}
-	_player->setLightVisibility(vis);
+	_player->_lightVisibility = vis;
 }
 
 bool Scene::isPlayerInFOV(FieldOfView* fov)
@@ -1607,7 +1619,7 @@ void Scene::calculateStrongestLight(Enemy* enemy)
 			continue;
 		}
 
-		if (fov->isActive())
+		if (fov->_active)
 		{
 			lightPos = fov->getPosition();
 			dist = vec2f_distance(pos, lightPos);
@@ -1766,7 +1778,7 @@ void Scene::getCircuitColor(Circuit c, float &r, float &g, float &b)
 
 bool Scene::isPlayerInLight()
 {
-	return _player->getLightVisibility() >= PLAYER_LIGHT_THRESHOLD;
+	return _player->_lightVisibility >= PLAYER_LIGHT_THRESHOLD;
 }
 
 void Scene::addPlayerJumpPower(float f)
@@ -1797,9 +1809,9 @@ void Scene::addParticle(float x, float y, float vx, float vy)
 	for (i = 0; i < _particles.size(); i++)
 	{
 		p = getParticleAt(i);
-		if (!p->isAlive())
+		if (!p->_alive)
 		{
-			p->setAlive(true);
+			p->_alive = true;
 			p->setPosition(x, y);
 			p->setVelocity(vx, vy);
 			return;
@@ -1858,14 +1870,14 @@ void Scene::handleMouse(unsigned int mx, unsigned int my)
 			_player->reverseDirection();
 		}
 
-		_player->setArmRotation(angle);
+		_player->_armRotation = angle;
 		traceBullet(_player, vec2f(mx + _camera.x, my + _camera.y), Shot_FromPlayer, false);
 	}
 
 	for (i = 0; i < _currentMap->getNumberOfEnts(); i++)
 	{
 		ent = _currentMap->getEntAt(i);
-		ent->setHighlighted(false);
+		ent->_highlighted = false;
 		if (vec2InRect(vec2f(mx + _camera.x, my + _camera.y), ent->getCollisionRect()))
 		{
 			if (dynamic_cast<LightSwitch*>(ent))
@@ -1970,7 +1982,7 @@ void Scene::handleMouse(unsigned int mx, unsigned int my)
 
 	if (shouldHighlight)
 	{
-		_currentMap->getEntAt(i)->setHighlighted(true);
+		_currentMap->getEntAt(i)->_highlighted = true;
 	}
 }
 
@@ -1997,36 +2009,6 @@ vec2f Scene::getLaserEnd()
 bool Scene::hasPlayerFiredShot()
 {
 	return _playerShotFired;
-}
-
-int Scene::getTimeToSniper()
-{
-	return _timeToSniper / 1000;
-}
-
-unsigned int Scene::getNumPlayerBullets()
-{
-	return _numPlayerBullets;
-}
-
-unsigned int Scene::getPlayerEnergy()
-{
-	return _playerEnergy;
-}
-
-void Scene::setTimeToSniper(int time)
-{
-	_timeToSniper = time;
-}
-
-void Scene::setNumPlayerBullets(unsigned int bullets)
-{
-	_numPlayerBullets = bullets;
-}
-
-void Scene::setPlayerEnergy(unsigned int energy)
-{
-	_playerEnergy = energy;
 }
 
 int Scene::getStringMessageTime()

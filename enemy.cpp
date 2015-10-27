@@ -207,7 +207,7 @@ void Enemy::update(unsigned int dT)
 				{
 					_targetSwitch->activate(NULL);
 					_numSwitchAttempts++;
-					if ((_lightToActivate != NULL && _lightToActivate->isActive()) || _numSwitchAttempts == 3) //activate the light, or give up.
+					if ((_lightToActivate != NULL && _lightToActivate->_active) || _numSwitchAttempts == 3) //activate the light, or give up.
 					{
 						_targetSwitch = NULL;
 						_targetType = TARGET_NONE;
@@ -621,7 +621,7 @@ void Enemy::setStrongestLight(FieldOfView* light)
 		changeState(PATROLLING);
 	}
 
-	if ((light == _lightToActivate && light != NULL) || (light != NULL && _lightToActivate != NULL && light->getLightFixture() == _lightToActivate->getLightFixture()))
+	if ((light == _lightToActivate && light != NULL) || (light != NULL && _lightToActivate != NULL && light->_fixture == _lightToActivate->_fixture))
 	{
 		//Nothing to activate, since it's now on.
 		_lightToActivate = NULL;
@@ -776,16 +776,6 @@ void Enemy::_fireWeapon(GunShotTraceType gstt)
 {
 	_scene_trace_bullet = true;
 	setResolve(1, gstt);
-}
-
-void Enemy::setGun(EnemyGun* gun)
-{
-	_gun = gun;
-}
-
-EnemyGun* Enemy::getGun()
-{
-	return _gun;
 }
 
 void Enemy::setResolve(int timeToReact, GunShotTraceType gstt)

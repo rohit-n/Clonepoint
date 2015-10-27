@@ -104,11 +104,6 @@ void LivingEntity::update(unsigned int dT)
 	}
 }
 
-bool LivingEntity::isOnGround()
-{
-	return _onGround;
-}
-
 void LivingEntity::landOnGround()
 {
 	_velocity.y = 0.0f;
@@ -118,11 +113,6 @@ void LivingEntity::landOnGround()
 	{
 		_velocity.x = 0.0f;
 	}
-}
-
-void LivingEntity::setOnGround(bool b)
-{
-	_onGround = b;
 }
 
 Direction LivingEntity::getDirection()
@@ -158,16 +148,6 @@ StairTraversal LivingEntity::getStairTraversal()
 	return _traversal;
 }
 
-void LivingEntity::setOverlappingStairs(Stairs* sw)
-{
-	_overlappingStairs = sw;
-}
-
-bool LivingEntity::isOverlappingStairs()
-{
-	return _overlappingStairs != NULL;
-}
-
 void LivingEntity::arriveAtStairs(Stairs* st)
 {
 	setCollisionRectPosition(st->getCollisionRectPosition().x, st->getCollisionRectPosition().y);
@@ -194,15 +174,6 @@ Acceleration* LivingEntity::getAccelerationStruct()
 	return &_acceleration;
 }
 
-float LivingEntity::getAcceleration()
-{
-	return _acceleration.accel;
-}
-
-bool LivingEntity::isAccelerating()
-{
-	return _acceleration.accelerating;
-}
 
 Stairs* LivingEntity::getStairsEntered()
 {

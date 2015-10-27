@@ -187,7 +187,7 @@ void Scene::handleMapCollisions(LivingEntity* ent, unsigned int dT)
 					ent->setVelY(0);
 					setAccel(_player->getAccelerationStruct(), false, 0.0f, 0.0f);
 
-					if (!_player->isOnGround() || _player->getAttachType() == Ceiling)
+					if (!_player->_onGround || _player->getAttachType() == Ceiling)
 					{
 						_player->attachToVolume(vol, velocity.x > 0.0f ? RightSide : LeftSide);
 					}
@@ -256,7 +256,7 @@ void Scene::handleParticles()
 	{
 		p = getParticleAt(i);
 
-		if (p->isAlive())
+		if (p->_alive)
 		{
 			position = p->getPosition();
 			for (j = 0; j < _numCollideVols; j++)
@@ -264,14 +264,14 @@ void Scene::handleParticles()
 				vol = _currentMap->getCollideVolPointerAt(j);
 				if (vol->active() && (check_collision(p->getCollisionRect(), vol->rect)))
 				{
-					p->setAlive(false);
+					p->_alive = false;
 					break;
 				}
 			}
 
 			if (position.x < 0 || position.y < 0 || position.x > _currentMap->getMapWidth()|| position.y > _currentMap->getMapHeight())
 			{
-				p->setAlive(false);
+				p->_alive = false;
 			}
 		}
 	}
@@ -350,14 +350,14 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 		}
 	}
 
-	if (!checkOnGround && ent->isOnGround())
+	if (!checkOnGround && ent->_onGround)
 	{
 		if (dynamic_cast<Enemy*>(ent))
 		{
 			Enemy* enemy = static_cast<Enemy*>(ent);
 			if (trapFall)
 			{
-				ent->setOnGround(false);
+				ent->_onGround = false;
 				if (enemy->getState() != PINNED && !enemy->ignoringFall())
 				{
 					enemy->changeState(FALLING);
@@ -407,7 +407,7 @@ bool Scene::checkIfEntOnGround(LivingEntity* ent)
 		}
 		else
 		{
-			ent->setOnGround(false);
+			ent->_onGround = false;
 		}
 		return false;
 	}
@@ -728,7 +728,7 @@ void Scene::checkPlayerCeilingEnd()
 					if (check_collision2(endRect, otherVol->rect))
 					{
 						//player would be colliding with a volume if they went up. Either stop, or detach.
-						if (_player->isAccelerating())
+						if (_player->getAccelerationStruct()->accelerating)
 						{
 							_player->detach();
 						}
@@ -864,7 +864,7 @@ void Scene::handlePlayerPounceEnemy(Enemy* enemy, unsigned int dT)
 	}
 	else
 	{
-		enemy->setOnGround(false);
+		enemy->_onGround = false;
 		enemy->changeState(FALLING);
 		enemy->setAlive(false);
 		enemy->setVelX(_player->getVelocity().x / 1.4f);

@@ -279,8 +279,8 @@ bool Map::loadFromFile(const char* filename, bool savegame)
 	_sniper = new Enemy(0, 0, Left, false, Enemy_Sniper);
 
 	EnemyGun* eg = new EnemyGun(0, 0, RED);
-	eg->setEnemy(_sniper);
-	_sniper->setGun(eg);
+	eg->_enemy = _sniper;
+	_sniper->_gun = eg;
 	_entities.push_back(eg);
 
 	return true;
@@ -547,7 +547,9 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 
 				LightFixture* fixture = new LightFixture(x, y - ENTDIM, c, true);
 				FieldOfView* fov = new FieldOfView(x + (ENTDIM / 2) - 8, y - (ENTDIM / 2) + 4, LIGHTRADIUS, 0, 180, true, FOV_LIGHT);
-				fov->setColors(r, g, b);
+				fov->_red = r;
+				fov->_green = g;
+				fov->_blue = b;
 				fixture->addFOV(fov);
 				_entities.push_back(fixture);
 				_linkableEnts.push_back(fixture);
@@ -569,8 +571,8 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 			{
 				ElevatorDoor* ed = new ElevatorDoor(x, y - ENTDIM);
 				ElevatorSwitch* sw = new ElevatorSwitch(x + 32, y - ENTDIM, c);
-				sw->registerDoor(ed);
-				ed->registerSwitch(sw);
+				sw->_door = ed;
+				ed->_switch = sw;
 				_entities.push_back(ed);
 				_entities.push_back(sw);
 				_linkableEnts.push_back(sw);
@@ -605,7 +607,9 @@ void Map::parseLinkableObject(TiXmlElement* element, Circuit c)
 				FieldOfView* fov = new FieldOfView(facingRight ? x + ENTDIM/2 + 8 : x + ENTDIM/2 - 8,
 				                                 y - ENTDIM/2 + 8, LIGHTRADIUS, facingRight ? 27 : -27, 27, true, FOV_CAMERA);
 
-				fov->setColors(0.5, 0.5, 0);
+				fov->_red = 0.5f;
+				fov->_green = 0.5f;
+				fov->_blue = 0.0f;
 
 				SecurityCamera* cam = new SecurityCamera(x , y - ENTDIM, c, facingRight ? Right : Left, fov);
 				_entities.push_back(cam);
@@ -706,8 +710,8 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				_entities.push_back(guard);
 				_enemyIndices.push_back(_entities.size() - 1);
 				EnemyGun* eg = new EnemyGun(x, y, RED);
-				eg->setEnemy(guard);
-				guard->setGun(eg);
+				eg->_enemy = guard;
+				guard->_gun = eg;
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
@@ -718,8 +722,8 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				_entities.push_back(enforcer);
 				_enemyIndices.push_back(_entities.size() - 1);
 				EnemyGun* eg = new EnemyGun(x, y, RED);
-				eg->setEnemy(enforcer);
-				enforcer->setGun(eg);
+				eg->_enemy = enforcer;
+				enforcer->_gun = eg;
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
@@ -730,8 +734,8 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				_entities.push_back(professional);
 				_enemyIndices.push_back(_entities.size() - 1);
 				EnemyGun* eg = new EnemyGun(x, y, RED);
-				eg->setEnemy(professional);
-				professional->setGun(eg);
+				eg->_enemy = professional;
+				professional->_gun  = eg;
 				_entities.push_back(eg);
 				_linkableEnts.push_back(eg);
 			}
@@ -991,13 +995,13 @@ void Map::makeElevatorShafts()
 			if (iShaft >= 0) //shaft already exists, just add to that.
 			{
 				_shafts[iShaft]->addDoor(ed);
-				ed->registerShaft(_shafts[iShaft]);
+				ed->_shaft = _shafts[iShaft];
 			}
 			else
 			{
 				ElevatorShaft* shaft = new ElevatorShaft((int)ed->getPosition().x);
 				shaft->addDoor(ed);
-				ed->registerShaft(shaft);
+				ed->_shaft = shaft;
 				_shafts.push_back(shaft);
 			}
 		}
@@ -1014,7 +1018,7 @@ int Map::doesElevatorShaftExist(int x)
 	size_t i;
 	for (i = 0; i < _shafts.size(); i++)
 	{
-		if (_shafts[i]->getX() == x)
+		if (_shafts[i]->_x == x)
 		{
 			return (int)i;
 		}
@@ -1260,7 +1264,7 @@ void Map::addMissingGuns()
 		if (dynamic_cast<EnemyGun*>(_entities[i]))
 		{
 			eg = static_cast<EnemyGun*>(_entities[i]);
-			if (eg->getEnemy()->getType() == Enemy_Sniper)
+			if (eg->_enemy->getType() == Enemy_Sniper)
 			{
 				continue;
 			}

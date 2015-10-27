@@ -700,7 +700,7 @@ void Renderer::drawSprite(float x, float y, float z, float rotation, SpriteSheet
 
 void Renderer::drawFieldOfView(Scene* scene, FieldOfView* fov, GLuint program)
 {
-	if (!fov->isActive())
+	if (!fov->_active)
 	{
 		return;
 	}
@@ -884,7 +884,7 @@ void Renderer::drawEntities(Scene* scene)
 		vol.x -= scene->getCamera().x;
 		vol.y -= scene->getCamera().y;
 
-		if (ent->isHighlighted())
+		if (ent->_highlighted)
 		{
 			drawRect2(vol, 1, 1, 1, 1);
 		}
@@ -954,7 +954,7 @@ void Renderer::drawEntities(Scene* scene)
 
 	for (i = 0; i < map->getNumberOfShafts(); i++)
 	{
-		if (map->getShaftAt(i)->isMoving())
+		if (map->getShaftAt(i)->_moving)
 		{
 			vol = map->getShaftAt(i)->getRect();
 			vol.x -= scene->getCamera().x;
@@ -988,7 +988,7 @@ void Renderer::drawEntities(Scene* scene)
 		vol = particle->getCollisionRect();
 		vol.x -= scene->getCamera().x;
 		vol.y -= scene->getCamera().y;
-		if (particle->isAlive())
+		if (particle->_alive)
 		{
 			drawSprite(	position.x - cam.x,
 			            position.y - cam.y,
@@ -1435,7 +1435,7 @@ void Renderer::drawScene(Scene* scene)
 	drawTileLayer(scene, 0);
 	if (!scene->inCrosslinkMode())
 	{
-		if ((!player->isInElevator() || !player->getElevatorDoor()->getShaft()->isMoving()) && !player->isPinning())
+		if ((!player->isInElevator() || !player->getElevatorDoor()->_shaft->_moving) && !player->isPinning())
 		{
 			glBindTexture(GL_TEXTURE_2D, player->getDirection() == Right ? resPlayer->getTexId() : resPlayerLeft->getTexId());
 			drawSprite(	scene->getPlayerPosition().x - cam.x,
@@ -1451,7 +1451,7 @@ void Renderer::drawScene(Scene* scene)
 				drawSprite(	scene->getPlayerPosition().x - cam.x,
 				            scene->getPlayerPosition().y - cam.y - 4,
 				            2.8f,
-				            player->getArmRotation(),
+				            player->_armRotation,
 				            player->getDirection() == Right ? resPlayer : resPlayerLeft,
 				            spr,
 				            SDM_Normal, 0, 0, 0);
@@ -1486,7 +1486,7 @@ void Renderer::drawScene(Scene* scene)
 	if (scene->inCrosslinkMode())
 	{
 		//if in crosslink mode, draw black sprites of enemies and player last so that color is not affected by lights.
-		if ((!player->isInElevator() || !player->getElevatorDoor()->getShaft()->isMoving()) && !player->isPinning())
+		if ((!player->isInElevator() || !player->getElevatorDoor()->_shaft->_moving) && !player->isPinning())
 		{
 			drawSpriteBind( scene->getPlayerPosition().x - cam.x,
 			                scene->getPlayerPosition().y - cam.y,
@@ -1497,7 +1497,7 @@ void Renderer::drawScene(Scene* scene)
 			                SDM_LinkableCross, 0, 0, 0);
 		}
 		drawEnemies(scene, true);
-		sprintf(print, "Energy: %i", scene->getPlayerEnergy());
+		sprintf(print, "Energy: %i", scene->_playerEnergy);
 		drawText(32, 160, print, RGB_WHITE, 1.0f, font1);
 	}
 
@@ -1533,7 +1533,7 @@ void Renderer::drawScene(Scene* scene)
 
 	if (scene->hasPlayerFiredShot() || player->isAimingGun())
 	{
-		sprintf(print, "%i", scene->getTimeToSniper());
+		sprintf(print, "%i", (scene->_timeToSniper / 1000));
 		if (scene->hasPlayerFiredShot())
 		{
 			drawText(winX - 64, winY - 32, print, RGB_RED, 1.0f, font1);
@@ -1544,7 +1544,7 @@ void Renderer::drawScene(Scene* scene)
 		}
 		if (player->isAimingGun())
 		{
-			sprintf(print, "Ammo: %i", scene->getNumPlayerBullets());
+			sprintf(print, "Ammo: %i", scene->_numPlayerBullets);
 			drawText(32, 128, print, RGB_WHITE, 1.0f, font1);
 		}
 	}
@@ -1590,14 +1590,14 @@ void Renderer::drawDebugSceneText(Scene* scene)
 	py = scene->getPlayerPosition().y;
 	drawText(px - scene->getCamera().x, py - scene->getCamera().y, print, RGB_WHITE, 1.0f, font1);
 	drawText(32, 32, (char*)"On Ground: ", RGB_WHITE, 1.0f, font1);
-	if (scene->getPlayer()->isOnGround())
+	if (scene->getPlayer()->_onGround)
 		drawText(192, 32, (char*)"Yes", 0.0f, 1.0f, 0.0f, 1.0f, font1);
 	else
 		drawText(192, 32, (char*)"No", RGB_RED, 1.0f, font1);
 
 	sprintf(print, "Attach Type: %i", scene->getPlayer()->getAttachType());
 	drawText(32, 64, print, RGB_WHITE, 1.0f, font1);
-	sprintf(print, "Light: %i", scene->getPlayer()->getLightVisibility());
+	sprintf(print, "Light: %i", scene->getPlayer()->_lightVisibility);
 	drawText(32, 96, print, RGB_WHITE, 1.0f, font1);
 }
 

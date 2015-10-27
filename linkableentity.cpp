@@ -141,21 +141,11 @@ ElevatorSwitch::ElevatorSwitch(float x, float y, Circuit c) : LinkableEntity(x, 
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "elev_switch_off");
 }
 
-void ElevatorSwitch::registerDoor(ElevatorDoor* door)
-{
-	_door = door;
-}
-
-ElevatorDoor* ElevatorSwitch::getElevatorDoor()
-{
-	return _door;
-}
-
 void ElevatorSwitch::activate(LinkableEntity* activator)
 {
-	if (_door->getShaft()->getOpenDoor() != _door)
+	if (_door->_shaft->getOpenDoor() != _door)
 	{
-		_door->getShaft()->setTarget(_door);
+		_door->_shaft->setTarget(_door);
 	}
 }
 
@@ -413,19 +403,9 @@ MotionScanner::MotionScanner(float x, float y, Circuit c) : LinkableEntity(x, y,
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "motionscanner");
 }
 
-bool MotionScanner::isTrespassed()
-{
-	return _trespassed;
-}
-
 Entity* MotionScanner::getTrespasser()
 {
 	return _trespasser;
-}
-
-void MotionScanner::setTrespassed(bool b)
-{
-	_trespassed = b;
 }
 
 void MotionScanner::setTrespasser(Entity* ent)
@@ -456,16 +436,6 @@ void SecurityCamera::activate(LinkableEntity* activator)
 		return;
 	}
 	LinkableEntity::activate(this);
-}
-
-bool SecurityCamera::isTrespassed()
-{
-	return _trespassed;
-}
-
-void SecurityCamera::setTrespassed(bool b)
-{
-	_trespassed = b;
 }
 
 FieldOfView* SecurityCamera::getFOV()
@@ -504,7 +474,7 @@ bool LightFixture::isSwitchedOn()
 
 void LightFixture::addFOV(FieldOfView* fov)
 {
-	fov->registerLightFixture(this);
+	fov->_fixture = this;
 	_lights.push_back(fov);
 }
 
@@ -512,7 +482,7 @@ void LightFixture::toggleAllFOVs()
 {
 	size_t i;
 	for(i = 0; i < _lights.size(); i++)
-		_lights[i]->setActive(_switchedOn);
+		_lights[i]->_active = _switchedOn;
 }
 
 PowerSocket::PowerSocket(float x, float y, Circuit c) : LinkableEntity(x, y, c)
@@ -598,23 +568,13 @@ Alarm::Alarm(float x, float y, Circuit c) : LinkableEntity(x, y, c)
 void Alarm::activate(LinkableEntity* activator)
 {
 	changeAnimationSequence(Locator::getAnimationManager()->getSequence(ANIM_ALARM_ACTIVE));
-	setSounded(true);
+	_sounded = true;
 	Locator::getAudio()->playSound("alarm");
 }
 
 void Alarm::deactivate()
 {
 	changeToStaticSprite(Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "alarm_off"));
-}
-
-void Alarm::setSounded(bool b)
-{
-	_sounded = b;
-}
-
-bool Alarm::isSounded()
-{
-	return _sounded;
 }
 
 void Alarm::setAnimating(bool b)
@@ -665,14 +625,4 @@ void EnemyGun::update(unsigned int dT)
 {
 	_position = _enemy->getPosition();
 	updateCollisionRectPosition();
-}
-
-void EnemyGun::setEnemy(Enemy* enemy)
-{
-	_enemy = enemy;
-}
-
-Enemy* EnemyGun::getEnemy()
-{
-	return _enemy;
 }

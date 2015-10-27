@@ -209,16 +209,6 @@ void Entity::changeAnimationSequence(AnimationSequence* sequence)
 	}
 }
 
-bool Entity::isHighlighted()
-{
-	return _highlighted;
-}
-
-void Entity::setHighlighted(bool b)
-{
-	_highlighted = b;
-}
-
 Particle::Particle(float x, float y, unsigned int sprite) : Entity(x, y, sprite)
 {
 	setCollisionRectDims(8, 8, 8);
@@ -232,25 +222,11 @@ void Particle::update(unsigned int dT)
 	updateCollisionRectPosition();
 }
 
-bool Particle::isAlive()
-{
-	return _alive;
-}
-void Particle::setAlive(bool b)
-{
-	_alive = b;
-}
-
 TutorialMark::TutorialMark(float x, float y, StringMessage ts) : Entity(x, y)
 {
 	setCollisionRectDims(32, 48, ENTDIM);
 	_ts = ts;
 	_sprite = Locator::getSpriteManager()->getIndex("./data/sprites/objects.sprites", "tutorial");
-}
-
-StringMessage TutorialMark::getTutorialString()
-{
-	return _ts;
 }
 
 MainComputer::MainComputer(float x, float y, bool active) : Entity(x, y)

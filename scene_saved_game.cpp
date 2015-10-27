@@ -117,7 +117,7 @@ void Scene::loadGame(const char* filename)
 			break;
 		case SGET_Player:
 			_player->setDirection(states[i].dir);
-			_player->setOnGround(states[i].onGround);
+			_player->_onGround = states[i].onGround;
 			_player->setPosition(states[i].position.x, states[i].position.y);
 			_player->setVelocity(states[i].velocity.x, states[i].velocity.y);
 			if (states[i].index1 >= 0)
@@ -136,7 +136,7 @@ void Scene::loadGame(const char* filename)
 			{
 				_player->leaveElevator();
 			}
-			_player->setNumTerminalsHacked(states[i].index3);
+			_player->_numHackedTerminals = states[i].index3;
 			break;
 		case SGET_Objective:
 			Assert(dynamic_cast<MainComputer*>(_currentMap->getEntAt(states[i].index1)));
@@ -190,7 +190,7 @@ void Scene::loadGame(const char* filename)
 			ed = static_cast<ElevatorDoor*>(_currentMap->getEntAt(states[i].index1));
 			if (states[i].b1)
 			{
-				ed->getShaft()->setOpenDoor(ed, false);
+				ed->_shaft->setOpenDoor(ed, false);
 			}
 			break;
 		default:
@@ -228,8 +228,8 @@ void Scene::saveGame(const char* filename)
 	player_SGES.at = _player->getAttachType();
 	player_SGES.index1 = _currentMap->indexOfCollideVol(_player->getAttachedVolume());
 	player_SGES.index2 = _currentMap->indexOfEntity(_player->getElevatorDoor());
-	player_SGES.index3 = _player->getNumHackedTerminals();
-	player_SGES.onGround = _player->isOnGround();
+	player_SGES.index3 = _player->_numHackedTerminals;
+	player_SGES.onGround = _player->_onGround;
 	states.push_back(player_SGES);
 
 	header.numEnts = states.size();
@@ -299,7 +299,7 @@ void Scene::getSGESs(std::vector<SavedGameEntityState>* container)
 			le = static_cast<LivingEntity*>(ent);
 			sges.dir = le->getDirection();
 			sges.stairTimer = le->getStairTimer();
-			sges.onGround = le->isOnGround();
+			sges.onGround = le->_onGround;
 			sges.alive = le->isAlive();
 		}
 
@@ -406,7 +406,7 @@ void Scene::getSGESs(std::vector<SavedGameEntityState>* container)
 void Scene::updateSaves(unsigned int dT)
 {
 	if (_loadMenuVisible ||
-	        (!_player->isOnGround() && _player->getAttachType() == NotAttached) ||
+	        (!_player->_onGround && _player->getAttachType() == NotAttached) ||
 	        !_player->isAlive())
 		return;
 

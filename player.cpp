@@ -125,7 +125,7 @@ void Player::update(unsigned int dT)
 	if (_inElevator)
 	{
 		int offset = _dir == Right ? 52 : 60;
-		setCollisionRectPosition(_door->getShaft()->getElevatorPosition().x + offset, _door->getShaft()->getElevatorPosition().y + 8);
+		setCollisionRectPosition(_door->_shaft->getElevatorPosition().x + offset, _door->_shaft->getElevatorPosition().y + 8);
 		_velocity.x = 0;
 		_velocity.y = 0;
 	}
@@ -272,11 +272,6 @@ bool Player::isHacking()
 	return _activeSequence == _hackingSequence;
 }
 
-unsigned int Player::getNumHackedTerminals()
-{
-	return _numHackedTerminals;
-}
-
 void Player::pinEnemy(Enemy* enemy)
 {
 	_velocity = vec2f(0, 0);
@@ -291,11 +286,6 @@ void Player::hackTerminal(MainComputer* computer)
 {
 	_hackedTerminal = computer;
 	changeAnimationSequence(_hackingSequence);
-}
-
-void Player::setNumTerminalsHacked(unsigned int num)
-{
-	_numHackedTerminals = num;
 }
 
 void Player::punchPinnedEnemy()
@@ -404,16 +394,6 @@ void Player::detach()
 	_attachedVolume = NULL;
 }
 
-void Player::setLightVisibility(unsigned int lightVisibility)
-{
-	_lightVisibility = lightVisibility;
-}
-
-unsigned int Player::getLightVisibility()
-{
-	return _lightVisibility;
-}
-
 bool Player::isAttachingDown()
 {
 	return _activeSequence == _attachDownSequence && !_currentAnimFinished;
@@ -450,16 +430,6 @@ void Player::arriveAtStairs(Stairs* st)
 bool Player::isAnimatingThroughStairs()
 {
 	return (_activeSequence == _exitStairs) || (_activeSequence == _enterStairs);
-}
-
-int Player::getArmRotation()
-{
-	return _armRotation;
-}
-
-void Player::setArmRotation(int rotation)
-{
-	_armRotation = rotation;
 }
 
 void Player::setAimingGun(bool b)

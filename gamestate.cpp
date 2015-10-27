@@ -77,14 +77,14 @@ void GameState::update(unsigned int dT)
 		        player->isGoingUpRoof() ||
 		        player->isAnimatingThroughStairs() ||
 		        player->isMovingThroughStairs() ||
-		        (player->isInElevator() && player->getElevatorDoor()->getShaft()->isMoving()) ||
+		        (player->isInElevator() && player->getElevatorDoor()->_shaft->_moving) ||
 		        _scene->isLoadMenuVisible())
 		{
 			_playerMovingLeft = _playerMovingRight = _playerMovingDown = _playerMovingUp = false;
 		}
 		else
 		{
-			if ((_playerMovingLeft || _playerMovingRight) && player->isInElevator() && !player->getElevatorDoor()->getShaft()->isMoving())
+			if ((_playerMovingLeft || _playerMovingRight) && player->isInElevator() && !player->getElevatorDoor()->_shaft->_moving)
 			{
 				player->leaveElevator();
 			}

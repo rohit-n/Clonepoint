@@ -88,9 +88,9 @@ void StateManager::switchToState(eState state)
 			us->getModifiers(&jp, &jt, &ammo, &timeToSniper, &energy);
 			gs->getScene()->addPlayerJumpPower((float)jp / 50.0f);
 			gs->getScene()->subPlayerJumpChargeTime(jt * 90);
-			gs->getScene()->setNumPlayerBullets(ammo);
-			gs->getScene()->setTimeToSniper(timeToSniper * 1000);
-			gs->getScene()->setPlayerEnergy(energy);
+			gs->getScene()->_numPlayerBullets = ammo;
+			gs->getScene()->_timeToSniper = (timeToSniper * 1000);
+			gs->getScene()->_playerEnergy = energy;
 		}
 		_activeState = _gameState;
 		break;

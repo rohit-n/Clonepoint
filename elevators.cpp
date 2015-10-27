@@ -70,21 +70,6 @@ bool ElevatorDoor::isOpen()
 	return _open;
 }
 
-void ElevatorDoor::registerShaft(ElevatorShaft* shaft)
-{
-	_shaft = shaft;
-}
-
-void ElevatorDoor::registerSwitch(ElevatorSwitch* eSwitch)
-{
-	_switch = eSwitch;
-}
-
-ElevatorShaft* ElevatorDoor::getShaft()
-{
-	return _shaft;
-}
-
 void ElevatorDoor::update(unsigned int dT)
 {
 	Entity::update(dT);
@@ -107,11 +92,6 @@ bool ElevatorDoor::isOpening()
 bool ElevatorDoor::isClosing()
 {
 	return _activeSequence == Locator::getAnimationManager()->getSequence(ANIM_ELEVATOR_CLOSE);
-}
-
-ElevatorSwitch* ElevatorDoor::getSwitch()
-{
-	return _switch;
 }
 
 ElevatorShaft::ElevatorShaft(int x)
@@ -179,15 +159,10 @@ void ElevatorShaft::update()
 		_yVel /= fabs(_yVel);
 		_yVel *= 0.1f;
 		setAccel(&_acceleration, true, _yVel < 0.0f ? -0.01f : 0.01f, _yVel < 0.0f ? -1.5f : 1.5f);
-		setMoving(true);
+		_moving = true;
 		_waitingForClose = false;
 		Locator::getAudio()->playSound("elevator_leave");
 	}
-}
-
-int ElevatorShaft::getX()
-{
-	return _x;
 }
 
 void ElevatorShaft::setOpenDoor(ElevatorDoor* door, bool animate)
@@ -232,17 +207,12 @@ void ElevatorShaft::setTarget(ElevatorDoor* target)
 	_openDoor->close(true);
 	_waitingForClose = true;
 	_target = target;
-	_target->getSwitch()->changeSprite(Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "elev_switch_wait"));
+	_target->_switch->changeSprite(Locator::getSpriteManager()->getIndex("./data/sprites/linkable.sprites", "elev_switch_wait"));
 }
 
 void ElevatorShaft::addDoor(ElevatorDoor* ed)
 {
 	_doors.push_back(ed);
-}
-
-bool ElevatorShaft::isMoving()
-{
-	return _moving;
 }
 
 int ElevatorShaft::containsDoor(ElevatorDoor* door)
@@ -256,11 +226,6 @@ int ElevatorShaft::containsDoor(ElevatorDoor* door)
 		}
 	}
 	return -1;
-}
-
-void ElevatorShaft::setMoving(bool b)
-{
-	_moving = b;
 }
 
 ElevatorDoor* ElevatorShaft::getOpenDoor()
@@ -339,9 +304,4 @@ int ElevatorShaft::getDoorIndexOrdered(int index)
 		}
 	}
 	return -1;
-}
-
-float ElevatorShaft::getVelocity()
-{
-	return _yVel;
 }

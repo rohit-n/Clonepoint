@@ -129,8 +129,6 @@ class FieldOfView
 public:
 	FieldOfView(float x, float y, float radius, int direction, int halfSize, bool active, FOVType type);
 	~FieldOfView();
-	void setActive(bool b);
-	bool isActive();
 	vec2f getPosition();
 	float getRadius();
 	int getDirection();
@@ -139,26 +137,22 @@ public:
 	void changeVertex(unsigned int i, float x, float y); //for calculating light when door opens or closes.
 	float* getVertData();
 	int getNumberOfVerts();
-	void rotate(int deg);
 	void moveTo(float x, float y);
 	void clearVerts();
 	void getColors(float* r, float* g, float* b);
-	void setColors(float r, float g, float b);
 	Rect getCollisionRect();
-	LightFixture* getLightFixture();
-	void registerLightFixture(LightFixture* fixture);
 	FOVType getType();
-private:
-	vec2f _position;
-	float _radius;
 	float _red;
 	float _green;
 	float _blue;
+	bool _active;
+	LightFixture* _fixture;
+private:
+	vec2f _position;
+	float _radius;
 	int _direction;
 	int _halfSize;
 	std::vector<float> _verts;
-	bool _active;
-	LightFixture* _fixture;
 	FOVType _type;
 };
 
@@ -196,8 +190,7 @@ public:
 	unsigned int getCurrentSprite();
 	void changeToStaticSprite(unsigned int sprite);
 	void changeAnimationSequence(AnimationSequence* sequence);
-	bool isHighlighted();
-	void setHighlighted(bool b);
+	bool _highlighted;
 protected:
 	vec2f _position;
 	vec2f _offset;
@@ -209,7 +202,6 @@ protected:
 	float _animDT;
 	unsigned int _currentSequenceIndex;
 	bool _currentAnimFinished;
-	bool _highlighted;
 };
 
 class Particle : public Entity //probably used only for glass shards.
@@ -217,9 +209,6 @@ class Particle : public Entity //probably used only for glass shards.
 public:
 	Particle(float x, float y, unsigned int sprite);
 	void update(unsigned int dT);
-	bool isAlive();
-	void setAlive(bool b);
-private:
 	bool _alive;
 };
 
@@ -227,8 +216,6 @@ class TutorialMark : public Entity
 {
 public:
 	TutorialMark(float x, float y, StringMessage ts);
-	StringMessage getTutorialString();
-private:
 	StringMessage _ts;
 };
 
@@ -272,17 +259,13 @@ public:
 	bool isOpen();
 	void open(bool animate);
 	void close( bool animate);
-	void registerShaft(ElevatorShaft* shaft);
-	void registerSwitch(ElevatorSwitch* eSwitch);
-	ElevatorShaft* getShaft();
 	void update(unsigned int dT);
 	bool isOpening();
 	bool isClosing();
-	ElevatorSwitch* getSwitch();
-private:
-	bool _open;
 	ElevatorShaft* _shaft;
 	ElevatorSwitch* _switch;
+private:
+	bool _open;
 };
 
 class ElevatorShaft
@@ -292,10 +275,7 @@ public:
 	~ElevatorShaft();
 	void addDoor(ElevatorDoor* ed);
 	void update();
-	bool isMoving();
 	int containsDoor(ElevatorDoor* door);
-	void setMoving(bool b);
-	int getX();
 	void setOpenDoor(ElevatorDoor* door, bool animate);
 	void setOpenDoorFirst();
 	void setTarget(ElevatorDoor* target);
@@ -307,7 +287,9 @@ public:
 	ElevatorDoor* getDoorAbove(ElevatorDoor* door);
 	ElevatorDoor* getDoorBelow(ElevatorDoor* door);
 	int getDoorIndexOrdered(int index);
-	float getVelocity();
+	float _yVel;
+	bool _moving;
+	int _x;
 private:
 	std::vector<ElevatorDoor*> _doors;
 	std::vector<int> _order;
@@ -315,9 +297,6 @@ private:
 	vec2f _elevatorPosition; //where bounding box is drawn.
 	ElevatorDoor* _target;
 	ElevatorDoor* _openDoor;
-	bool _moving;
-	int _x;
-	float _yVel;
 	bool _waitingForClose;
 	Acceleration _acceleration;
 };
@@ -351,34 +330,28 @@ public:
 	void update(unsigned int dT);
 	void setAlive(bool b);
 	bool isAlive();
-	bool isOnGround();
 	virtual void landOnGround();
-	void setOnGround(bool b);
 	void setStairMovement(StairTraversal st);
 	StairTraversal getStairTraversal();
 	virtual void arriveAtStairs(Stairs* st);
-	void setOverlappingStairs(Stairs* sw);
-	bool isOverlappingStairs();
 	Direction getDirection();
 	void reverseDirection();
 	bool isMovingThroughStairs();
 	int getStairTimer();
 	void setDirection(Direction dir);
-	float getAcceleration();
-	bool isAccelerating();
 	Stairs* getStairsEntered();
 	virtual bool isAnimatingThroughStairs() = 0;
 	Acceleration* getAccelerationStruct();
 	bool isPositionBehind(float x);
-protected:
 	bool _onGround;
+	Stairs* _overlappingStairs;
+protected:
 	bool _alive;
 	bool _fixDirection;
 	bool _affectedByGravity;
 	Direction _dir;
 	int _stairTimer;
 	StairTraversal _traversal;
-	Stairs* _overlappingStairs;
 	Stairs* _stairsEntered;
 	Acceleration _acceleration;
 private:
@@ -415,11 +388,8 @@ class ElevatorSwitch : public LinkableEntity
 public:
 	ElevatorSwitch(float x, float y, Circuit c);
 	void activate(LinkableEntity* activator);
-	void registerDoor(ElevatorDoor* door);
-	ElevatorDoor* getElevatorDoor();
 	void activateTarget();
 	void changeSprite(unsigned int sprite);
-private:
 	ElevatorDoor* _door;
 };
 
@@ -459,13 +429,11 @@ class MotionScanner : public LinkableEntity
 {
 public:
 	MotionScanner(float x, float y, Circuit c);
-	bool isTrespassed();
 	Entity* getTrespasser();
-	void setTrespassed(bool b);
 	void setTrespasser(Entity* ent);
 	void resetTrespasser();
-private:
 	bool _trespassed; //set to true when an entity (probably living) has overlapped collisionRect. Do not activate() while true, to prevent multiple activations.
+private:
 	Entity* _trespasser;
 };
 
@@ -474,11 +442,9 @@ class SecurityCamera : public LinkableEntity
 public:
 	SecurityCamera(float x, float y, Circuit c, Direction dir, FieldOfView* fov);
 	void activate(LinkableEntity* activator);
-	void setTrespassed(bool b);
-	bool isTrespassed();
 	FieldOfView* getFOV();
-private:
 	bool _trespassed; //set to true when an entity (probably living) has overlapped collisionRect. Do not activate() while true, to prevent multiple activations.
+private:
 	Direction _direction;
 	FieldOfView* _fov;
 };
@@ -525,11 +491,8 @@ public:
 	Alarm(float x, float y, Circuit c);
 	void activate(LinkableEntity* activator);
 	void deactivate();
-	void setSounded(bool b);
-	bool isSounded();
 	void setAnimating(bool b);
 	bool isActivated();
-private:
 	bool _sounded;
 };
 
@@ -542,9 +505,6 @@ public:
 	void activate(LinkableEntity* activator);
 	void fire(GunShotTraceType gstt);
 	void update(unsigned int dT);
-	void setEnemy(Enemy* enemy);
-	Enemy* getEnemy();
-private:
 	Enemy* _enemy;
 };
 
@@ -603,9 +563,8 @@ public:
 	bool _scene_trace_bullet;
 	vec2f _shootTarget; //usually set to _target, unless gun is activated by something else...
 	void _fireWeapon(GunShotTraceType gstt); //ugh.
-	EnemyGun* getGun();
-	void setGun(EnemyGun* gun);
 	EnemyShotResolve getResolve();
+	EnemyGun* _gun;
 
 private:
 	int _reactionTime; //time between seeing player and shooting.
@@ -634,7 +593,6 @@ private:
 	bool _readyToShoot;
 	bool _heldAtGunpoint;
 	EnemyType _type;
-	EnemyGun* _gun;
 };
 
 class Player : public LivingEntity
@@ -656,7 +614,6 @@ public:
 	void pinEnemy(Enemy* enemy);
 	void hackTerminal(MainComputer* computer);
 	void punchPinnedEnemy();
-	void setNumTerminalsHacked(unsigned int num); //only used while loading saved games.
 	unsigned int getNumPunches();
 	void releasePin();
 	Enemy* getPinnedEnemy();
@@ -670,9 +627,6 @@ public:
 	void switchElevator(ElevatorDoor* door);
 	void leaveElevator();
 	ElevatorDoor* getElevatorDoor();
-	void setLightVisibility(unsigned int lightVisibility);
-	unsigned int getLightVisibility();
-	unsigned int getNumHackedTerminals();
 	void setStairMovement(StairTraversal st);
 	void arriveAtStairs(Stairs* st);
 	bool isAnimatingThroughStairs();
@@ -680,20 +634,20 @@ public:
 	void setArmRotation(int rotation);
 	void setAimingGun(bool b);
 	bool isAimingGun();
+	unsigned int _lightVisibility; //between 0 and 100.
+	unsigned int _numHackedTerminals;
+	int _armRotation;
 private:
 	bool _jumping;
 	bool _pinning;
 	unsigned int _numPunches;
-	unsigned int _numHackedTerminals;
 	bool _inElevator;
 	AttachType _attach;
 	AttachType _lastAttach;
-	unsigned int _lightVisibility; //between 0 and 100.
 	ElevatorDoor* _door;
 	Enemy* _pinnedEnemy;
 	MainComputer* _hackedTerminal;
 	CollisionVolume* _attachedVolume; //The Collision Volume the player is attached to.
-	int _armRotation;
 	bool _aimingGun;
 
 	//deleted by AnimationManager.
