@@ -33,7 +33,8 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_settingsChanged = false;
 	int i;
 
-	_currVolume = 5;
+	_currSoundVolume = 5;
+	_currMusicVolume = 5;
 
 	_bindingMode = false;
 	_bindToChange = Bind_Nothing;
@@ -61,18 +62,25 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 
 	_saveMessage = new FloatingMessage(0, 0, "", 0, 1, 0);
 	_toBindingsPage = new TextButton(0, 0, (strlen("Bindings") + 2) * 16, 32, "Bindings");
-	_volumeDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
-	_volumeIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
-	_gameplayPage.push_back(_volumeDecr);
-	_gameplayPage.push_back(_volumeIncr);
+	_soundVolumeDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
+	_soundVolumeIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
+	_musicVolumeDecr = new ImageButton(0, 0, 32, 32, left, left_selected);
+	_musicVolumeIncr = new ImageButton(0, 0, 32, 32, right, right_selected);
+	_gameplayPage.push_back(_soundVolumeDecr);
+	_gameplayPage.push_back(_soundVolumeIncr);
+	_gameplayPage.push_back(_musicVolumeDecr);
+	_gameplayPage.push_back(_musicVolumeIncr);
 
 	for (i = 0; i < NUM_VOLUME_BARS; i++)
 	{
-		_volumeProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
-		_gameplayPage.push_back(_volumeProgress[i]);
+		_soundVolumeProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
+		_gameplayPage.push_back(_soundVolumeProgress[i]);
+		_musicVolumeProgress[i] = new ImageButton(0, 0, 32, 32, false, empty);
+		_gameplayPage.push_back(_musicVolumeProgress[i]);
 	}
 
-	_volumeLabel = new TextLabel(0, 0, "Volume", 1, 1, 1);
+	_soundVolumeLabel = new TextLabel(0, 0, "Sound Volume", 1, 1, 1);
+	_musicVolumeLabel = new TextLabel(0, 0, "Music Volume", 1, 1, 1);
 
 	_labels.push_back(_titleLabel);
 	_labels.push_back(_resolutionLabel);
@@ -82,7 +90,8 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_labels.push_back(_tutorialPopupsText);
 	_labels.push_back(_inputPopupsText);
 	_labels.push_back(_saveMessage);
-	_labels.push_back(_volumeLabel);
+	_labels.push_back(_soundVolumeLabel);
+	_labels.push_back(_musicVolumeLabel);
 
 	_gameplayPage.push_back(_exitButton);
 	_gameplayPage.push_back(_saveChangesButton);
@@ -148,13 +157,16 @@ OptionsState::~OptionsState()
 	{
 		for (i = 0; i < NUM_VOLUME_BARS; i++)
 		{
-			delete _volumeProgress[i];
+			delete _soundVolumeProgress[i];
+			delete _musicVolumeProgress[i];
 		}
 
 		delete _saveChangesButton;
 		delete _toBindingsPage;
-		delete _volumeDecr;
-		delete _volumeIncr;
+		delete _soundVolumeDecr;
+		delete _soundVolumeIncr;
+		delete _musicVolumeDecr;
+		delete _musicVolumeIncr;
 		delete _inputPopupsState;
 		delete _tutorialPopupsState;
 		delete _lightEnteredAlphaState;
@@ -205,13 +217,17 @@ void OptionsState::resetPositions(int w, int h)
 
 	for (i = 0; i < NUM_VOLUME_BARS; i++)
 	{
-		_volumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 0);
+		_soundVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 0);
+		_musicVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 36);
 	}
 
-	_volumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 0);
-	_volumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 0);
+	_soundVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 0);
+	_soundVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 0);
+	_musicVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 36);
+	_musicVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 36);
 
-	_volumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 24);
+	_soundVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 24);
+	_musicVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 60);
 
 	//bindings page
 	_toGameplayPage->setPosition(w * 0.2f, h * 0.1f);
@@ -308,13 +324,21 @@ void OptionsState::handleButton(Button* button)
 		}
 		_resolutionText->setText(_modes[_modeIndex]);
 	}
-	else if (button == _volumeDecr && _currVolume > 0)
+	else if (button == _soundVolumeDecr && _currSoundVolume > 0)
 	{
-		_currVolume--;
+		_currSoundVolume--;
 	}
-	else if (button == _volumeIncr && _currVolume < NUM_VOLUME_BARS)
+	else if (button == _soundVolumeIncr && _currSoundVolume < NUM_VOLUME_BARS)
 	{
-		_currVolume++;
+		_currSoundVolume++;
+	}
+	else if (button == _musicVolumeDecr && _currMusicVolume > 0)
+	{
+		_currMusicVolume--;
+	}
+	else if (button == _musicVolumeIncr && _currMusicVolume < NUM_VOLUME_BARS)
+	{
+		_currMusicVolume++;
 	}
 	else if (button == _saveChangesButton)
 	{
@@ -351,8 +375,10 @@ void OptionsState::handleButton(Button* button)
 		_bindToChange = Bind_MoveDown;
 	}
 
-	if (button == _volumeDecr ||
-	        button == _volumeIncr)
+	if (button == _soundVolumeDecr ||
+	    button == _soundVolumeIncr ||
+		button == _musicVolumeDecr ||
+		button == _musicVolumeIncr)
 	{
 		updateProgressBars();
 	}
@@ -425,15 +451,18 @@ void OptionsState::setLabels()
 	}
 
 	updateBindingButtons();
-	_currVolume = atoi(Locator::getConfigManager()->getValue("volume").c_str());
+	_currSoundVolume = atoi(Locator::getConfigManager()->getValue("sound_volume").c_str());
+	_currMusicVolume = atoi(Locator::getConfigManager()->getValue("music_volume").c_str());
 	updateProgressBars();
 }
 
 void OptionsState::saveSettings()
 {
 	unsigned int cbs = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox_selected");
-	char volstr[4];
-	sprintf(volstr, "%i", _currVolume);
+	char sndvolstr[4];
+	char musvolstr[4];
+	sprintf(sndvolstr, "%i", _currSoundVolume);
+	sprintf(musvolstr, "%i", _currMusicVolume);
 
 	std::string resolution = _resolutionText->getText();
 	std::string tokenX = resolution.substr(0, resolution.find("x"));
@@ -445,8 +474,10 @@ void OptionsState::saveSettings()
 	Locator::getConfigManager()->setValue("entered_light_flash", _lightEnteredAlphaState->getSpriteIndex() == cbs ? "1" : "0");
 	Locator::getConfigManager()->setValue("tutorial_popups", _tutorialPopupsState->getSpriteIndex() == cbs ? "1" : "0");
 	Locator::getConfigManager()->setValue("input_popups", _inputPopupsState->getSpriteIndex() == cbs ? "1" : "0");
-	Locator::getConfigManager()->setValue("volume", std::string(volstr));
-	Locator::getAudio()->setVolume((float)_currVolume / 10);
+	Locator::getConfigManager()->setValue("sound_volume", std::string(sndvolstr));
+	Locator::getConfigManager()->setValue("music_volume", std::string(musvolstr));
+	Locator::getAudio()->setSoundVolume((float)_currSoundVolume / 10);
+	Locator::getAudio()->setMusicVolume((float)_currMusicVolume / 10);
 }
 
 void OptionsState::addMode(std::string mode)
@@ -465,7 +496,8 @@ void OptionsState::changeToGameplayPage()
 	_resolutionText->setVisible(true);
 	_resolutionLabel->setVisible(true);
 	_lightEnteredAlphaText->setVisible(true);
-	_volumeLabel->setVisible(true);
+	_soundVolumeLabel->setVisible(true);
+	_musicVolumeLabel->setVisible(true);
 	_tutorialPopupsText->setVisible(true);
 	_inputPopupsText->setVisible(true);
 	//bindings
@@ -485,7 +517,8 @@ void OptionsState::changeToBindingsPage()
 	_resolutionText->setVisible(false);
 	_resolutionLabel->setVisible(false);
 	_lightEnteredAlphaText->setVisible(false);
-	_volumeLabel->setVisible(false);
+	_soundVolumeLabel->setVisible(false);
+	_musicVolumeLabel->setVisible(false);
 	_tutorialPopupsText->setVisible(false);
 	_inputPopupsText->setVisible(false);
 	//bindings
@@ -548,17 +581,27 @@ void OptionsState::updateProgressBars()
 
 	for (i = 0; i < NUM_VOLUME_BARS; i++)
 	{
-		if (i < _currVolume)
+		if (i < _currSoundVolume)
 		{
-			_volumeProgress[i]->changeSprites(full, full);
+			_soundVolumeProgress[i]->changeSprites(full, full);
 		}
 		else
 		{
-			_volumeProgress[i]->changeSprites(empty, empty);
+			_soundVolumeProgress[i]->changeSprites(empty, empty);
+		}
+
+		if (i < _currMusicVolume)
+		{
+			_musicVolumeProgress[i]->changeSprites(full, full);
+		}
+		else
+		{
+			_musicVolumeProgress[i]->changeSprites(empty, empty);
 		}
 	}
 
-	handleDecrIncrVisibility(_volumeDecr, _volumeIncr, _currVolume, NUM_VOLUME_BARS);
+	handleDecrIncrVisibility(_soundVolumeDecr, _soundVolumeIncr, _currSoundVolume, NUM_VOLUME_BARS);
+	handleDecrIncrVisibility(_musicVolumeDecr, _musicVolumeIncr, _currMusicVolume, NUM_VOLUME_BARS);
 }
 
 void OptionsState::handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size)

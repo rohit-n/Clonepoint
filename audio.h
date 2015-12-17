@@ -42,7 +42,8 @@ public:
 	ALuint bufferFromOGG(std::string filename);
 	ALuint getBuffer(std::string filename);
 	ALuint getNextAvailableSource();
-	void setVolume(float volume);
+	void setSoundVolume(float volume);
+	void setMusicVolume(float volume);
 private:
 	std::map<std::string, ALuint> _loadedBuffers;
 	std::vector<ALuint> _loadedSources;

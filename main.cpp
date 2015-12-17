@@ -298,7 +298,8 @@ and place them in the data/ directory?\n\n");
 
 	sm = new StateManager();
 	sm->setWindowDims(winX, winY);
-	Locator::getAudio()->setVolume((float)atoi(Locator::getConfigManager()->getValue("volume").c_str()) / 10);
+	Locator::getAudio()->setSoundVolume((float)atoi(Locator::getConfigManager()->getValue("sound_volume").c_str()) / 10);
+	Locator::getAudio()->setMusicVolume((float)atoi(Locator::getConfigManager()->getValue("music_volume").c_str()) / 10);
 
 	loop1();
 

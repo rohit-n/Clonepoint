@@ -38,7 +38,8 @@ bool ConfigManager::isKeyValid(const char* key)
 	if (!strcmp(key, "window_y")) return true;
 	if (!strcmp(key, "screenshot_index")) return true;
 	if (!strcmp(key, "entered_light_flash")) return true;
-	if (!strcmp(key, "volume")) return true;
+	if (!strcmp(key, "sound_volume")) return true;
+	if (!strcmp(key, "music_volume")) return true;
 	if (!strcmp(key, "tutorial_popups")) return true;
 	if (!strcmp(key, "input_popups")) return true;
 

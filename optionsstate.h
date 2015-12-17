@@ -61,7 +61,8 @@ private:
 	int _modeIndex;
 	bool _bindingMode;
 	eBinding _bindToChange;
-	int _currVolume;
+	int _currSoundVolume;
+	int _currMusicVolume;
 	OptionsPage _page;
 
 	//gameplay page
@@ -70,14 +71,18 @@ private:
 	TextLabel* _lightEnteredAlphaText;
 	TextLabel* _resolutionText;
 	TextLabel* _resolutionLabel;
-	TextLabel* _volumeLabel;
+	TextLabel* _soundVolumeLabel;
+	TextLabel* _musicVolumeLabel;
 	ImageButton* _resUp;
 	ImageButton* _resDown;
 	TextLabel* _fullscreenLabel;
 	ImageButton* _fullscreenState;
-	ImageButton* _volumeDecr;
-	ImageButton* _volumeIncr;
-	ImageButton* _volumeProgress[NUM_VOLUME_BARS];
+	ImageButton* _soundVolumeDecr;
+	ImageButton* _soundVolumeIncr;
+	ImageButton* _soundVolumeProgress[NUM_VOLUME_BARS];
+	ImageButton* _musicVolumeDecr;
+	ImageButton* _musicVolumeIncr;
+	ImageButton* _musicVolumeProgress[NUM_VOLUME_BARS];
 	TextLabel* _tutorialPopupsText;
 	TextLabel* _inputPopupsText;
 	ImageButton* _tutorialPopupsState;

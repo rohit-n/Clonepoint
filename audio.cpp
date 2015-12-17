@@ -251,12 +251,16 @@ ALuint AudioManager::getNextAvailableSource()
 	return 0;
 }
 
-void AudioManager::setVolume(float volume)
+void AudioManager::setSoundVolume(float volume)
 {
 	size_t i;
 	for (i = 0; i < _loadedSources.size(); i++)
 	{
 		alSourcef(_loadedSources[i], AL_GAIN, volume);
 	}
+}
+
+void AudioManager::setMusicVolume(float volume)
+{
 	alSourcef(_musicSource, AL_GAIN, volume);
 }
