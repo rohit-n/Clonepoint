@@ -52,6 +52,9 @@ PFNGLACTIVETEXTUREARBPROC  glActiveTexture;
 #endif
 PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubData;
 
+#define BACKGROUND_WIDTH 1280
+#define BACKGROUND_HEIGHT 720
+
 struct point
 {
 	GLfloat x;
@@ -110,6 +113,15 @@ Renderer::~Renderer()
 	deleteSpriteSheet(resLinkables);
 	deleteSpriteSheet(resInterface);
 	deleteSpriteSheet(resGlass);
+
+	if (bgClose > 0)
+		glDeleteTextures(1, &bgClose);
+	if (bgMiddle > 0)
+		glDeleteTextures(1, &bgMiddle);
+	if (bgFar > 0)
+		glDeleteTextures(1, &bgFar);
+	if (bgVeryFar > 0)
+		glDeleteTextures(1, &bgVeryFar);
 }
 
 void Renderer::deleteSpriteSheet(SpriteSheet* sheet)
@@ -205,6 +217,12 @@ bool Renderer::init(int x, int y)
 	resLinkables = new SpriteSheet("./data/sprites/linkable.png", ENTDIM, false);
 	resInterface = new SpriteSheet("./data/sprites/interface.png", 32, false);
 	resGlass = new SpriteSheet("./data/sprites/glass.png", 8, false);
+
+	//backgrounds
+	bgClose = loadTexture("./data/backgrounds/bgClose.png");
+	bgMiddle = loadTexture("./data/backgrounds/bgMiddle.png");
+	bgFar = loadTexture("./data/backgrounds/bgFar.png");
+	bgVeryFar = loadTexture("./data/backgrounds/bgVeryFar.png");
 
 	if (resPlayer->getTexId() == 0 ||
 		resPlayerLeft->getTexId() == 0 ||
@@ -1359,6 +1377,48 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 	glUseProgramObject(0);
 }
 
+void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offset)
+{
+	glUseProgramObject(pgmButton);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), scene->inCrosslinkMode() ? 1 : 0);
+	float xOffset = scene->getCamera().x * offset;
+
+	float verts[] = {	0.0f, 0.0f,
+	                    0.0f, (float)BACKGROUND_HEIGHT,
+	                    (float)BACKGROUND_WIDTH, 0.0f,
+	                    0.0f, (float)BACKGROUND_HEIGHT,
+	                    (float)BACKGROUND_WIDTH, 0.0f,
+	                    (float)BACKGROUND_WIDTH, (float)BACKGROUND_HEIGHT,
+	                };
+
+	float texes[] = {	0.0f, 0.0f,
+	                    0.0f, 1.0f,
+	                    1.0f, 0.0f,
+	                    0.0f, 1.0f,
+	                    1.0f, 0.0f,
+	                    1.0f, 1.0f,
+	                };
+
+	quadTransform = mat4f_mult(orthographic, mat4f_translate(x - xOffset,
+		scene->getMap()->getBackGroundYOffset() - BACKGROUND_HEIGHT - scene->getCamera().y, z));
+	glUniformMatrix4fv(glGetUniformLocation(pgmButton, "proj_mat"), 1, GL_TRUE, &quadTransform.m[0][0]);
+	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "Position")); /*vertex coords*/
+	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "TexCoord")); /*texture coords*/
+	glVertexAttribPointer(glGetAttribLocation(pgmButton, "Position"), 2, GL_FLOAT, GL_FALSE, 0, verts);
+	glVertexAttribPointer(glGetAttribLocation(pgmButton, "TexCoord"), 2, GL_FLOAT, GL_FALSE, 0, texes);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(glGetAttribLocation(pgmButton, "Position"));
+	glDisableVertexAttribArray(glGetAttribLocation(pgmButton, "TexCoord"));
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), 0);
+	glUseProgramObject(0);
+}
+
 void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, Font* font, Rect* rect)
 {
 	int longestWidth = 0;
@@ -1429,10 +1489,23 @@ void Renderer::getBoxDimsAroundText(const char* text, Font* font, vec2f* dims)
 
 void Renderer::drawScene(Scene* scene)
 {
+	unsigned int mapWidth = scene->getMap()->getMapWidth();
+	unsigned int bgCounter = 0;
 	Rect cam = scene->getCamera();
 	Player* player = scene->getPlayer();
 	Rect playerRect = player->getCollisionRect();
+
 	drawTileLayer(scene, 0);
+
+	while (bgCounter < mapWidth)
+	{
+		drawBackground(scene, bgClose, bgCounter, 0, 1.0f);
+		drawBackground(scene, bgMiddle, bgCounter, -1, 0.75f);
+		drawBackground(scene, bgFar, bgCounter, -2, 0.5f);
+		drawBackground(scene, bgVeryFar, bgCounter, -3, 0.25f);
+		bgCounter += BACKGROUND_WIDTH;
+	}
+
 	if (!scene->inCrosslinkMode())
 	{
 		if ((!player->isInElevator() || !player->getElevatorDoor()->_shaft->_moving) && !player->isPinning())

@@ -79,11 +79,13 @@ public:
 	void addSniper();
 	void removeSniper();
 	Enemy* getSniper();
+	float getBackGroundYOffset();
 private:
 	unsigned int _tilesHigh;
 	unsigned int _tilesWide;
 	unsigned int _mapWidth;
 	unsigned int _mapHeight;
+	float _backgroundYOffset;
 	vec2f _playerStartPos;
 	vec2f _subwayPos;
 	bool _subwayFound;
@@ -116,6 +118,7 @@ private:
 	void calculateStairDirections();
 	void calculateElevatorOrder();
 	void parseTileLayer(char* data);
+	void findBackGroundYOffset(std::string filename);
 	SDL_Surface* _tilesetImage;
 	GLuint _mapTex;
 	GLuint _crosslinkTex;

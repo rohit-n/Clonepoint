@@ -98,6 +98,7 @@ bool Map::loadFromFile(const char* filename, bool savegame)
 	_playerStartPos = vec2f(0, 0);
 	_subwayPos = vec2f(0, 0);
 	_subwayFound = false;
+	_backgroundYOffset = 0;
 
 	if (!doc.LoadFile())
 	{
@@ -282,6 +283,8 @@ bool Map::loadFromFile(const char* filename, bool savegame)
 	eg->_enemy = _sniper;
 	_sniper->_gun = eg;
 	_entities.push_back(eg);
+
+	findBackGroundYOffset(filename);
 
 	return true;
 }
@@ -1191,6 +1194,43 @@ void Map::parseTileLayer(char* data)
 	delete [] token;
 }
 
+void Map::findBackGroundYOffset(std::string filename)
+{
+	TiXmlDocument doc(filename.c_str());
+
+	if (!doc.LoadFile())
+	{
+		LOGF((stderr, "Failed to load map file %s.\n", filename.c_str()));
+		return;
+	}
+
+	TiXmlHandle hDoc(&doc);
+	TiXmlElement *root, *lvl1, *lvl2;
+	root = doc.FirstChildElement("map");
+
+	if(!root)
+	{
+		LOGF((stderr, "Failed to parse map file %s.\n", filename.c_str()));
+		return;
+	}
+
+	lvl1 = root->FirstChildElement("properties");
+	while(lvl1)
+	{
+		lvl2 = lvl1->FirstChildElement("property");
+		while (lvl2)
+		{
+			if (!strcmp(lvl2->Attribute("name"), "backgroundyoff"))
+			{
+				_backgroundYOffset = atof(lvl2->Attribute("value")) * TILEDIM;
+			}
+
+			lvl2 = lvl2->NextSiblingElement("property");
+		}
+		lvl1 = lvl1->NextSiblingElement("properties");
+	}
+}
+
 GLuint Map::getMapTexture()
 {
 	return _mapTex;
@@ -1327,4 +1367,9 @@ void Map::removeSniper()
 Enemy* Map::getSniper()
 {
 	return _sniper;
+}
+
+float Map::getBackGroundYOffset()
+{
+	return _backgroundYOffset;
 }

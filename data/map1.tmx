@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="128" height="64" tilewidth="16" tileheight="16">
  <properties>
+  <property name="backgroundyoff" value="61"/>
   <property name="startingupgrades" value="8"/>
  </properties>
  <tileset firstgid="1" name="set01" tilewidth="16" tileheight="16">
@@ -13,7 +14,7 @@
   <image source="sprites/objects.png" trans="ff00ff" width="512" height="768"/>
  </tileset>
  <tileset firstgid="1069" name="linkables" tilewidth="128" tileheight="128">
-  <image source="sprites/linkable.png" trans="ff00ff" width="512" height="768"/>
+  <image source="sprites/linkable.png" trans="ff00ff" width="512" height="896"/>
  </tileset>
  <layer name="Tile Layer 1" width="128" height="64">
   <data encoding="csv">

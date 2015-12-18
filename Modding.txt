@@ -169,3 +169,7 @@ in the "type" property and adding them in the previous object groups.
 
 	* timetosniper - The number of seconds the player has after firing their weapon before
 	the police sniper arrives. If not set, time to sniper is 1 second.
+
+	* backgroundyoff - The height that the "ground" is considered at, used for drawing layered
+	backgrounds. Set this to the Y coordinate of the collision volume (in tiles) you consider 
+	to be the "ground" for best visual results.

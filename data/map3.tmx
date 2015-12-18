@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="100" height="64" tilewidth="16" tileheight="16">
  <properties>
+  <property name="backgroundyoff" value="61"/>
   <property name="startingammo" value="3"/>
   <property name="startingupgrades" value="16"/>
   <property name="timetosniper" value="15"/>
@@ -15,9 +16,9 @@
   <image source="sprites/objects.png" trans="ff00ff" width="512" height="768"/>
  </tileset>
  <tileset firstgid="1069" name="linkables" tilewidth="128" tileheight="128">
-  <image source="sprites/linkable.png" trans="ff00ff" width="512" height="768"/>
+  <image source="sprites/linkable.png" trans="ff00ff" width="512" height="896"/>
  </tileset>
- <tileset firstgid="1093" name="EnfSet" tilewidth="128" tileheight="128">
+ <tileset firstgid="1097" name="EnfSet" tilewidth="128" tileheight="128">
   <image source="sprites/enforcer.png" trans="ff00ff" width="512" height="640"/>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="64">
@@ -220,7 +221,7 @@
     <property name="direction" value="right"/>
    </properties>
   </object>
-  <object type="Enforcer" gid="1093" x="816" y="576">
+  <object type="Enforcer" gid="1097" x="816" y="576">
    <properties>
     <property name="patrolling" value="yes"/>
    </properties>
