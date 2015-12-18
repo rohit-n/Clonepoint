@@ -42,6 +42,7 @@ bool ConfigManager::isKeyValid(const char* key)
 	if (!strcmp(key, "music_volume")) return true;
 	if (!strcmp(key, "tutorial_popups")) return true;
 	if (!strcmp(key, "input_popups")) return true;
+	if (!strcmp(key, "crosslink_blur")) return true;
 
 	return false;
 }

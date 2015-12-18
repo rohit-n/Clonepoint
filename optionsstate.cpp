@@ -81,6 +81,8 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 
 	_soundVolumeLabel = new TextLabel(0, 0, "Sound Volume", 1, 1, 1);
 	_musicVolumeLabel = new TextLabel(0, 0, "Music Volume", 1, 1, 1);
+	_crosslinkBlurLabel = new TextLabel(0, 0, "Crosslink Blur", 1, 1, 1);
+	_crossLinkBlurState = new ImageButton(0, 0, 32, 32, cbs, cbs);
 
 	_labels.push_back(_titleLabel);
 	_labels.push_back(_resolutionLabel);
@@ -92,6 +94,7 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_labels.push_back(_saveMessage);
 	_labels.push_back(_soundVolumeLabel);
 	_labels.push_back(_musicVolumeLabel);
+	_labels.push_back(_crosslinkBlurLabel);
 
 	_gameplayPage.push_back(_exitButton);
 	_gameplayPage.push_back(_saveChangesButton);
@@ -101,6 +104,7 @@ OptionsState::OptionsState(StateManager* sm) : MenuState(sm)
 	_gameplayPage.push_back(_lightEnteredAlphaState);
 	_gameplayPage.push_back(_tutorialPopupsState);
 	_gameplayPage.push_back(_inputPopupsState);
+	_gameplayPage.push_back(_crossLinkBlurState);
 	_gameplayPage.push_back(_toBindingsPage);
 
 	//Bindings page
@@ -209,25 +213,28 @@ void OptionsState::resetPositions(int w, int h)
 	_resolutionText->setPositionWithOffset(w * 0.4f, y, 408, 260);
 	_resDown->setPositionWithOffset(w * 0.4f, y, 440, 272);
 
-	_saveChangesButton->setPosition(w * 0.45f, h * 0.75f);
-	_exitButton->setPosition(x, h * 0.8f);
+	_saveChangesButton->setPosition(w * 0.75f, h * 0.8f);
+	_exitButton->setPosition(w * 0.75f, h * 0.85f);
 
 	x = w * 0.4f;
 	y = h * 0.6f;
 
 	for (i = 0; i < NUM_VOLUME_BARS; i++)
 	{
-		_soundVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 0);
-		_musicVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 36);
+		_soundVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 72);
+		_musicVolumeProgress[i]->setPositionWithOffset(x, y, 16 * i, 108);
 	}
 
-	_soundVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 0);
-	_soundVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 0);
-	_musicVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 36);
-	_musicVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 36);
+	_soundVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 72);
+	_soundVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 72);
+	_musicVolumeDecr->setPositionWithOffset(x, y, (16 * i) + 32, 108);
+	_musicVolumeIncr->setPositionWithOffset(x, y, (16 * i) + 64, 108);
 
-	_soundVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 24);
-	_musicVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 60);
+	_soundVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 88);
+	_musicVolumeLabel->setPositionWithOffset(w * 0.25f, h * 0.6f, 0, 128);
+
+	_crosslinkBlurLabel->setPosition(w * 0.25f, y + 32);
+	_crossLinkBlurState->setPositionWithOffset(w * 0.4f, y, 440, 12);
 
 	//bindings page
 	_toGameplayPage->setPosition(w * 0.2f, h * 0.1f);
@@ -252,56 +259,29 @@ void OptionsState::update(unsigned int dT)
 
 void OptionsState::handleButton(Button* button)
 {
-	unsigned int cb = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox");
-	unsigned int cbs = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox_selected");
-
 	if (button == _exitButton)
 	{
 		_manager->switchToState(MAINMENU_SCREEN);
 	}
 	else if (button == _fullscreenState)
 	{
-		if (_fullscreenState->getSpriteIndex() == cb)
-		{
-			_fullscreenState->changeSprites(cbs, cbs);
-		}
-		else
-		{
-			_fullscreenState->changeSprites(cb, cb);
-		}
+		toggleCheckbox(_fullscreenState);
+	}
+	else if (button == _crossLinkBlurState)
+	{
+		toggleCheckbox(_crossLinkBlurState);
 	}
 	else if (button == _lightEnteredAlphaState)
 	{
-		if (_lightEnteredAlphaState->getSpriteIndex() == cb)
-		{
-			_lightEnteredAlphaState->changeSprites(cbs, cbs);
-		}
-		else
-		{
-			_lightEnteredAlphaState->changeSprites(cb, cb);
-		}
+		toggleCheckbox(_lightEnteredAlphaState);
 	}
 	else if (button == _tutorialPopupsState)
 	{
-		if (_tutorialPopupsState->getSpriteIndex() == cb)
-		{
-			_tutorialPopupsState->changeSprites(cbs, cbs);
-		}
-		else
-		{
-			_tutorialPopupsState->changeSprites(cb, cb);
-		}
+		toggleCheckbox(_tutorialPopupsState);
 	}
 	else if (button == _inputPopupsState)
 	{
-		if (_inputPopupsState->getSpriteIndex() == cb)
-		{
-			_inputPopupsState->changeSprites(cbs, cbs);
-		}
-		else
-		{
-			_inputPopupsState->changeSprites(cb, cb);
-		}
+		toggleCheckbox(_inputPopupsState);
 	}
 	else if (button == _resUp)
 	{
@@ -403,6 +383,15 @@ void OptionsState::setLabels()
 		_fullscreenState->changeSprites(cb, cb);
 	}
 
+	if (Locator::getConfigManager()->getBool("crosslink_blur"))
+	{
+		_crossLinkBlurState->changeSprites(cbs, cbs);
+	}
+	else
+	{
+		_crossLinkBlurState->changeSprites(cb, cb);
+	}
+
 	if (Locator::getConfigManager()->getBool("entered_light_flash"))
 	{
 		_lightEnteredAlphaState->changeSprites(cbs, cbs);
@@ -478,6 +467,7 @@ void OptionsState::saveSettings()
 	Locator::getConfigManager()->setValue("music_volume", std::string(musvolstr));
 	Locator::getAudio()->setSoundVolume((float)_currSoundVolume / 10);
 	Locator::getAudio()->setMusicVolume((float)_currMusicVolume / 10);
+	Locator::getConfigManager()->setValue("crosslink_blur", _crossLinkBlurState->getSpriteIndex() == cbs ?  "1" : "0");
 }
 
 void OptionsState::addMode(std::string mode)
@@ -500,6 +490,7 @@ void OptionsState::changeToGameplayPage()
 	_musicVolumeLabel->setVisible(true);
 	_tutorialPopupsText->setVisible(true);
 	_inputPopupsText->setVisible(true);
+	_crosslinkBlurLabel->setVisible(true);
 	//bindings
 	_moveLeftLabel->setVisible(false);
 	_moveRightLabel->setVisible(false);
@@ -521,6 +512,7 @@ void OptionsState::changeToBindingsPage()
 	_musicVolumeLabel->setVisible(false);
 	_tutorialPopupsText->setVisible(false);
 	_inputPopupsText->setVisible(false);
+	_crosslinkBlurLabel->setVisible(false);
 	//bindings
 	_moveLeftLabel->setVisible(true);
 	_moveRightLabel->setVisible(true);
@@ -644,5 +636,20 @@ void OptionsState::handleDecrIncrVisibility(Button* decr, Button* incr, int valu
 		{
 			_buttons.push_back(incr);
 		}
+	}
+}
+
+void OptionsState::toggleCheckbox(ImageButton* ib)
+{
+	unsigned int cb = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox");
+	unsigned int cbs = Locator::getSpriteManager()->getIndex("./data/sprites/interface.sprites", "checkbox_selected");
+
+	if (ib->getSpriteIndex() == cb)
+	{
+		ib->changeSprites(cbs, cbs);
+	}
+	else
+	{
+		ib->changeSprites(cb, cb);
 	}
 }

@@ -179,6 +179,7 @@ private:
 	GLuint notex;
 
 	bool _enteredLightFlash;
+	bool _crosslinkBlur;
 
 	//for animating crosslink lines
 	float linkProgress;

@@ -48,9 +48,10 @@ public:
 	void rebindKey(SDL_Keycode key);
 	void updateBindingButtons();
 	void updateProgressBars();
-	void handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size);
 	bool _settingsChanged;
 private:
+	void handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size);
+	void toggleCheckbox(ImageButton* ib);
 	TextLabel* _titleLabel;
 	TextButton* _exitButton;
 	TextButton* _saveChangesButton;
@@ -73,6 +74,8 @@ private:
 	TextLabel* _resolutionLabel;
 	TextLabel* _soundVolumeLabel;
 	TextLabel* _musicVolumeLabel;
+	TextLabel* _crosslinkBlurLabel;
+	ImageButton* _crossLinkBlurState;
 	ImageButton* _resUp;
 	ImageButton* _resDown;
 	TextLabel* _fullscreenLabel;

@@ -193,6 +193,7 @@ bool Renderer::init(int x, int y)
 	screenshotIndex = 1;
 	wireframe = false;
 	_enteredLightFlash = false;
+	_crosslinkBlur = false;
 
 	linkProgress = 0.0f;
 
@@ -1379,10 +1380,20 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 
 void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offset)
 {
-	glUseProgramObject(pgmButton);
+	GLuint pgm;
+	if (scene->inCrosslinkMode() && !_crosslinkBlur)
+	{
+		pgm = pgmCrosslinkProp;
+	}
+	else
+	{
+		pgm = pgmButton;
+	}
+	glUseProgramObject(pgm);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), scene->inCrosslinkMode() ? 1 : 0);
+	unsigned int should_blur = scene->inCrosslinkMode() && _crosslinkBlur ? 1 : 0;
+	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), should_blur);
 	float xOffset = scene->getCamera().x * offset;
 
 	float verts[] = {	0.0f, 0.0f,
@@ -1731,6 +1742,7 @@ void Renderer::setScreenshotIndex(unsigned int value)
 void Renderer::handleSettingsChange()
 {
 	_enteredLightFlash = (Locator::getConfigManager()->getBool("entered_light_flash"));
+	_crosslinkBlur = (Locator::getConfigManager()->getBool("crosslink_blur"));
 	_bindingStrings[UESwitch] = "Flip Switch: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UETerminal] = "Hack: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UEElevator] = "Move Up:   " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp) + "\nMove Down: " +
