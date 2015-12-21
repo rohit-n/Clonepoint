@@ -299,12 +299,15 @@ bool Renderer::init(int x, int y)
 	_messageStrings[SM_Start] = "Welcome to Clonepoint.";
 	_messageStrings[SM_Jumping] = "Use the mouse to jump on to the side of the building.";
 	_messageStrings[SM_Falling] = "You can survive any fall.";
-	_messageStrings[SM_Guards1] = "Avoid the guard's field of vision. Pounce on them to knock them out.";
-	_messageStrings[SM_Guards2] = "Guards will search for the nearest switch to turn the light back on. Turn off the light.";
+	_messageStrings[SM_Guards1] = "Avoid the guard's field of vision. The mouse pointer turns red where it can be seen.\
+								\nPounce on guards to knock them out.";
+	_messageStrings[SM_Guards2] = "Turn off the light. Guards will search for the nearest switch to turn the light back on.\
+								\nYou are much less visible in darkness.";
 	_messageStrings[SM_Crosslink1] = "Enter Crosslink and drag a connection from the light switch to the door to proceed.";
 	_messageStrings[SM_Crosslink2] = "Good job! Use Crosslink to get to your objectives in creative ways.";
 	_messageStrings[SM_Objectives] = "Hack all computer terminals and go to the exit to end the level.";
 	_messageStrings[SM_Elevators] = "Enemies cannot see you while you are in an elevator.";
+	_messageStrings[SM_Optional] = "You can disable these tutorial messages in the Options menu.";
 	_messageStrings[SM_ObjectivesIncomplete] = "Objectives not completed.";
 
 	handleSettingsChange();

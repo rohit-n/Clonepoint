@@ -807,6 +807,10 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				{
 					sm = SM_Elevators;
 				}
+				if (!strcmp(element->Attribute("type"), "tut_10"))
+				{
+					sm = SM_Optional;
+				}
 				if (sm < NUMBER_OF_STRING_MESSAGES)
 				{
 					_tutorials.push_back(new TutorialMark(x, y - ENTDIM, sm));
