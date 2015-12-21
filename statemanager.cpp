@@ -24,6 +24,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #include "creditsstate.h"
 #include "levelendstate.h"
 #include "pausestate.h"
+#include "loadingmapstate.h"
 #include "loadmapstate.h"
 #include "optionsstate.h"
 #include "upgradesstate.h"
@@ -35,6 +36,7 @@ StateManager::StateManager()
 	_creditsState = new CreditsState(this);
 	_levelEndState = new LevelEndState(this);
 	_pauseState = new PauseState(this);
+	_loadingMapState = new LoadingMapState(this);
 	_loadMapState = new LoadMapState(this);
 	_optionsState = new OptionsState(this);
 	_upgradesState = new UpgradesState(this);
@@ -54,6 +56,7 @@ StateManager::~StateManager()
 	delete _creditsState;
 	delete _levelEndState;
 	delete _pauseState;
+	delete _loadingMapState;
 	delete _loadMapState;
 	delete _optionsState;
 	delete _upgradesState;
@@ -73,6 +76,7 @@ void StateManager::switchToState(eState state)
 {
 	GameState* gs = static_cast<GameState*>(_gameState);
 	UpgradesState* us = static_cast<UpgradesState*>(_upgradesState);
+	LoadingMapState* lms = static_cast<LoadingMapState*>(_loadingMapState);
 	int jp, jt, timeToSniper, old_x, old_y;
 	unsigned int ammo, energy;
 	_activeState->getMousePosition(&old_x, &old_y);
@@ -83,7 +87,7 @@ void StateManager::switchToState(eState state)
 		_activeState = _mainMenuState;
 		break;
 	case GAME_SCREEN:
-		if (_activeState == _upgradesState)
+		if (_activeState == _loadingMapState)
 		{
 			us->getModifiers(&jp, &jt, &ammo, &timeToSniper, &energy);
 			gs->getScene()->addPlayerJumpPower((float)jp / 50.0f);
@@ -102,6 +106,10 @@ void StateManager::switchToState(eState state)
 		break;
 	case PAUSE_SCREEN:
 		_activeState = _pauseState;
+		break;
+	case LOADINGMAP_SCREEN:
+		lms->setMap(_activeMapFilename);
+		_activeState = _loadingMapState;
 		break;
 	case LOADMAP_SCREEN:
 		_activeState = _loadMapState;

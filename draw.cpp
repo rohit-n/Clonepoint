@@ -432,14 +432,16 @@ void Renderer::drawState(BaseState* state)
 {
 	size_t i;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (dynamic_cast<MenuState*>(state))
+	bool is_menu = dynamic_cast<MenuState*>(state);
+	bool is_game = dynamic_cast<GameState*>(state);
+	if (is_menu)
 	{
 		for (i = 0; i < static_cast<MenuState*>(state)->getButtonCount(); i++)
 		{
 			drawButton(static_cast<MenuState*>(state)->getButtonAt(i));
 		}
 	}
-	else
+	else if (is_game)
 	{
 		drawScene(static_cast<GameState*>(state)->getScene());
 	}
@@ -448,7 +450,11 @@ void Renderer::drawState(BaseState* state)
 	{
 		drawTextLabel(state->getLabelAt(i));
 	}
-	drawMouseCursor(state);
+
+	if (is_menu || is_game)
+	{
+		drawMouseCursor(state);
+	}
 }
 
 void Renderer::drawMouseCursor(BaseState* state)

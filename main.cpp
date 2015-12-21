@@ -41,6 +41,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #include "levelendstate.cpp"
 #include "linkableentity.cpp"
 #include "livingentity.cpp"
+#include "loadingmapstate.cpp"
 #include "loadmapstate.cpp"
 #include "locator.cpp"
 #include "map.cpp"

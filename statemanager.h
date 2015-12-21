@@ -30,6 +30,7 @@ enum eState
 	CREDITS_SCREEN,
 	LEVELEND_SCREEN,
 	PAUSE_SCREEN,
+	LOADINGMAP_SCREEN,
 	LOADMAP_SCREEN,
 	OPTIONS_SCREEN,
 	UPGRADES_SCREEN
@@ -65,6 +66,7 @@ private:
 	BaseState* _creditsState;
 	BaseState* _levelEndState;
 	BaseState* _pauseState;
+	BaseState* _loadingMapState;
 	BaseState* _loadMapState;
 	BaseState* _optionsState;
 	BaseState* _upgradesState;
