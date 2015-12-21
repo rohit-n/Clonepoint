@@ -102,6 +102,7 @@ public:
 	void drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue);
 	void drawFieldOfView(Scene* scene, FieldOfView* fov, GLuint program);
 	void drawTileLayer(Scene* scene, int z);
+	void drawBackgrounds(Scene* scene);
 	void drawBackground(Scene* scene, GLuint tex, int x, int z, float offset);
 	void updateLinkProgress(unsigned int dT);
 	void deleteSpriteSheet(SpriteSheet* sheet);

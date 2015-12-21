@@ -52,7 +52,7 @@ PFNGLACTIVETEXTUREARBPROC  glActiveTexture;
 #endif
 PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubData;
 
-#define BACKGROUND_WIDTH 1280
+#define BACKGROUND_WIDTH 2048
 #define BACKGROUND_HEIGHT 720
 
 struct point
@@ -1378,8 +1378,11 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 	glUseProgramObject(0);
 }
 
-void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offset)
+void Renderer::drawBackgrounds(Scene* scene)
 {
+	unsigned int mapWidth = scene->getMap()->getMapWidth();
+	unsigned int bgCounter = 0;
+
 	GLuint pgm;
 	if (scene->inCrosslinkMode() && !_crosslinkBlur)
 	{
@@ -1389,12 +1392,12 @@ void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offs
 	{
 		pgm = pgmButton;
 	}
+
 	glUseProgramObject(pgm);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
+
 	unsigned int should_blur = scene->inCrosslinkMode() && _crosslinkBlur ? 1 : 0;
 	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), should_blur);
-	float xOffset = scene->getCamera().x * offset;
 
 	float verts[] = {	0.0f, 0.0f,
 	                    0.0f, (float)BACKGROUND_HEIGHT,
@@ -1412,22 +1415,37 @@ void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offs
 	                    1.0f, 1.0f,
 	                };
 
-	quadTransform = mat4f_mult(orthographic, mat4f_translate(x - xOffset,
-		scene->getMap()->getBackGroundYOffset() - BACKGROUND_HEIGHT - scene->getCamera().y, z));
-	glUniformMatrix4fv(glGetUniformLocation(pgmButton, "proj_mat"), 1, GL_TRUE, &quadTransform.m[0][0]);
-	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "Position")); /*vertex coords*/
-	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "TexCoord")); /*texture coords*/
-	glVertexAttribPointer(glGetAttribLocation(pgmButton, "Position"), 2, GL_FLOAT, GL_FALSE, 0, verts);
-	glVertexAttribPointer(glGetAttribLocation(pgmButton, "TexCoord"), 2, GL_FLOAT, GL_FALSE, 0, texes);
+	glVertexAttribPointer(glGetAttribLocation(pgm, "Position"), 2, GL_FLOAT, GL_FALSE, 0, verts);
+	glVertexAttribPointer(glGetAttribLocation(pgm, "TexCoord"), 2, GL_FLOAT, GL_FALSE, 0, texes);
+	glEnableVertexAttribArray(glGetAttribLocation(pgm, "Position")); /*vertex coords*/
+	glEnableVertexAttribArray(glGetAttribLocation(pgm, "TexCoord")); /*texture coords*/
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glDisableVertexAttribArray(glGetAttribLocation(pgmButton, "Position"));
-	glDisableVertexAttribArray(glGetAttribLocation(pgmButton, "TexCoord"));
+	while (bgCounter < mapWidth)
+	{
+		drawBackground(scene, bgClose, bgCounter, 0, 1.0f);
+		drawBackground(scene, bgMiddle, bgCounter, -1, 0.75f);
+		drawBackground(scene, bgFar, bgCounter, -2, 0.5f);
+		drawBackground(scene, bgVeryFar, bgCounter, -3, 0.25f);
+		bgCounter += BACKGROUND_WIDTH;
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUniform1i(glGetUniformLocation(pgmButton, "use_blur"), 0);
+	glDisableVertexAttribArray(glGetAttribLocation(pgm, "Position"));
+	glDisableVertexAttribArray(glGetAttribLocation(pgm, "TexCoord"));
 	glUseProgramObject(0);
+
+}
+
+void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offset)
+{
+	glBindTexture(GL_TEXTURE_2D, tex);
+	float xOffset = scene->getCamera().x * offset;
+
+	quadTransform = mat4f_mult(orthographic, mat4f_translate(x - xOffset,
+		scene->getMap()->getBackGroundYOffset() - BACKGROUND_HEIGHT - scene->getCamera().y, z));
+	glUniformMatrix4fv(glGetUniformLocation(pgmButton, "proj_mat"), 1, GL_TRUE, &quadTransform.m[0][0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, Font* font, Rect* rect)
@@ -1500,22 +1518,11 @@ void Renderer::getBoxDimsAroundText(const char* text, Font* font, vec2f* dims)
 
 void Renderer::drawScene(Scene* scene)
 {
-	unsigned int mapWidth = scene->getMap()->getMapWidth();
-	unsigned int bgCounter = 0;
 	Rect cam = scene->getCamera();
 	Player* player = scene->getPlayer();
 	Rect playerRect = player->getCollisionRect();
-
 	drawTileLayer(scene, 0);
-
-	while (bgCounter < mapWidth)
-	{
-		drawBackground(scene, bgClose, bgCounter, 0, 1.0f);
-		drawBackground(scene, bgMiddle, bgCounter, -1, 0.75f);
-		drawBackground(scene, bgFar, bgCounter, -2, 0.5f);
-		drawBackground(scene, bgVeryFar, bgCounter, -3, 0.25f);
-		bgCounter += BACKGROUND_WIDTH;
-	}
+	drawBackgrounds(scene);
 
 	if (!scene->inCrosslinkMode())
 	{
