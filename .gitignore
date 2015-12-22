@@ -3,6 +3,7 @@ clonepoint
 *.dll
 *.o
 *.sav
+data/backgrounds
 data/fonts
 data/music/
 data/sprites/*.png
