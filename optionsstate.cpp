@@ -236,18 +236,20 @@ void OptionsState::resetPositions(int w, int h)
 	_crosslinkBlurLabel->setPosition(w * 0.25f, y + 32);
 	_crossLinkBlurState->setPositionWithOffset(w * 0.4f, y, 440, 12);
 
+	x = w * 0.3f;
+
 	//bindings page
 	_toGameplayPage->setPosition(w * 0.2f, h * 0.1f);
 	_toBindingsPage->setPosition(w * 0.2f, h * 0.1f);
-	_moveLeftLabel->setPosition(w * 0.1f, h * 0.2f);
-	_moveRightLabel->setPosition(w * 0.1f, h * 0.25f);
-	_moveUpLabel->setPosition(w * 0.1f, h * 0.3f);
-	_moveDownLabel->setPosition(w * 0.1f, h * 0.35f);
-	_moveLeftButton->setPositionWithOffset(w * 0.25f, h * 0.2f, 0, -32);
-	_moveRightButton->setPositionWithOffset(w * 0.25f, h * 0.25f, 0, -32);
-	_moveUpButton->setPositionWithOffset(w * 0.25f, h * 0.3f, 0, -32);
-	_moveDownButton->setPositionWithOffset(w * 0.25f, h * 0.35f, 0, -32);
-	_pressAKeyLabel->setPosition(w * 0.4f, h * 0.4f);
+	_moveLeftLabel->setPosition(x, h * 0.2f);
+	_moveRightLabel->setPosition(x, h * 0.25f);
+	_moveUpLabel->setPosition(x, h * 0.3f);
+	_moveDownLabel->setPosition(x, h * 0.35f);
+	_moveLeftButton->setPositionWithOffset(w * 0.45f, h * 0.2f, 0, -32);
+	_moveRightButton->setPositionWithOffset(w * 0.45f, h * 0.25f, 0, -32);
+	_moveUpButton->setPositionWithOffset(w * 0.45f, h * 0.3f, 0, -32);
+	_moveDownButton->setPositionWithOffset(w * 0.45f, h * 0.35f, 0, -32);
+	_pressAKeyLabel->setPosition(w * 0.25f, h * 0.5f);
 	_autoSaveMessage->setPositionWithOffset(w * 0.35f, h * 0.75f, 0, 32);
 }
 
@@ -592,8 +594,13 @@ void OptionsState::updateProgressBars()
 		}
 	}
 
-	handleDecrIncrVisibility(_soundVolumeDecr, _soundVolumeIncr, _currSoundVolume, NUM_VOLUME_BARS);
-	handleDecrIncrVisibility(_musicVolumeDecr, _musicVolumeIncr, _currMusicVolume, NUM_VOLUME_BARS);
+	if (_page == OPTION_PAGE_GAMEPLAY)
+	{
+		handleDecrIncrVisibility(_soundVolumeDecr,
+			_soundVolumeIncr, _currSoundVolume, NUM_VOLUME_BARS);
+		handleDecrIncrVisibility(_musicVolumeDecr,
+			_musicVolumeIncr, _currMusicVolume, NUM_VOLUME_BARS);
+	}
 }
 
 void OptionsState::handleDecrIncrVisibility(Button* decr, Button* incr, int value, int size)
