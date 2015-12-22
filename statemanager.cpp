@@ -44,8 +44,10 @@ StateManager::StateManager()
 	_winX = 800;
 	_winY = 600;
 	_settingsChanged = false;
+	_stateChanged = false;
 	_activeMapFilename = "";
 	_mapMusicFilename = "";
+	_activeStateName = MAINMENU_SCREEN;
 
 	Locator::getAudio()->playMenuMusic();
 }
@@ -129,6 +131,9 @@ void StateManager::switchToState(eState state)
 		_activeState = _upgradesState;
 		break;
 	}
+
+	_stateChanged = true;
+	_activeStateName = state;
 
 	//done to prevent the mouse cursor sprite from being initially drawn in the old position.
 	_activeState->setMousePosition(old_x, old_y);
@@ -328,4 +333,14 @@ void StateManager::resetScreenShotFlag()
 	_loadMapState->tookScreenshot = false;
 	_optionsState->tookScreenshot = false;
 	_upgradesState->tookScreenshot = false;
+}
+
+bool StateManager::stateChanged()
+{
+	return _stateChanged;
+}
+
+void StateManager::resetStateChangedFlag()
+{
+	_stateChanged = false;
 }

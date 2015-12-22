@@ -267,6 +267,12 @@ void loop1()
 			renderer.takeScreenshot();
 			sm->resetScreenShotFlag();
 		}
+
+		if (sm->stateChanged())
+		{
+			renderer.changeMenuBackground(sm->_activeStateName);
+			sm->resetStateChangedFlag();
+		}
 	}
 }
 

@@ -77,24 +77,18 @@ Renderer::Renderer()
 Renderer::~Renderer()
 {
 	LOGF((stdout, "Running Renderer destructor.\n"));
-	if (pgmText)
-		glDeleteObject(pgmText);
-	if (pgmMap)
-		glDeleteObject(pgmMap);
-	if (pgmButton)
-		glDeleteObject(pgmButton);
-	if (pgmColoredSprite)
-		glDeleteObject(pgmColoredSprite);
-	if (pgmCrosslinkProp)
-		glDeleteObject(pgmCrosslinkProp);
-	if (text_vbo)
-		glDeleteBuffers(1, &text_vbo);
-	if (entRectVBO)
-		glDeleteBuffers(1, &entRectVBO);
-	if (pointVBO)
-		glDeleteBuffers(1, &pointVBO);
-	if (_screenVBO)
-		glDeleteBuffers(1, &_screenVBO);
+
+	safeDeleteProgram(pgmText);
+	safeDeleteProgram(pgmMap);
+	safeDeleteProgram(pgmButton);
+	safeDeleteProgram(pgmColoredSprite);
+	safeDeleteProgram(pgmCrosslinkProp);
+
+	safeDeleteBuffer(text_vbo);
+	safeDeleteBuffer(entRectVBO);
+	safeDeleteBuffer(pointVBO);
+	safeDeleteBuffer(_screenVBO);
+	safeDeleteBuffer(_screenTexVBO);
 
 	delete font1;
 	delete font2;
@@ -114,14 +108,29 @@ Renderer::~Renderer()
 	deleteSpriteSheet(resInterface);
 	deleteSpriteSheet(resGlass);
 
-	if (bgClose > 0)
-		glDeleteTextures(1, &bgClose);
-	if (bgMiddle > 0)
-		glDeleteTextures(1, &bgMiddle);
-	if (bgFar > 0)
-		glDeleteTextures(1, &bgFar);
-	if (bgVeryFar > 0)
-		glDeleteTextures(1, &bgVeryFar);
+	safeDeleteTexture(bgClose);
+	safeDeleteTexture(bgMiddle);
+	safeDeleteTexture(bgFar);
+	safeDeleteTexture(bgVeryFar);
+	safeDeleteTexture(bgMainMenu);
+}
+
+void Renderer::safeDeleteBuffer(GLuint buf)
+{
+	if (buf > 0)
+		glDeleteBuffers(1, &buf);
+}
+
+void Renderer::safeDeleteProgram(GLuint pgm)
+{
+	if (pgm > 0)
+		glDeleteObject(pgm);
+}
+
+void Renderer::safeDeleteTexture(GLuint tex)
+{
+	if (tex > 0)
+		glDeleteTextures(1, &tex);
 }
 
 void Renderer::deleteSpriteSheet(SpriteSheet* sheet)
@@ -156,6 +165,7 @@ void Renderer::toggleWireframe()
 bool Renderer::init(int x, int y)
 {
 	_screenVBO = 0;
+	_screenTexVBO = 0;
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -224,6 +234,14 @@ bool Renderer::init(int x, int y)
 	bgMiddle = loadTexture("./data/backgrounds/bgMiddle.png");
 	bgFar = loadTexture("./data/backgrounds/bgFar.png");
 	bgVeryFar = loadTexture("./data/backgrounds/bgVeryFar.png");
+
+	bgMainMenu = loadTexture("./data/backgrounds/menus/main.png");
+	bgCredits = loadTexture("./data/backgrounds/menus/credits.png");
+	bgOptions = loadTexture("./data/backgrounds/menus/options.png");
+	bgLoadMap = loadTexture("./data/backgrounds/menus/loadmap.png");
+	bgPaused = loadTexture("./data/backgrounds/menus/paused.png");
+	bgUpgrades = loadTexture("./data/backgrounds/menus/upgrades.png");
+	bgActive = bgMainMenu;
 
 	if (resPlayer->getTexId() == 0 ||
 		resPlayerLeft->getTexId() == 0 ||
@@ -436,6 +454,7 @@ void Renderer::drawState(BaseState* state)
 	bool is_game = dynamic_cast<GameState*>(state);
 	if (is_menu)
 	{
+		drawMenuBackground(bgActive);
 		for (i = 0; i < static_cast<MenuState*>(state)->getButtonCount(); i++)
 		{
 			drawButton(static_cast<MenuState*>(state)->getButtonAt(i));
@@ -631,17 +650,33 @@ void Renderer::bufferScreenVBO(float x, float y)
 	if (_screenVBO)
 		glDeleteBuffers(1, &_screenVBO);
 
-	float verts[] = {	0.0, 0.0,
-	                    0.0, y,
+	if (_screenTexVBO)
+		glDeleteBuffers(1, &_screenTexVBO);
+
+	float verts[] = {	0.0f, 0.0f,
+	                    0.0f, y,
 	                    x, 0.0f,
-	                    0.0, y,
+	                    0.0f, y,
 	                    x, 0.0f,
 	                    x, y
 	                };
 
+	float vertsAndTexes[] = {	0.0f, 0.0f, 0.0f, 0.0f,
+								0.0f, y, 0.0f, 1.0f,
+								x, 0.0f, 1.0f, 0.0f,
+								0.0f, y, 0.0f, 1.0f,
+								x, 0.0f, 1.0f, 0.0f,
+								x, y, 1.0f, 1.0f
+							};
+
 	glGenBuffers(1, &_screenVBO);
+	glGenBuffers(1, &_screenTexVBO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, _screenVBO);
 	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &verts[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _screenTexVBO);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), &vertsAndTexes[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -1387,7 +1422,7 @@ void Renderer::drawTileLayer(Scene* scene, int z)
 	glUseProgramObject(0);
 }
 
-void Renderer::drawBackgrounds(Scene* scene)
+void Renderer::drawSceneBackgrounds(Scene* scene)
 {
 	unsigned int mapWidth = scene->getMap()->getMapWidth();
 	unsigned int bgCounter = 0;
@@ -1455,6 +1490,33 @@ void Renderer::drawBackground(Scene* scene, GLuint tex, int x, int z, float offs
 		scene->getMap()->getBackGroundYOffset() - BACKGROUND_HEIGHT - scene->getCamera().y, z));
 	glUniformMatrix4fv(glGetUniformLocation(pgmButton, "proj_mat"), 1, GL_TRUE, &quadTransform.m[0][0]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Renderer::drawMenuBackground(GLuint tex)
+{
+	glUseProgramObject(pgmButton);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glBindBuffer(GL_ARRAY_BUFFER, _screenTexVBO);
+	glUniform1i(glGetUniformLocation(pgmButton, "use_grayscale"), 1);
+
+	SpriteVertex* vert = NULL;
+	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "Position"));
+	glEnableVertexAttribArray(glGetAttribLocation(pgmButton, "TexCoord"));
+	glVertexAttribPointer(glGetAttribLocation(pgmButton, "Position"), 2,
+		GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), vert->position);
+	glVertexAttribPointer(glGetAttribLocation(pgmButton, "TexCoord"), 2,
+		GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), vert->texcoord);
+
+	quadTransform = mat4f_mult(orthographic, mat4f_translate(0, 0, 0));
+	glUniformMatrix4fv(glGetUniformLocation(pgmButton, "proj_mat"),
+		1, GL_TRUE, &quadTransform.m[0][0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glUniform1i(glGetUniformLocation(pgmButton, "use_grayscale"), 0);
+	glUseProgramObject(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Renderer::getBoxCoordsAroundText(const char* text, float x, float y, Font* font, Rect* rect)
@@ -1531,7 +1593,7 @@ void Renderer::drawScene(Scene* scene)
 	Player* player = scene->getPlayer();
 	Rect playerRect = player->getCollisionRect();
 	drawTileLayer(scene, 0);
-	drawBackgrounds(scene);
+	drawSceneBackgrounds(scene);
 
 	if (!scene->inCrosslinkMode())
 	{
@@ -1743,6 +1805,34 @@ void Renderer::drawLoadMenu(/*Scene* scene*/)
 	drawText(winX / 2, winY / 2 + incr, (char*)"F9: Load quick save", RGB_WHITE, 1.0f, font2);
 	incr += 32;
 	drawText(winX / 2, winY / 2 + incr, (char*)"ESC: Abort", RGB_WHITE, 1.0f, font2);
+}
+
+void Renderer::changeMenuBackground(eState state)
+{
+	switch(state)
+	{
+	case MAINMENU_SCREEN:
+		bgActive = bgMainMenu;
+		break;
+	case CREDITS_SCREEN:
+		bgActive = bgCredits;
+		break;
+	case PAUSE_SCREEN:
+		bgActive = bgPaused;
+		break;
+	case LOADMAP_SCREEN:
+		bgActive = bgLoadMap;
+		break;
+	case OPTIONS_SCREEN:
+		bgActive = bgOptions;
+		break;
+	case UPGRADES_SCREEN:
+		bgActive = bgUpgrades;
+		break;
+	default:
+		bgActive = 0;
+		break;
+	}
 }
 
 unsigned int Renderer::getScreenshotIndex()

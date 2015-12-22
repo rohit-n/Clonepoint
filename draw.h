@@ -24,6 +24,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #include "file.h"
 #include "sprite.h"
 #include "scene.h"
+#include "statemanager.h"
 #include "gamestate.h"
 #include "menustate.h"
 #include "font.h"
@@ -77,6 +78,11 @@ class Renderer
 public:
 	Renderer();
 	~Renderer();
+
+	void safeDeleteBuffer(GLuint buf);
+	void safeDeleteProgram(GLuint pgm);
+	void safeDeleteTexture(GLuint tex);
+
 	bool init(int x, int y);
 	void setResolution(int x, int y);
 	bool initShaders();
@@ -102,8 +108,9 @@ public:
 	void drawSpriteBind(float x, float y, float z, float rotation, SpriteSheet* resource, unsigned int index, SpriteDrawMode mode, float red, float green, float blue);
 	void drawFieldOfView(Scene* scene, FieldOfView* fov, GLuint program);
 	void drawTileLayer(Scene* scene, int z);
-	void drawBackgrounds(Scene* scene);
+	void drawSceneBackgrounds(Scene* scene);
 	void drawBackground(Scene* scene, GLuint tex, int x, int z, float offset);
+	void drawMenuBackground(GLuint tex);
 	void updateLinkProgress(unsigned int dT);
 	void deleteSpriteSheet(SpriteSheet* sheet);
 
@@ -121,6 +128,7 @@ public:
 	void drawLine(Scene* scene, float r, float g, float b, float a, vec2f pA, vec2f pB, float z);
 	void drawInterface(Scene* scene);
 	void drawLoadMenu(/*Scene* scene*/);
+	void changeMenuBackground(eState state);
 
 	//test functions.
 	void drawEnemyFOV(Scene* scene, Enemy* enemy);
@@ -140,6 +148,7 @@ private:
 	GLuint entRectVBO; //vbo for storing tile-sized quads.
 	GLuint pointVBO; //vbo for storing quad for jump trajectory.
 	GLuint _screenVBO; //vbo for quad with dimensions of window.
+	GLuint _screenTexVBO;
 
 	bool wireframe;
 	GLuint attribute_coord;
@@ -153,6 +162,14 @@ private:
 	GLuint bgMiddle;
 	GLuint bgFar;
 	GLuint bgVeryFar;
+	//menus
+	GLuint bgMainMenu;
+	GLuint bgCredits;
+	GLuint bgOptions;
+	GLuint bgLoadMap;
+	GLuint bgPaused;
+	GLuint bgUpgrades;
+	GLuint bgActive;
 
 	//programs
 	GLuint pgmText;

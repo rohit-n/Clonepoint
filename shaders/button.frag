@@ -3,6 +3,7 @@
 in vec2 texpos;
 uniform sampler2D tex;
 uniform int use_blur;
+uniform int use_grayscale;
 
 vec4 blur(sampler2D tex, vec2 coords)
 {
@@ -20,12 +21,21 @@ vec4 blur(sampler2D tex, vec2 coords)
 	return sum;
 }
 
+vec4 grayscale(vec4 color)
+{
+	float gs = (0.2126 * color.r) + (0.7152 * color.g) + (0.0722 * color.b);
+	return vec4(gs, gs, gs, 1.0);
+}
+
 void main(void) 
 {
-	if (texture2D(tex, texpos).rgb == vec3(1, 0, 1))
+	vec4 texture_color = texture2D(tex, texpos);
+
+	if (texture_color.rgb == vec3(1, 0, 1))
 		discard;
 
-	gl_FragColor = texture2D(tex, texpos);
+	gl_FragColor = texture_color;
+
 	if (use_blur == 1)
 	{
 		gl_FragColor = blur(tex, texpos);
@@ -33,5 +43,8 @@ void main(void)
 		gl_FragColor.g = 0;
 	}
 
-	//gl_FragColor = vec4(1, 0, 0, 1);
+	if (use_grayscale == 1)
+	{
+		gl_FragColor = grayscale(texture_color);
+	}
 }

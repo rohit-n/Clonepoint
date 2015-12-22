@@ -60,6 +60,9 @@ public:
 	void resetSettingsFlag();
 	bool screenshotTaken();
 	void resetScreenShotFlag();
+	bool stateChanged();
+	void resetStateChangedFlag();
+	eState _activeStateName;
 private:
 	BaseState* _activeState;
 	BaseState* _gameState;
@@ -72,6 +75,7 @@ private:
 	BaseState* _optionsState;
 	BaseState* _upgradesState;
 	bool _settingsChanged;
+	bool _stateChanged;
 	std::string _activeMapFilename;
 	std::string _mapMusicFilename;
 	int _winX;
