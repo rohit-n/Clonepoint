@@ -3,6 +3,7 @@
  <properties>
   <property name="backgroundyoff" value="61"/>
   <property name="startingupgrades" value="8"/>
+  <property name="music" value="groove_grove.ogg"/>
  </properties>
  <tileset firstgid="1" name="set01" tilewidth="16" tileheight="16">
   <image source="tilesets/tile1.png" trans="ff00ff" width="512" height="512"/>

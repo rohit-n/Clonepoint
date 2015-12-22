@@ -22,6 +22,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 LoadingMapState::LoadingMapState(StateManager* sm) : BaseState(sm)
 {
 	_mapFilename = "";
+	_mapMusicFilename = "";
 	_timer = 0;
 	_loaded = false;
 }
@@ -38,7 +39,7 @@ void LoadingMapState::update(unsigned int dT)
 	{
 		_manager->initSceneAndMap(_mapFilename.c_str());
 		_manager->makeStartSave();
-		Locator::getAudio()->playMusic("groove_grove.ogg");
+		Locator::getAudio()->playMusic(_mapMusicFilename);
 		_loaded = true;
 	}
 
@@ -55,9 +56,10 @@ void LoadingMapState::handleKeyUp(SDL_Keycode){}
 void LoadingMapState::handleMouseDown(SDL_MouseButtonEvent event){}
 void LoadingMapState::handleMouseUp(SDL_MouseButtonEvent event){}
 
-void LoadingMapState::setMap(std::string mapFilename)
+void LoadingMapState::setMap(std::string mapFilename, std::string musicFilename)
 {
 	_mapFilename = mapFilename;
+	_mapMusicFilename = musicFilename;
 	_timer = 0;
 	_loaded = false;
 }

@@ -33,33 +33,33 @@ Credits:
 			- https://www.freesound.org/people/fastson/sounds/50618/
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
 			- Beginning and end of wav file cut with Audacity
-		
+
 		2. menu_click.wav
 			- By dklon
 			- http://opengameart.org/content/quick-zap
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
-		
+
 		3. switch.wav
 			- By ecfike
 			- http://freesound.org/people/ecfike/sounds/128919/
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
-		
+
 		4. enter_crosslink.wav, exit_crosslink.wav, jump.wav, circuitbox.wav
 			- By Circlerun
 			- http://opengameart.org/content/hi-tech-button-sound-pack-i-non-themed
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
-		
+
 		5. punch1.wav, punch2.wav
 			- By scarbelly25
 			- https://www.freesound.org/people/scarbelly25/sounds/35409/
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
-		
+
 		6. glass_break.wav
 			- By cmusounddesign
 			- http://freesound.org/people/cmusounddesign/sounds/84536/
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
 			- Beginning and end of wav file cut and used Noise Removal tool with Audacity
-		
+
 		7. pistol_ready.wav
 			- By Fr3yr
 			- https://www.freesound.org/people/Fr3yr/sounds/100804/
@@ -76,12 +76,12 @@ Credits:
 			- https://www.freesound.org/people/pempi/sounds/33873/
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
 			- Both sounds cut out and faded with Audacity
-		
+
 		10. alarm.wav
 			- By hypocore
 			- http://freesound.org/people/hypocore/sounds/164090/
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
-		
+
 		11. link.wav
 			- By NoiseCollector
 			- https://www.freesound.org/people/NoiseCollector/sounds/41610/
@@ -100,12 +100,12 @@ Credits:
 			- http://opengameart.org/content/netslash-tiles
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
 			- Taken from tileset_office.png and darkened
-		
+
 		2. Collision Tiles
 			- By Eris
 			- http://opengameart.org/content/sci-fi-platform-tiles
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
-		
+
 		3. Wall Tiles 1
 			- By RodlenJack
 			- http://opengameart.org/content/crimelike-spritetile-set
@@ -126,7 +126,7 @@ Credits:
 			- CC0 http://creativecommons.org/publicdomain/zero/1.0/
 
 	Music
-		1. groove_grove.ogg
+		1. groove_grove.ogg, brittle_rille.ogg, ultralounge.ogg
 			- By Kevin MacLeod
 			- incompetech.com
 			- CC BY 3.0 http://creativecommons.org/licenses/by/3.0/

@@ -52,6 +52,7 @@ public:
 	void setWindowDims(int w, int h);
 	void setActiveMapFilename(std::string filename);
 	void getMapVariables(std::string filename, int* money, int* upgrades, unsigned int* bullets, int* timeToSniper, unsigned int* energy);
+	void getMusicFilename(std::string mapFilename);
 	int getWindowWidth();
 	int getWindowHeight();
 	void makeStartSave();
@@ -72,6 +73,7 @@ private:
 	BaseState* _upgradesState;
 	bool _settingsChanged;
 	std::string _activeMapFilename;
+	std::string _mapMusicFilename;
 	int _winX;
 	int _winY;
 };

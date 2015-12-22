@@ -32,9 +32,10 @@ public:
 	void handleKeyUp(SDL_Keycode);
 	void handleMouseDown(SDL_MouseButtonEvent event);
 	void handleMouseUp(SDL_MouseButtonEvent event);
-	void setMap(std::string mapFilename);
+	void setMap(std::string mapFilename, std::string musicFilename);
 private:
 	std::string _mapFilename;
+	std::string _mapMusicFilename;
 	unsigned int _timer;
 	bool _loaded;
 };

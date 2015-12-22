@@ -45,6 +45,7 @@ StateManager::StateManager()
 	_winY = 600;
 	_settingsChanged = false;
 	_activeMapFilename = "";
+	_mapMusicFilename = "";
 }
 
 StateManager::~StateManager()
@@ -108,7 +109,8 @@ void StateManager::switchToState(eState state)
 		_activeState = _pauseState;
 		break;
 	case LOADINGMAP_SCREEN:
-		lms->setMap(_activeMapFilename);
+		getMusicFilename(_activeMapFilename);
+		lms->setMap(_activeMapFilename, _mapMusicFilename);
 		_activeState = _loadingMapState;
 		break;
 	case LOADMAP_SCREEN:
@@ -172,6 +174,7 @@ void StateManager::update(unsigned int dT)
 void StateManager::setActiveMapFilename(std::string filename)
 {
 	_activeMapFilename = filename;
+	_mapMusicFilename = "";
 }
 
 void StateManager::getMapVariables(std::string filename, int* money, int* upgrades, unsigned int* bullets, int* timeToSniper, unsigned int* energy)
@@ -230,6 +233,42 @@ void StateManager::getMapVariables(std::string filename, int* money, int* upgrad
 				*timeToSniper = atoi(lvl2->Attribute("value"));
 			}
 
+			lvl2 = lvl2->NextSiblingElement("property");
+		}
+		lvl1 = lvl1->NextSiblingElement("properties");
+	}
+}
+
+void StateManager::getMusicFilename(std::string mapFilename)
+{
+	TiXmlDocument doc(mapFilename.c_str());
+
+	if (!doc.LoadFile())
+	{
+		LOGF((stderr, "Failed to load map file %s.\n", mapFilename.c_str()));
+		return;
+	}
+
+	TiXmlHandle hDoc(&doc);
+	TiXmlElement *root, *lvl1, *lvl2;
+	root = doc.FirstChildElement("map");
+
+	if(!root)
+	{
+		LOGF((stderr, "Failed to parse map file %s.\n", mapFilename.c_str()));
+		return;
+	}
+
+	lvl1 = root->FirstChildElement("properties");
+	while(lvl1)
+	{
+		lvl2 = lvl1->FirstChildElement("property");
+		while (lvl2)
+		{
+			if (!strcmp(lvl2->Attribute("name"), "music"))
+			{
+				_mapMusicFilename = std::string(lvl2->Attribute("value"));
+			}
 			lvl2 = lvl2->NextSiblingElement("property");
 		}
 		lvl1 = lvl1->NextSiblingElement("properties");
