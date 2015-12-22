@@ -70,7 +70,6 @@ UpgradesState::UpgradesState(StateManager* sm) : MenuState(sm)
 	_labels.push_back(_jumpTimeLabel);
 	_labels.push_back(_upgradesLeft);
 
-	_mapFilename = "";
 	_jumpPower = 0;
 	_jumpTime = 0;
 	_availableMoney = 0;
@@ -281,8 +280,7 @@ void UpgradesState::getModifiers(int* jumpPower, int* jumpTime, unsigned int* bu
 
 void UpgradesState::setMap(std::string mapFilename)
 {
-	_mapFilename = mapFilename;
-	_manager->getMapVariables(_mapFilename, &_availableMoney, &_availableUpgrades, &_availableBullets, &_availableTimeToSniper, &_availableEnergy);
+	_manager->getMapVariables(mapFilename, &_availableMoney, &_availableUpgrades, &_availableBullets, &_availableTimeToSniper, &_availableEnergy);
 	updateAvailableUpgrades();
 	updateProgressBars();
 }

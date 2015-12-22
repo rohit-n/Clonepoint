@@ -55,7 +55,6 @@ private:
 	ImageButton* _jumpPowerProgress[NUM_JUMP_POWER_UPGRADES];
 	ImageButton* _jumpTimeProgress[NUM_JUMP_TIME_UPGRADES];
 
-	std::string _mapFilename;
 	int _jumpPower;
 	int _jumpTime;
 	int _availableMoney;
