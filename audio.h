@@ -35,7 +35,9 @@ public:
 	AudioManager();
 	~AudioManager();
 	void playSound(std::string filename);
-	void playMusic(std::string filename);
+	void playMapMusic(std::string filename);
+	void playMenuMusic();
+	void playMusic(ALuint buf);
 	void stopMusic();
 	void playSound3D(const char* filename, float x, float y, float z);
 	void loadWAV(std::string filename);
@@ -48,9 +50,11 @@ private:
 	std::map<std::string, ALuint> _loadedBuffers;
 	std::vector<ALuint> _loadedSources;
 	ALuint _musicSource;
-	ALuint _musicBuffer;
+	ALuint _mapMusicBuffer;
+	ALuint _mainmenuMusicBuffer;
 	ALCdevice* _device;
 	ALCcontext* _context;
+	bool _playingMenuMusic;
 };
 
 #endif

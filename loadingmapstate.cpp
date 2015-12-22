@@ -39,7 +39,7 @@ void LoadingMapState::update(unsigned int dT)
 	{
 		_manager->initSceneAndMap(_mapFilename.c_str());
 		_manager->makeStartSave();
-		Locator::getAudio()->playMusic(_mapMusicFilename);
+		Locator::getAudio()->playMapMusic(_mapMusicFilename);
 		_loaded = true;
 	}
 

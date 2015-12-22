@@ -46,6 +46,8 @@ StateManager::StateManager()
 	_settingsChanged = false;
 	_activeMapFilename = "";
 	_mapMusicFilename = "";
+
+	Locator::getAudio()->playMenuMusic();
 }
 
 StateManager::~StateManager()
@@ -85,6 +87,7 @@ void StateManager::switchToState(eState state)
 	switch(state)
 	{
 	case MAINMENU_SCREEN:
+		Locator::getAudio()->playMenuMusic();
 		_activeState = _mainMenuState;
 		break;
 	case GAME_SCREEN:
@@ -109,6 +112,7 @@ void StateManager::switchToState(eState state)
 		_activeState = _pauseState;
 		break;
 	case LOADINGMAP_SCREEN:
+		Locator::getAudio()->stopMusic();
 		getMusicFilename(_activeMapFilename);
 		lms->setMap(_activeMapFilename, _mapMusicFilename);
 		_activeState = _loadingMapState;

@@ -42,7 +42,7 @@ AudioManager::AudioManager()
 	}
 
 	_musicSource = 0;
-	_musicBuffer = 0;
+	_mapMusicBuffer = 0;
 	alGenSources(1, &_musicSource);
 
 	loadWAV("./data/sounds/alarm.wav");
@@ -63,6 +63,8 @@ AudioManager::AudioManager()
 	loadWAV("./data/sounds/elevator_arrive.wav");
 	loadWAV("./data/sounds/elevator_leave.wav");
 	loadWAV("./data/sounds/elevator_decelerate.wav");
+	_mainmenuMusicBuffer = bufferFromOGG("./data/music/ontheground.ogg");
+	_playingMenuMusic = false;
 }
 
 AudioManager::~AudioManager()
@@ -78,9 +80,14 @@ AudioManager::~AudioManager()
 
 	alDeleteSources(1, &_musicSource);
 
-	if (_musicBuffer != 0)
+	if (_mapMusicBuffer != 0)
 	{
-		alDeleteBuffers(1, &_musicBuffer);
+		alDeleteBuffers(1, &_mapMusicBuffer);
+	}
+
+	if (_mainmenuMusicBuffer != 0)
+	{
+		alDeleteBuffers(1, &_mainmenuMusicBuffer);
 	}
 
 	std::map<std::string, ALuint>::iterator it;
@@ -107,22 +114,41 @@ void AudioManager::playSound(std::string filename)
 	alSourcePlay(src);
 }
 
-void AudioManager::playMusic(std::string filename)
+void AudioManager::playMapMusic(std::string filename)
 {
-	if (_musicBuffer != 0)
+	if (_mapMusicBuffer != 0)
 	{
-		alDeleteBuffers(1, &_musicBuffer);
-		_musicBuffer = 0;
+		alDeleteBuffers(1, &_mapMusicBuffer);
+		_mapMusicBuffer = 0;
 	}
 
-	_musicBuffer = bufferFromOGG("./data/music/" + filename);
+	_mapMusicBuffer = bufferFromOGG("./data/music/" + filename);
 
-	if (_musicBuffer == 0)
+	if (_playingMenuMusic)
+	{
+		alSourceStop(_musicSource);
+	}
+	_playingMenuMusic = false;
+	playMusic(_mapMusicBuffer);
+}
+
+void AudioManager::playMenuMusic()
+{
+	if (_playingMenuMusic)
+		return;
+
+	_playingMenuMusic = true;
+	playMusic(_mainmenuMusicBuffer);
+}
+
+void AudioManager::playMusic(ALuint buf)
+{
+	if (buf == 0)
 	{
 		return;
 	}
 
-	alSourcei(_musicSource, AL_BUFFER, _musicBuffer);
+	alSourcei(_musicSource, AL_BUFFER, buf);
 	alSource3f(_musicSource, AL_POSITION, 0, 0, 0);
 	alSourcei(_musicSource, AL_LOOPING, 1);
 	alSourcePlay(_musicSource);
@@ -130,8 +156,8 @@ void AudioManager::playMusic(std::string filename)
 
 void AudioManager::stopMusic()
 {
-	alDeleteBuffers(1, &_musicBuffer);
-	_musicBuffer = 0;
+	alDeleteBuffers(1, &_mapMusicBuffer);
+	_mapMusicBuffer = 0;
 	alSourceStop(_musicSource);
 }
 
