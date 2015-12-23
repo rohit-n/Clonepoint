@@ -122,6 +122,12 @@ void AudioManager::playMapMusic(std::string filename)
 		_mapMusicBuffer = 0;
 	}
 
+	if (filename == "")
+	{
+		_playingMenuMusic = false;
+		return;
+	}
+
 	_mapMusicBuffer = bufferFromOGG("./data/music/" + filename);
 
 	if (_playingMenuMusic)
