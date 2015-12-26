@@ -43,6 +43,7 @@ AudioManager::AudioManager()
 
 	_musicSource = 0;
 	_mapMusicBuffer = 0;
+	_mapMusicCrosslinkBuffer = 0;
 	alGenSources(1, &_musicSource);
 
 	loadWAV("./data/sounds/alarm.wav");
@@ -63,7 +64,7 @@ AudioManager::AudioManager()
 	loadWAV("./data/sounds/elevator_arrive.wav");
 	loadWAV("./data/sounds/elevator_leave.wav");
 	loadWAV("./data/sounds/elevator_decelerate.wav");
-	_mainmenuMusicBuffer = bufferFromOGG("./data/music/ontheground.ogg");
+	_mainmenuMusicBuffer = bufferFromOGG("./data/music/ontheground.ogg", NULL);
 	_playingMenuMusic = false;
 }
 
@@ -88,6 +89,11 @@ AudioManager::~AudioManager()
 	if (_mainmenuMusicBuffer != 0)
 	{
 		alDeleteBuffers(1, &_mainmenuMusicBuffer);
+	}
+
+	if (_mapMusicCrosslinkBuffer != 0)
+	{
+		alDeleteBuffers(1, &_mapMusicCrosslinkBuffer);
 	}
 
 	std::map<std::string, ALuint>::iterator it;
@@ -119,7 +125,9 @@ void AudioManager::playMapMusic(std::string filename)
 	if (_mapMusicBuffer != 0)
 	{
 		alDeleteBuffers(1, &_mapMusicBuffer);
+		alDeleteBuffers(1, &_mapMusicCrosslinkBuffer);
 		_mapMusicBuffer = 0;
+		_mapMusicCrosslinkBuffer = 0;
 	}
 
 	if (filename == "")
@@ -128,7 +136,7 @@ void AudioManager::playMapMusic(std::string filename)
 		return;
 	}
 
-	_mapMusicBuffer = bufferFromOGG("./data/music/" + filename);
+	_mapMusicBuffer = bufferFromOGG("./data/music/" + filename, &_mapMusicCrosslinkBuffer);
 
 	if (_playingMenuMusic)
 	{
@@ -223,7 +231,7 @@ void AudioManager::loadWAV(std::string filename)
 	}
 }
 
-ALuint AudioManager::bufferFromOGG(std::string filename)
+ALuint AudioManager::bufferFromOGG(std::string filename, ALuint* filtered_buf)
 {
 	long size;
 	char* file_buffer = file_read(filename.c_str(), &size);
@@ -245,9 +253,30 @@ ALuint AudioManager::bufferFromOGG(std::string filename)
 
 	int const length_samples = stb_vorbis_stream_length_in_samples(ogg) * info.channels;
 	std::vector<ALshort> ogg_buffer(length_samples);
+	std::vector<ALshort> filtered(length_samples);
+
 	alGenBuffers(1, &ret);
 	stb_vorbis_get_samples_short_interleaved(ogg, info.channels, ogg_buffer.data(), length_samples);
+
+	if (filtered_buf != NULL)
+	{
+		//Apply low pass filter for to another buffer of the music for crosslink
+		int i;
+		float alpha = 0.05f;
+		filtered[0] = ogg_buffer[0];
+		for (i = 1; i < length_samples; i++)
+		{
+			float filter = (alpha * (float)ogg_buffer[i]) + (1.0f - alpha) * (float)filtered[i-1];
+			filtered[i] = (ALshort)filter;
+		}
+		alGenBuffers(1, filtered_buf);
+	}
+
 	alBufferData(ret, format, ogg_buffer.data(), (length_samples * sizeof( ALshort)), info.sample_rate);
+	if (filtered_buf != NULL)
+	{
+		alBufferData(*filtered_buf, format, filtered.data(), (length_samples * sizeof( ALshort)), info.sample_rate);
+	}
 	stb_vorbis_close(ogg);
 	delete [] file_buffer;
 
@@ -290,6 +319,25 @@ void AudioManager::setSoundVolume(float volume)
 	{
 		alSourcef(_loadedSources[i], AL_GAIN, volume);
 	}
+}
+
+float AudioManager::getMusicTime()
+{
+	float result;
+
+	alGetSourcef(_musicSource, AL_SEC_OFFSET, &result);
+
+	return result;
+}
+
+void AudioManager::changeMusicMode(bool crosslink)
+{
+	float time = getMusicTime();
+	int status;
+	alGetSourcei(_musicSource, AL_SOURCE_STATE, &status);
+	alSourceStop(_musicSource);
+	playMusic(crosslink ? _mapMusicCrosslinkBuffer : _mapMusicBuffer);
+	alSourcef(_musicSource, AL_SEC_OFFSET, time);
 }
 
 void AudioManager::setMusicVolume(float volume)

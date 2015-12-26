@@ -1312,6 +1312,8 @@ void Scene::toggleCrosslinkMode()
 		return;
 	}
 
+	Locator::getAudio()->changeMusicMode(!_crosslink);
+
 	size_t i;
 	float r, g, b;
 	r = g = b = 0;

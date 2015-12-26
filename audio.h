@@ -41,16 +41,19 @@ public:
 	void stopMusic();
 	void playSound3D(const char* filename, float x, float y, float z);
 	void loadWAV(std::string filename);
-	ALuint bufferFromOGG(std::string filename);
+	ALuint bufferFromOGG(std::string filename, ALuint* filtered_buf);
 	ALuint getBuffer(std::string filename);
 	ALuint getNextAvailableSource();
 	void setSoundVolume(float volume);
 	void setMusicVolume(float volume);
+	void changeMusicMode(bool crosslink);
+	float getMusicTime();
 private:
 	std::map<std::string, ALuint> _loadedBuffers;
 	std::vector<ALuint> _loadedSources;
 	ALuint _musicSource;
 	ALuint _mapMusicBuffer;
+	ALuint _mapMusicCrosslinkBuffer;
 	ALuint _mainmenuMusicBuffer;
 	ALCdevice* _device;
 	ALCcontext* _context;
