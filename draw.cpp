@@ -326,6 +326,8 @@ bool Renderer::init(int x, int y)
 	_messageStrings[SM_Objectives] = "Hack all computer terminals and go to the exit to end the level.";
 	_messageStrings[SM_Elevators] = "Enemies cannot see you while you are in an elevator.";
 	_messageStrings[SM_Optional] = "You can disable these tutorial messages in the Options menu.";
+	_messageStrings[SM_Circuits] = "You can't rewire the objects here directly. You need to find their circuit box.\
+								\nBypass the circuit box upstairs to hack them in Crosslink.";
 	_messageStrings[SM_ObjectivesIncomplete] = "Objectives not completed.";
 
 	handleSettingsChange();

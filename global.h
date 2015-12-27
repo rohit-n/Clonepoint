@@ -111,6 +111,7 @@ enum StringMessage
 	SM_Objectives,
 	SM_Elevators,
 	SM_Optional,
+	SM_Circuits,
 	SM_ObjectivesIncomplete,
 	NUMBER_OF_STRING_MESSAGES
 };

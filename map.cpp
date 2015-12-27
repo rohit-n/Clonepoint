@@ -811,6 +811,10 @@ void Map::parseEntity(TiXmlElement* element, bool savegame)
 				{
 					sm = SM_Optional;
 				}
+				if (!strcmp(element->Attribute("type"), "tut_11"))
+				{
+					sm = SM_Circuits;
+				}
 				if (sm < NUMBER_OF_STRING_MESSAGES)
 				{
 					_tutorials.push_back(new TutorialMark(x, y - ENTDIM, sm));
