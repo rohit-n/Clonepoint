@@ -43,6 +43,9 @@ bool ConfigManager::isKeyValid(const char* key)
 	if (!strcmp(key, "tutorial_popups")) return true;
 	if (!strcmp(key, "input_popups")) return true;
 	if (!strcmp(key, "crosslink_blur")) return true;
+	if (!strcmp(key, "debug_draw_scene_backgrounds")) return true;
+	if (!strcmp(key, "debug_draw_collision_outlines")) return true;
+	if (!strcmp(key, "debug_teleport_with_mouse3")) return true;
 
 	return false;
 }

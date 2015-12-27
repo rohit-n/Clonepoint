@@ -151,6 +151,8 @@ private:
 	GLuint _screenTexVBO;
 
 	bool wireframe;
+	bool _drawSceneBackgrounds;
+	bool _drawCollisionOutlines;
 	GLuint attribute_coord;
 	GLuint uniform_color;
 	GLuint uniform_alpha_scale;

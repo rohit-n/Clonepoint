@@ -5,9 +5,10 @@ http://www.mapeditor.org/
 
 Notes on making maps for Clonepoint:
 
-- If you want to test your maps quickly, compile Clonepoint with the
--DDEBUG flag to allow you to teleport to the mouse's position with
-the middle mouse button.
+- If you want to test your maps quickly, set the "debug_draw_scene_backgrounds",
+"debug_draw_collision_outlines", and "debug_teleport_with_mouse3" variables in
+config.cfg to allow you to easily visualize unfinished maps, and to teleport
+to the mouse's position with the middle mouse button.
 
 - Clonepoint considers all files in the data/ directory with the .tmx
 extension as potential maps to load.

@@ -268,9 +268,8 @@ void GameState::handleMouseUp(SDL_MouseButtonEvent event)
 	}
 	else if (event.button == SDL_BUTTON_MIDDLE)
 	{
-#ifdef DEBUG
-		_scene->warpPlayerTo(event.x, event.y);
-#endif
+		if (Locator::getConfigManager()->getBool("debug_teleport_with_mouse3"))
+			_scene->warpPlayerTo(event.x, event.y);
 	}
 	else if (event.button == SDL_BUTTON_RIGHT)
 	{

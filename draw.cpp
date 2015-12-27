@@ -202,6 +202,8 @@ bool Renderer::init(int x, int y)
 
 	screenshotIndex = 1;
 	wireframe = false;
+	_drawSceneBackgrounds = true;
+	_drawCollisionOutlines = false;
 	_enteredLightFlash = false;
 	_crosslinkBlur = false;
 
@@ -917,13 +919,10 @@ void Renderer::drawCollisionVols(Scene* scene)
 
 			if (map->getCollideVolAt(i).glass())
 				drawRect2(rect, 0, 1, 1, 1);
-#ifdef DEBUG
-			else
+			else if (_drawCollisionOutlines)
 			{
 				drawRect2(rect, 0.40625f, 0.71875f, 0.91796875f, 1);
-				// drawRect2(rect, 0, 0, 0, scene->inCrosslinkMode(), 1);
 			}
-#endif
 		}
 	}
 }
@@ -1595,7 +1594,9 @@ void Renderer::drawScene(Scene* scene)
 	Player* player = scene->getPlayer();
 	Rect playerRect = player->getCollisionRect();
 	drawTileLayer(scene, 0);
-	drawSceneBackgrounds(scene);
+
+	if (_drawSceneBackgrounds)
+		drawSceneBackgrounds(scene);
 
 	if (!scene->inCrosslinkMode())
 	{
@@ -1850,6 +1851,8 @@ void Renderer::setScreenshotIndex(unsigned int value)
 void Renderer::handleSettingsChange()
 {
 	_enteredLightFlash = (Locator::getConfigManager()->getBool("entered_light_flash"));
+	_drawSceneBackgrounds = (Locator::getConfigManager()->getBool("debug_draw_scene_backgrounds"));
+	_drawCollisionOutlines = (Locator::getConfigManager()->getBool("debug_draw_collision_outlines"));
 	_crosslinkBlur = (Locator::getConfigManager()->getBool("crosslink_blur"));
 	_bindingStrings[UESwitch] = "Flip Switch: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
 	_bindingStrings[UETerminal] = "Hack: " + Locator::getBindingsManager()->getFirstKeyBound(Bind_MoveUp);
