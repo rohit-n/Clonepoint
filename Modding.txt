@@ -174,3 +174,7 @@ in the "type" property and adding them in the previous object groups.
 	* backgroundyoff - The height that the "ground" is considered at, used for drawing layered
 	backgrounds. Set this to the Y coordinate of the collision volume (in tiles) you consider 
 	to be the "ground" for best visual results.
+
+	* music - The music file in data/music that will be played while playing the level.
+		+ Clonepoint only plays music in the OGG format.
+		+ You don't need to specify the directory - just give the filename, including extension.
