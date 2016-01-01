@@ -326,7 +326,7 @@ void Enemy::update(unsigned int dT)
 	if (_gun != NULL)
 		_gun->update(dT);
 
-	int r;
+
 	if (_activeSequence == Locator::getAnimationManager()->getSequence(ANIM_ENEMY_KNOCK_OUT))
 	{
 		if (_currentAnimFinished)
@@ -336,16 +336,6 @@ void Enemy::update(unsigned int dT)
 		}
 		else if (_sprite == Locator::getSpriteManager()->getGuardSpriteIndex(GUARD_PUNCHED) && !_fullyPunched)
 		{
-			r = ceil(((double)rand() / (double)(RAND_MAX)) * 10);
-			if (r > 5)
-			{
-				Locator::getAudio()->playSound("punch1");
-			}
-			else
-			{
-				Locator::getAudio()->playSound("punch2");
-			}
-
 			_fullyPunched = true;
 		}
 	}

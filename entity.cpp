@@ -198,14 +198,19 @@ void Entity::changeAnimationSequence(AnimationSequence* sequence)
 {
 	if (_activeSequence != sequence)
 	{
-		_activeSequence = sequence;
-		if (_activeSequence)
-		{
-			_sprite = _activeSequence->getSpriteAt(0);
-			_animDT = _activeSequence->getMsPerFrame();
-			_currentSequenceIndex = 0;
-			_currentAnimFinished = false;
-		}
+		changeAnimationSequenceForce(sequence);
+	}
+}
+
+void Entity::changeAnimationSequenceForce(AnimationSequence* sequence)
+{
+	_activeSequence = sequence;
+	if (_activeSequence)
+	{
+		_sprite = _activeSequence->getSpriteAt(0);
+		_animDT = _activeSequence->getMsPerFrame();
+		_currentSequenceIndex = 0;
+		_currentAnimFinished = false;
 	}
 }
 

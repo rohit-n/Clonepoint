@@ -190,6 +190,7 @@ public:
 	unsigned int getCurrentSprite();
 	void changeToStaticSprite(unsigned int sprite);
 	void changeAnimationSequence(AnimationSequence* sequence);
+	void changeAnimationSequenceForce(AnimationSequence* sequence);
 	bool _highlighted;
 protected:
 	vec2f _position;

@@ -290,8 +290,11 @@ void Player::hackTerminal(MainComputer* computer)
 
 void Player::punchPinnedEnemy()
 {
+	int r = ceil(((double)rand() / (double)(RAND_MAX)) * 10);
+	Locator::getAudio()->playSound(r > 5 ? "punch1" : "punch2");
 	_numPunches++;
-	_pinnedEnemy->changeAnimationSequence(Locator::getAnimationManager()->getSequence(ANIM_ENEMY_KNOCK_OUT));
+	_pinnedEnemy->changeAnimationSequenceForce(Locator::getAnimationManager()->getSequence(ANIM_ENEMY_KNOCK_OUT));
+
 }
 
 void Player::releasePin()
