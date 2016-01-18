@@ -75,7 +75,7 @@ SpriteSheet::SpriteSheet(const char* filename, int tileDim, bool flip)
 			_clips[j * _widthInSprites + i].y = j * tileDim;
 		}
 	}
-	LOGF((stdout, "%s is %ix%i pixels and has %i %ix%i sprites.\n", filename, _width, _height, numberOfSprites, tileDim, tileDim));
+	LOGF((stdout, "%s is %ix%i pixels and has %i %ix%i sprites.\n", filename, _width, _height, _numberOfSprites, tileDim, tileDim));
 }
 
 SpriteSheet::~SpriteSheet()
