@@ -9,11 +9,11 @@ tinyxml/tinyxml.o tinyxml/tinystr.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror
 
 ifneq (, $(findstring mingw, $(SYS)))
 LIBS = -lmingw32 -lSDL2main -lSDL2 -lopengl32 -lopenal32
-DELCMD = del *.o clonepoint.exe && cd tinyxml/ && del *.o
+DELCMD = del *.o clonepoint.exe gun2clone.exe && cd tinyxml/ && del *.o
 MAKECMD = mingw32-make
 else
 LIBS = `sdl2-config --libs` -lGL -lopenal
-DELCMD = rm -f *.o clonepoint && cd tinyxml/ && make clean
+DELCMD = rm -f *.o clonepoint gun2clone && cd tinyxml/ && make clean
 MAKECMD = make
 endif
 
@@ -21,6 +21,9 @@ all: tinyxmldir game
 
 tinyxmldir:
 	cd tinyxml/ && $(MAKECMD)
+
+gun2clone: gun2clone.cpp
+	$(CXX) gun2clone.cpp tinyxml/tinyxml.o tinyxml/tinystr.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o -o gun2clone
 
 game: main.cpp $(OBJECTS)
 	$(CXX) main.cpp $(OBJECTS) $(LIBS) $(CFLAGS) -o clonepoint

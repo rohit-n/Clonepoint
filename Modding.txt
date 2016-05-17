@@ -3,6 +3,20 @@ can obtain the editor here.
 
 http://www.mapeditor.org/
 
+You can now try to convert custom maps for the original Gunpoint into the
+tmx format that Clonepoint reads. This is a good way to quickly port level
+geometry and entities, though it is recommended to make additonal fixes by
+hand. Tile backgrounds are not preserved, and some crosslink connections may
+not make it over. If a map has too many lights, it is recommended to remove
+some so as not to slow the game to a crawl.
+
+To convert a .lvl custom map, run `make gun2clone`, then supply the level
+filename and then an output tmx file to write to. For example,
+
+"./gun2clone input.lvl output.tmx"
+
+Will create output.tmx from input.lvl.
+
 Notes on making maps for Clonepoint:
 
 - If you want to test your maps quickly, set the "debug_draw_scene_backgrounds",
