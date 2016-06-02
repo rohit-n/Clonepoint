@@ -802,7 +802,7 @@ void Renderer::generateSheetBuffers(SpriteSheet* sheet, int tileDim)
 	float sheetHeight = sheet->getHeight();
 	std::vector<SpriteVertex> verts(spriteCount * 6);
 	GLuint* ibos = sheet->getIndexBuffers();
-	GLuint indices[6] = {0, 0, 0, 0};
+	GLuint indices[6] = {0, 0, 0, 0, 0, 0};
 	glGenBuffers(spriteCount, ibos);
 
 	for (i = 0; i < spriteCount; i++)
