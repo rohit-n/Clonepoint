@@ -23,7 +23,7 @@ Credits:
 	OpenAL Soft is under the LGPL license.
 
 	Clonepoint is Free Software. You may modify the software according to
-	the terms of the GPLv3. See COPYING for more details.
+	the terms of the GPLv3. See LICENSE for more details.
 
 	Any content not listed below is created by me and is released into the public domain (CC0).
 
