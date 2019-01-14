@@ -69,7 +69,8 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 extern PFNGLGETATTRIBLOCATIONPROC glGetAttribLocation;
 extern PFNGLVALIDATEPROGRAMPROC glValidateProgram;
 #if _WIN32
-extern PFNGLACTIVETEXTUREARBPROC  glActiveTexture;
+extern PFNGLACTIVETEXTUREARBPROC glActiveTexture_t;
+#define glActiveTexture glActiveTexture_t
 #endif
 extern PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubData;
 
