@@ -31,7 +31,7 @@ along with Clonepoint.  If not, see <http://www.gnu.org/licenses/>.
 #define ToRadian(x) ((x) * MY_PI / 180.0f)
 #define ToDegree(x) ((x) * 180.0f / MY_PI)
 
-#if DEBUG
+#ifdef DEBUG
 #define Assert(x) if (!x) { printf("Assertion failed!\n"); *(int*)0 = 0; }
 #else
 #define Assert(x)
